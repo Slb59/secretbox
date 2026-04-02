@@ -1,0 +1,23 @@
+# Virtual environments
+.venv
+.env
+
+# Test files
+input/
+output/
+*.zip
+
+# Fichiers de production
+dist-prod/
+*.tar.gz
+build/
+dist/
+
+# Fichiers de débogage
+filchat_debug.log
+build.log
+
+# Fichiers de données
+db.sqlite3
+data/
+media/
