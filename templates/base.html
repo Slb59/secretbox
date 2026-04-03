@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link href='{% static "css/base.css" %}'' rel="stylesheet">
+</head>
+<body>
+    <div id = "header">
+        <span class="logo">SecretBox</span>
+
+        <span class="user">
+        {% if request.user.is_authenticated %}
+            Salut {{ request.user.first_name|default:request.user.username }},
+            <a href="{% url "logout" %}">Logout</a>
+        {% else %}
+            <a href="{% url "login" %}">Log-in</a>
+        {% endif %}
+        </span>
+    </div>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
