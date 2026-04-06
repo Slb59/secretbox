@@ -21,10 +21,13 @@ from django.conf.urls.static import static
 
 from account import views
 
+print(f'Secretbox version: {settings.VERSION}')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('', views.dashboard, name='dashboard'),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]
 
 if settings.DEBUG:

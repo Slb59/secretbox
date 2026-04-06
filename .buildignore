@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+tests/
+.git/
+.gitignore
+makefile
+.installignore
+db.sqlite3
+build.sh
+install.sh
+versions/
+media/
