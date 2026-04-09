@@ -10,3 +10,4 @@ build.sh
 install.sh
 versions/
 media/
+.env

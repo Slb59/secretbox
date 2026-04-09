@@ -1,0 +1,26 @@
+# config.settings.prod.py
+from .base import *
+
+DEBUG = False
+
+ENVIRONMENT = "prod"
+
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "/var/lib/secretbox/db.sqlite3",
+    }
+}
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# doit être modifié si déploiement sur serveur web
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+INTERNAL_IPS = ["127.0.0.1",]
+
+MEDIA_ROOT = os.path.join("/var/lib/secretbox/", 'media')
+
+NPM_BIN_PATH = "/////usr/lib/node_modules/npm"

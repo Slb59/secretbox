@@ -28,3 +28,9 @@ git rebase upstream/main
 ### Créer une release
 - git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
 - git push origin v0.0.0
+
+### Deploiement
+- construire le zip avec make to-build
+- copier le zip dans le dossier hôte
+- lancer le script de déploiement : install.sh
+
