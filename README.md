@@ -33,4 +33,7 @@ git rebase upstream/main
 - construire le zip avec make to-build
 - copier le zip dans le dossier hôte
 - lancer le script de déploiement : install.sh
+- verifier le service : systemctl status secretbox
+- en cas d'erreur, revoir les logs : journalctl -u secretbox
 
+#### service already running

@@ -23,4 +23,4 @@ INTERNAL_IPS = ["127.0.0.1",]
 
 MEDIA_ROOT = os.path.join("/var/lib/secretbox/", 'media')
 
-NPM_BIN_PATH = "/////usr/lib/node_modules/npm"
+NPM_BIN_PATH = env("NPM_BIN_PATH")

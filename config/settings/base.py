@@ -12,7 +12,8 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env("DEBUG")
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 TAILWIND_APP_NAME = 'theme'
-EXEMPLE_DEST = env("EXEMPLE_DEST")
+if DEBUG:
+    EXEMPLE_DEST = env("EXEMPLE_DEST")
 
 # Application definition
 

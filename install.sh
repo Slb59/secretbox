@@ -88,6 +88,8 @@ uv sync --refresh
 # ------------------------------------------------------------------------------
 # Création du fichier d'environnement
 # ------------------------------------------------------------------------------
+systemctl stop secretbox
+
 echo "▶ Création du .env"
 if [ ! -f "$DATA_DIR/.env" ]; then
     echo "Création du .env production"
@@ -97,12 +99,12 @@ DEBUG=False
 ALLOWED_HOSTS=127.0.0.1,localhost
 DJANGO_SECRET_KEY=$NEWKEY
 DATABASE_URL=sqlite:////$DATA_DIR/db.sqlite3
-NPM_BIN_PATH=/////usr/lib/node_modules/npm
+NPM_BIN_PATH=/////usr/bin/npm
 EOF
   chown "$APP_USER:$APP_USER" "$DATA_DIR/.env"
   chmod 600 "$DATA_DIR/.env"
 fi
-ENV_FILE=$DATA_DIR/.env
+export ENV_FILE=$DATA_DIR/.env
 
 # ------------------------------------------------------------------------------
 # Base de données
@@ -131,7 +133,7 @@ After=network.target
 [Service]
 User=$APP_USER
 WorkingDirectory=$APP_DIR
-ExecStart=$VENV_DIR/bin/gunicorn --bind 127.0.0.1:9000 config.wsgi:secretbox
+ExecStart=$VENV_DIR/bin/gunicorn --bind 127.0.0.1:9000 config.wsgi:application
 Restart=always
 EnvironmentFile=$DATA_DIR/.env
 Environment=ENV_FILE=$DATA_DIR/.env
