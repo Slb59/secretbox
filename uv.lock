@@ -205,6 +205,31 @@ wheels = [
 ]
 
 [[package]]
+name = "django-crispy-forms"
+version = "2.6"
+source = { registry = "https://pkgs.safetycli.com/repository/osynia/pypi/simple/" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://pkgs.safetycli.com/package/osynia/pypi/packages/73/42/c2cfb672493730b963ef377b103e29871c56348a215d0ae8cf362fe8ab1e/django_crispy_forms-2.6.tar.gz", hash = "sha256:4921a1087c6cd4f9fa3c139654c1de1c1c385f8bd6729aaee530bc0121ab4b93", size = 1097838 }
+wheels = [
+    { url = "https://pkgs.safetycli.com/package/osynia/pypi/packages/96/e3/4c5915a732d6ab54da8871400852b67529518eedfb6b78ecf10bbccfcabb/django_crispy_forms-2.6-py3-none-any.whl", hash = "sha256:8ee0ae28b6b0ac41ff48a65944480c049fe8d1b0047086874fd7efabf4ec1374", size = 31479 },
+]
+
+[[package]]
+name = "django-debug-toolbar"
+version = "6.3.0"
+source = { registry = "https://pkgs.safetycli.com/repository/osynia/pypi/simple/" }
+dependencies = [
+    { name = "django" },
+    { name = "sqlparse" },
+]
+sdist = { url = "https://pkgs.safetycli.com/package/osynia/pypi/packages/d8/ea/b62673424dd72d2dbf5adf4145281a421d5792f47380d9bc8e3b11e1a769/django_debug_toolbar-6.3.0.tar.gz", hash = "sha256:f830a86fe02e17f625a22cfbed24a5bd1500762e201ec959c50efb0f9327282b", size = 334079 }
+wheels = [
+    { url = "https://pkgs.safetycli.com/package/osynia/pypi/packages/7d/9e/d8c3c845f4b5ccac7377c19f4049e7e00c6f121846a81f69a497b45734df/django_debug_toolbar-6.3.0-py3-none-any.whl", hash = "sha256:a199ce3d0f884739a9096835ad417479fede05f3b3c4824bc8b354721ba8f629", size = 298304 },
+]
+
+[[package]]
 name = "django-environ"
 version = "0.13.0"
 source = { registry = "https://pkgs.safetycli.com/repository/osynia/pypi/simple/" }
@@ -831,6 +856,8 @@ dependencies = [
     { name = "cookiecutter" },
     { name = "django" },
     { name = "django-browser-reload" },
+    { name = "django-crispy-forms" },
+    { name = "django-debug-toolbar" },
     { name = "django-environ" },
     { name = "django-extensions" },
     { name = "django-stubs-ext" },
@@ -845,6 +872,8 @@ requires-dist = [
     { name = "cookiecutter", specifier = ">=2.7.1" },
     { name = "django", specifier = ">=6.0.3" },
     { name = "django-browser-reload", specifier = ">=1.21.0" },
+    { name = "django-crispy-forms", specifier = ">=2.6" },
+    { name = "django-debug-toolbar", specifier = ">=6.3.0" },
     { name = "django-environ", specifier = ">=0.13.0" },
     { name = "django-extensions", specifier = ">=4.1" },
     { name = "django-stubs-ext", specifier = ">=6.0.2" },

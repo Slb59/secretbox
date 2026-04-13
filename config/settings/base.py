@@ -18,12 +18,12 @@ if DEBUG:
 # Application definition
 
 DJANGO_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     # "compressor",
 ]
 
@@ -33,11 +33,15 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = [
     # Tailwind
-    "tailwind",
-    "theme",
-    "django_browser_reload",]
+    'tailwind',
+    'theme',
+    'django_browser_reload',
+    'crispy_forms']
 
-DEV_APPS = []
+DEV_APPS = [
+    "django.test",
+    "debug_toolbar",
+]
 
 INSTALLED_APPS = THIRD_PARTY_APPS + PROJECT_APPS + DJANGO_APPS 
 
@@ -45,18 +49,19 @@ if DEBUG:
     INSTALLED_APPS += DEV_APPS
 
 DJANGO_MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 TIERS_MIDDLEWARE = [
-    ]
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+]
 
 MIDDLEWARE = TIERS_MIDDLEWARE + DJANGO_MIDDLEWARE
 
@@ -78,6 +83,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+CRISPY_TEMPLATE_PACK = "tailwind"
+AUTH_USER_MODEL = "account.MyUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
