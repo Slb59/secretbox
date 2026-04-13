@@ -226,6 +226,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-stubs-ext"
+version = "6.0.2"
+source = { registry = "https://pkgs.safetycli.com/repository/osynia/pypi/simple/" }
+dependencies = [
+    { name = "django" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://pkgs.safetycli.com/package/osynia/pypi/packages/52/e0/f2e6caf627d176a51fba1ca9c34082c7ea10d3f521ff2c828532ca99fa91/django_stubs_ext-6.0.2.tar.gz", hash = "sha256:70b7b7ae837e7a6036e2facb64435550bf7cf8143c1a6e802864d4824ce6058c", size = 6751 }
+wheels = [
+    { url = "https://pkgs.safetycli.com/package/osynia/pypi/packages/2b/d2/9cb93cd1ef94ddc97c26c902ff75a859f5f154051fec98cf8242649b26ce/django_stubs_ext-6.0.2-py3-none-any.whl", hash = "sha256:b35bdec1995bf49765cc39fa89aa7c23f120a23d0cb0152ab7fb4e48ff7d667b", size = 10446 },
+]
+
+[[package]]
 name = "django-tailwind"
 version = "4.4.2"
 source = { registry = "https://pkgs.safetycli.com/repository/osynia/pypi/simple/" }
@@ -820,6 +833,7 @@ dependencies = [
     { name = "django-browser-reload" },
     { name = "django-environ" },
     { name = "django-extensions" },
+    { name = "django-stubs-ext" },
     { name = "django-tailwind" },
     { name = "gitingest" },
     { name = "gunicorn" },
@@ -833,6 +847,7 @@ requires-dist = [
     { name = "django-browser-reload", specifier = ">=1.21.0" },
     { name = "django-environ", specifier = ">=0.13.0" },
     { name = "django-extensions", specifier = ">=4.1" },
+    { name = "django-stubs-ext", specifier = ">=6.0.2" },
     { name = "django-tailwind", specifier = ">=4.4.2" },
     { name = "gitingest", specifier = ">=0.3.1" },
     { name = "gunicorn", specifier = ">=25.3.0" },
