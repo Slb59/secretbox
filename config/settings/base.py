@@ -29,6 +29,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'account',
+    'journaling',
 ]
 
 THIRD_PARTY_APPS = [
@@ -36,7 +37,8 @@ THIRD_PARTY_APPS = [
     'tailwind',
     'theme',
     'django_browser_reload',
-    'crispy_forms']
+    'crispy_forms'
+]
 
 DEV_APPS = [
     "django.test",
