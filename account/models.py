@@ -30,6 +30,7 @@ class MyUser(AbstractUser):
     class UserTypes(models.TextChoices):
         MEMBER = "member", "Member"
         SUPERMEMBER = "supermember", "Supermember"
+        COMPTABLE = "comptable", "Comptable"
 
     first_name = None
     last_name = None
@@ -118,7 +119,7 @@ class MemberProfile(BaseUserProfile):
 
 class MemberManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(usertype=CQUser.UserTypes.MEMBER)
+        return super().get_queryset().filter(usertype=MyUser.UserTypes.MEMBER)
 
     def get_by_natural_key(self, email):
         return self.get(email=email)

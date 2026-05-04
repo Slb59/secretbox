@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div class="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl p-6">
+        <div class="space-y-4">
+            <h2 class="text-2xl font-bold text-center mb-6">{% trans "Déconnexion" %}</h2>
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <p class="text-gray-600 text-sm text-center">
+                    {% trans "Êtes-vous sûr de vouloir vous déconnecter ?" %}
+                </p>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                    {% trans "Confirmer la déconnexion" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

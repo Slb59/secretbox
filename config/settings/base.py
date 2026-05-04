@@ -28,7 +28,7 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-    'account.apps.AccountConfig',
+    'account',
 ]
 
 THIRD_PARTY_APPS = [
@@ -77,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processor.current_year',
             ],
         },
     },
@@ -136,5 +137,4 @@ PASSWORD_HASHERS = [
 
 
 LOGIN_REDIRECT_URL = 'dashboard'
-LOGIN_URL = 'login'
-LOGIN_URL = 'login'
+LOGIN_URL = 'account:login'

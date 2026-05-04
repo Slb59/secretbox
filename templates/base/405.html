@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Page non trouvée{% endblock %}
+{% block content %}
+<h1>Il semble y avoir un problème</h1>
+<p>{% if exception %}{{ exception }}{% else %}Code d’erreur : 405 Method Not Allowed.{% endif %}</p>
+{% endblock content %}

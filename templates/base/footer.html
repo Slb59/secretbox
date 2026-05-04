@@ -1,0 +1,8 @@
+{% load static %}
+
+<div class="bg-gray-800 text-white py-6 container-fluid text-center mt-auto p-5 rounded"">
+    &copy; {{ current_year }} Osynia. Tous droits réservés.
+    {% if request.user.is_superuser %}
+        <a href="{% url 'admin:index' %}">Administration avancée</a>
+    {% endif %}
+</div>

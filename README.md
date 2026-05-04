@@ -1,7 +1,5 @@
 # secretbox
-personnal organisation tools
-
-
+petits outils d'organisation
 
 ## Maintenance
 - git add .
@@ -13,7 +11,7 @@ personnal organisation tools
 - mettre à jour Readme.md + VERSION
 - git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
 - git push origin v0.0.0
-- sauvegarde du code source: gitingest . -o tests/output/digest.txt -i "*.py *.css *.js"
+- sauvegarde du code source: gitingest . -o media/digest.txt -i "*.py *.css *.js"
 
 ### création d'une branche pour une nouvelle fonctionnalité
 git checkout -b feature/objectif

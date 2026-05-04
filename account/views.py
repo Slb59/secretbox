@@ -12,24 +12,41 @@ from django.contrib.auth.views import (
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 
 from .forms import LoginForm, PasswordResetForm, ProfileUpdateForm
 
 MYUSER = get_user_model()
 
+class DashboardView(LoginRequiredMixin,TemplateView):
+    template_name = 'account/dashboard.html'
 
-def dashboard(request):
-    return render(request, 'account/dashboard.html', {'section': 'dashboard'})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "title": _("Bienvenue dans SecretBox"),
+                "logo_url": "/theme/static/images/secret.jpeg",
+                "request": self.request,
+            }
+        )
+        return context
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        context = {}
+        return self.render_to_response(context)
+
 
 class MyLoginView(DjangoLoginView):
 
     form_class = LoginForm
-    template_name = "registration/login.html"
+    template_name = "account/login.html"
     success_url = reverse_lazy("home")
 
     def get_success_url(self):
         url = self.success_url
-        print(url)
         return url
 
     def form_valid(self, form):
@@ -41,7 +58,7 @@ class MyLoginView(DjangoLoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = _("Connexion")
-        context["logo_url"] = "/static/images/secretbox/logo_sb.png"
+        context["logo_url"] = "/theme/static/images/secret.jpeg"
         return context
 
     def form_invalid(self, form):
@@ -51,7 +68,7 @@ class MyLoginView(DjangoLoginView):
 
 
 class MyLogoutView(DjangoLogoutView):
-    template_name = "registration/logout.html"
+    template_name = "account/logout.html"
     success_url = reverse_lazy("login")
 
 
