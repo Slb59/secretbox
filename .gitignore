@@ -21,3 +21,4 @@ build.log
 db.sqlite3
 data/
 media/
+staticfiles/

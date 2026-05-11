@@ -2,30 +2,31 @@
 petits outils d'organisation
 
 ## Maintenance
-- git add .
-- git commit -m "Ajout de la nouvelle API d'utilisateurs
-> Description détaillée des changements
-> Impact sur le système existant"
-- git push origin HEAD
+### Créer une branche feature
+git checkout -b feature/ma-fonctionnalite
+
+### Faire vos modifications et commits
+git add .
+git commit -m "feat: Description de la fonctionnalité"
+
+### Retourner sur main et fusionner
+git checkout main
+git merge feature/ma-fonctionnalite
+
+### Envoyer les modifications
+git push origin HEAD
+
+### Tagger la version après deploiement
 
 - mettre à jour Readme.md + VERSION
 - git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
 - git push origin v0.0.0
 - sauvegarde du code source: gitingest . -o media/digest.txt -i "*.py *.css *.js"
 
-### création d'une branche pour une nouvelle fonctionnalité
-git checkout -b feature/objectif
-git commit -m "feat: Ajout de la nouvelle fonctionnalité"
-git checkout main
-git merge feature/objectif
-
 ### Mise à jour depuis la branche principale
 git fetch upstream
 git rebase upstream/main
 
-### Créer une release
-- git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
-- git push origin v0.0.0
 
 ### Deploiement
 - construire le zip avec make to-build
@@ -34,4 +35,89 @@ git rebase upstream/main
 - verifier le service : systemctl status secretbox
 - en cas d'erreur, revoir les logs : journalctl -u secretbox
 
-#### service already running
+## Dépendances
+
+Django 6.0.3
+Django Tailwind 4.4.2
+Django Debug Toolbar 6.3.0
+MySQL (mysqlclient)
+
+## Exploitation
+
+### Creer le fichier .env
+DEBUG=True
+ALLOWED_HOSTS=localhost
+DJANGO_SECRET_KEY=
+DJANGO_SETTINGS_MODULE=config.settings.dev
+
+DATABASE_URL=sqlite:///db.sqlite3
+
+NPM_BIN_PATH=
+
+DEFAULT_FROM_EMAIL=
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+ADMIN_EMAIL=
+
+
+### Exécuter des commandes Python
+uv run python manage.py migrate
+uv run python manage.py runserver
+
+### Lancer le shell Django
+uv run python manage.py shell
+
+## Base de données : Mariadb
+
+### Activation / arrêt
+sudo systemctl start mariadb
+sudo systemctl stop mariadb
+sudo systemctl status mariadb
+
+### activation au demmarage
+sudo systemctl enable mariadb
+
+### Exporte/importe les données
+mariadb-dump -u [user] -p secretbox_dev > secretbox_dump.sql
+scp secretbox_dump.sql user@mint-pc:/tmp/ #copie sur cle pour mint
+mariadb -u [user] -p secretbox_prod < /tmp/secretbox_dump.sql # deploiement sur mint
+
+## commandes reseau
+
+### trouver l'ip local
+ip a
+hostname -I
+ifconfig
+
+### Ouvrir un port dans le pare-feu (UFW)
+sudo ufw allow 3306/tcp  # MariaDB
+sudo ufw allow 5432/tcp  # PostgreSQL
+sudo ufw enable
+
+## liens utils
+
+PostgreSQL :
+
+Documentation officielle : https://www.postgresql.org/docs/
+
+
+MariaDB :
+
+Documentation MariaDB : https://mariadb.com/kb/en/
+Configuration sous Arch Linux : https://wiki.archlinux.org/title/MariaDB
+
+
+Django :
+
+Documentation Django : https://docs.djangoproject.com/fr/4.2/
+Tutoriel officiel : https://docs.djangoproject.com/fr/4.2/intro/tutorial01/
+
+
+Raspberry Pi :
+
+Documentation officielle : https://www.raspberrypi.org/documentation/
+Installation d’Ubuntu Server : https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi
+

@@ -62,8 +62,8 @@ class MyLoginView(DjangoLoginView):
         return context
 
     def form_invalid(self, form):
-        # print("=== Formulaire invalide ===")
-        # print(form.errors)
+        print("=== Formulaire invalide ===")
+        print(form.errors)
         return super().form_invalid(form)
 
 

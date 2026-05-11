@@ -12,6 +12,7 @@ APP_BASE="/opt/secretbox"
 DATA_DIR="/var/lib/secretbox"
 APP_DIR="$APP_BASE/app"
 VENV_DIR="$APP_DIR/.venv"
+LOG_DIR="/var/log/secretbox"
 export UV_HTTP_TIMEOUT=240
 
 
@@ -39,10 +40,10 @@ if ! id "$APP_USER" >/dev/null 2>&1; then
 fi
 
 rm -rf "$VENV_DIR" 
-rm -rf "$APP_DIR"
-mkdir -p "$APP_DIR" "$DATA_DIR" "$DATA_DIR/media" "$VENV_DIR" 
+rm -rf "$APP_DIR" "$LOG_DIR"
+mkdir -p "$APP_DIR" "$DATA_DIR" "$DATA_DIR/media" "$VENV_DIR" "$LOG_DIR" 
 chown -R "$APP_USER:$APP_USER" "$APP_BASE"
-chown -R "$APP_USER:$APP_USER" $DATA_DIR/media/
+chown -R "$APP_USER:$APP_USER" $DATA_DIR/media/ $LOG_DIR
 
 # ------------------------------------------------------------------------------
 # Installation de uv
@@ -88,19 +89,16 @@ uv sync --refresh
 # ------------------------------------------------------------------------------
 # Création du fichier d'environnement
 # ------------------------------------------------------------------------------
-systemctl stop secretbox
+if systemctl cat secretbox.service >/dev/null 2>&1; then
+    echo "▶ arrêt du service secretbox..."
+    systemctl stop secretbox
+fi
 
 echo "▶ Création du .env"
 if [ ! -f "$DATA_DIR/.env" ]; then
-    echo "Création du .env production"
-    NEWKEY=$("./djangokey.sh")
-    cat > "$DATA_DIR/.env" <<EOF
-DEBUG=False
-ALLOWED_HOSTS=127.0.0.1,localhost
-DJANGO_SECRET_KEY=$NEWKEY
-DATABASE_URL=sqlite:////$DATA_DIR/db.sqlite3
-NPM_BIN_PATH=/////usr/bin/npm
-EOF
+  echo "Création du .env production nécessaire"
+  exit 1
+else  
   chown "$APP_USER:$APP_USER" "$DATA_DIR/.env"
   chmod 600 "$DATA_DIR/.env"
 fi
@@ -144,8 +142,13 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl enable secretbox
-systemctl restart secretbox
+if systemctl cat secretbox.service >/dev/null 2>&1; then
+    echo "▶ Redémarrage du service secretbox..."
+    systemctl enable secretbox
+    systemctl restart secretbox
+else
+    echo "⚠ Le service secretbox n'est pas correctement installé."
+fi
 systemctl status secretbox
 
 uv run manage.py showmigrations

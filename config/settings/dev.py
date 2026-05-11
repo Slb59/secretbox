@@ -14,9 +14,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env("BASE_NAME"),          # Nom de votre base
-        'USER': env("BASE_USER"),             # Utilisateur MariaDB (à créer)
+        'USER': env("BASE_USER"),             # Utilisateur MariaDB
         'PASSWORD': env("BASE_PWD"),  # Mot de passe de l'utilisateur
-        'HOST': env("BASE_HOST"),          # Adresse IP du serveur MariaDB (localhost)
+        'HOST': env("BASE_HOST"),          # Adresse IP du serveur MariaDB
         'PORT': env("BASE_PORT"),               # Port par défaut de MariaDB
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -26,4 +26,3 @@ DATABASES = {
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-

@@ -2,7 +2,7 @@
 set -e
 
 APP_NAME="secretbox"
-BASE_DIR="$(dirname "$(readlink -f "$0")")"
+BASE_DIR="$PWD"
 BUILD_DIR="$BASE_DIR/build"
 
 # Lire la version
@@ -21,8 +21,9 @@ fi
 echo "▶ Nettoyage avant build"
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR/app"
+chmod 755 "$BUILD_DIR/app" "$BUILD_DIR"
 
-echo "▶ Copie des fichiers applicatifs"
+echo "▶ Copie des fichiers applicatifs dans $BUILD_DIR/app"
 rsync -av --exclude-from='.buildignore' ./ "$BUILD_DIR/app/"
 
 echo "▶ Copie des fichiers d'installation "
@@ -33,6 +34,7 @@ echo "▶ Création de l’archive $VERSION dans build"
 cd "$BUILD_DIR/app"
 7z a "$BUILD_DIR"/"app.7z" .
 GLOBAL_ARCHIVE_NAME="$BUILD_DIR"/"$VERSION"_"$APP_NAME"_"$(date +%Y.%m.%d)"_linux.7z
+echo "global archive name $GLOBAL_ARCHIVE_NAME"
 7z a "$GLOBAL_ARCHIVE_NAME" "$BUILD_DIR"/VERSION
 7z a "$GLOBAL_ARCHIVE_NAME" "$BUILD_DIR"/install.sh
 7z a "$GLOBAL_ARCHIVE_NAME" "$BUILD_DIR"/"app.7z"
