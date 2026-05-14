@@ -38,15 +38,15 @@ class MemoCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        todo = form.save(commit=False)
-        todo.user = self.request.user
-        todo.save()
+        memo = form.save(commit=False)
+        memo.user = self.request.user
+        memo.save()
 
         # Afficher les assignés
-        todo.who.add(self.request.user)
-        assignees = todo.who.all()
+        memo.who.add(self.request.user)
+        assignees = memo.who.all()
         print(f"Assignés: {[user.trigram for user in assignees]}")
-        todo.save()
+        memo.save()
 
         return super().form_valid(form)
 

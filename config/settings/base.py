@@ -37,7 +37,8 @@ THIRD_PARTY_APPS = [
     'tailwind',
     'theme',
     'django_browser_reload',
-    'crispy_forms'
+    'crispy_forms',
+    'crispy_tailwind',
 ]
 
 DEV_APPS = [
@@ -69,6 +70,7 @@ MIDDLEWARE = TIERS_MIDDLEWARE + DJANGO_MIDDLEWARE
 
 ROOT_URLCONF = 'config.urls'
 
+CRISPY_TEMPLATE_PACK = 'tailwind'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

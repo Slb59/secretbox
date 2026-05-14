@@ -243,6 +243,7 @@ class Memo(models.Model):
             return f"{base_label} le {self.get_report_date_display()}"
         return base_label
 
+    @property
     def get_color(self) -> str:
         filters = [
             Q(

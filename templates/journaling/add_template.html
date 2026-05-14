@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+
+    {% include "base/logo_header.html" %}
+    
+    {% csrf_token %}
+    {% crispy form %}
+
+{% endblock %}
