@@ -47,8 +47,8 @@ DEV_APPS = [
 
 INSTALLED_APPS = THIRD_PARTY_APPS + PROJECT_APPS + DJANGO_APPS 
 
-if DEBUG:
-    INSTALLED_APPS += DEV_APPS
+# if DEBUG:
+INSTALLED_APPS += DEV_APPS
 
 DJANGO_MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

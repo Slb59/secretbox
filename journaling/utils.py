@@ -7,7 +7,7 @@ from django.utils.dateparse import parse_date
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .memohistorymodel import MemoHistory
+from .memo import MemoHistory
 from .memo import Memo
 
 logger = logging.getLogger(__name__)

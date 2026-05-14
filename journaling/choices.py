@@ -10,7 +10,7 @@ PRIORITY_CHOICES = [
     ("4-normal", "Normale"),
     ("3-medium", "Moyenne"),
     ("2-high", "Élevée"),
-    ("1-highest", "Trés élevée"),
+    ("1-highest", "Très élevée"),
 ]
 
 PERIODIC_CHOICES = [
@@ -23,13 +23,15 @@ PERIODIC_CHOICES = [
     ("07-everyweek", "Toutes les semaines"),
     ("08-every10days", "Tous les 10 jours"),
     ("09-every2weeks", "Toutes les 2 semaines"),
-    ("10-everymonth", "Tous les mois"),
-    ("11-every6weeks", "Toutes les 6 semaines"),
-    ("12-every2months", "Tous les 2 mois"),
-    ("13-every3months", "Tous les 3 mois"),
-    ("14-every4months", "Tous les 4 mois"),
-    ("15-every6months", "Tous les 6 mois"),
-    ("16-everyyear", "Tous les ans"),
+    ("10-every3weeks", "Toutes les 3 semaines"),
+    ("11-everymonth", "Tous les mois"),
+    ("12-every6weeks", "Toutes les 6 semaines"),
+    ("13-every2months", "Tous les 2 mois"),
+    ("14-every3months", "Tous les 3 mois"),
+    ("15-every4months", "Tous les 4 mois"),
+    ("16-every6months", "Tous les 6 mois"),
+    ("17-everyyear", "Tous les ans"),
+    ("18-every18months", "Tous les 18 mois"),
 ]
 
 CATEGORY_CHOICES = [
@@ -46,13 +48,13 @@ CATEGORY_CHOICES = [
     ("11-bricoles", "Bricoles"),
     ("12-couture", "Couture"),
     ("13-loisirs", "Loisirs"),
+    ("14-vacances", "Vacances"),
 ]
 
 PLACE_CHOICES = [
     ("cantin", "Cantin"),
     ("chm", "CHM"),
     ("genese", "Genèse"),
-    ("partout", "Partout"),
 ]
 
 ACTION_CHOICES = [

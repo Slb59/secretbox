@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/dashboard.html"
 
-    def apply_filters(self, todos, data):
+    def apply_filters(self, memos, data):
         """Apply filters to the queryset"""
 
         simple_filters = {
@@ -37,9 +37,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             value = data.get(field)
             if value:
                 if callable(target):
-                    todos = todos.filter(**target(value))
+                    memos = memos.filter(**target(value))
                 else:
-                    todos = todos.filter(**{target: value})
+                    memos = memos.filter(**{target: value})
 
         range_filters = {
             "planned_date_start": ("planned_date__gte", "planned_date_start"),
@@ -53,11 +53,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         for field, (lookup, data_key) in range_filters.items():
             value = data.get(data_key)
             if value is not None:
-                todos = todos.filter(**{lookup: value})
+                memos = memos.filter(**{lookup: value})
                 if "done_date" in lookup:
-                    todos = todos.exclude(done_date__isnull=True)
+                    memos = memos.exclude(done_date__isnull=True)
 
-        return todos
+        return memos
 
     def get_queryset_by_rights(self, user):
         """Filtering by rights"""
@@ -67,22 +67,22 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
 
         if user.is_superuser:
-            qs = Todo.objects.all()
+            qs = Memo.objects.all()
         else:
-            qs = Todo.objects.filter(Q(user=user) | Q(who=user))
+            qs = Memo.objects.filter(Q(user=user) | Q(who=user))
 
         qs = qs.distinct().prefetch_related("who")
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        form = TodoFilterForm(self.request.GET or None)
+        form = MemoFilterForm(self.request.GET or None)
         user = self.request.user
-        todos = self.get_queryset_by_rights(user)
+        memos = self.get_queryset_by_rights(user)
 
         if form.is_valid():
-            todos = self.apply_filters(todos, form.cleaned_data)
-        todos = todos.annotate(first_who=Min("who__trigram")).order_by(
+            memos = self.apply_filters(memos, form.cleaned_data)
+        todos = memos.annotate(first_who=Min("who__trigram")).order_by(
             "planned_date",
             "priority",
             "periodic",
@@ -116,16 +116,16 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 todo = get_object_or_404(Todo, pk=pk, who=request.user)
                 request.session["active_timer_id"] = pk
                 request.session["active_timer_start"] = timezone.now().isoformat()
-                context["active_todo"] = todo
+                context["active_memo"] = todo
                 context["timer_started"] = True
             else:
                 # Un timer est déjà en cours → on reste sur la page
                 context["timer_started"] = True
                 active_id = request.session.get("active_timer_id")
                 if active_id:
-                    context["active_todo"] = Todo.objects.filter(pk=active_id).first()
+                    context["active_memo"] = Memo.objects.filter(pk=active_id).first()
         else:
             context["timer_started"] = False
 
-        context["todos"] = Todo.objects.filter(who=request.user)
+        context["memos"] = Memo.objects.filter(who=request.user)
         return self.render_to_response(context)

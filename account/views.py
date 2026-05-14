@@ -3,7 +3,6 @@
 from django.contrib import messages
 from django.shortcuts import render
 from django.contrib.auth import get_user_model, login
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView as DjangoLoginView,
     LogoutView as DjangoLogoutView,
@@ -18,26 +17,6 @@ from django.views.generic import TemplateView
 from .forms import LoginForm, PasswordResetForm, ProfileUpdateForm
 
 MYUSER = get_user_model()
-
-class DashboardView(LoginRequiredMixin,TemplateView):
-    template_name = 'account/dashboard.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(
-            {
-                "title": _("Bienvenue dans SecretBox"),
-                "logo_url": "/theme/static/images/secret.jpeg",
-                "request": self.request,
-            }
-        )
-        return context
-
-    def get(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-        context = {}
-        return self.render_to_response(context)
-
 
 class MyLoginView(DjangoLoginView):
 

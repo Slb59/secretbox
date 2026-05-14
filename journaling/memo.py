@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .choices import CATEGORY_CHOICES, PERIODIC_CHOICES, PLACE_CHOICES, PRIORITY_CHOICES
+from .choices import CATEGORY_CHOICES, PERIODIC_CHOICES, PLACE_CHOICES, PRIORITY_CHOICES, ACTION_CHOICES
 from .colors import ColorParameter
 
 User = get_user_model()
@@ -310,3 +310,24 @@ class Memo(models.Model):
 
     def can_undelete(self, user):
         return (user.is_superuser or self.user == user) and (self.state == "cancel")
+
+
+class MemoHistory(models.Model):
+    memo = models.ForeignKey(Memo, on_delete=models.CASCADE, related_name="history")
+    changed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="memo_changes",
+    )
+    timestamp = models.DateTimeField(default=timezone.now)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    changes = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        ts = localtime(self.timestamp)
+        return f"{self.memo} - {self.get_action_display()} ({ts:%Y-%m-%d %H:%M:%S%z})"
