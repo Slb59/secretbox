@@ -23,13 +23,13 @@ Member = get_user_model()
 
 class MemoFilterForm(forms.Form):
     state = forms.ChoiceField(
-        choices=[("", "Tous")] + Todo.STATE_CHOICES, required=False, label="Etat"
+        choices=[("", "Tous")] + Memo.STATE_CHOICES, required=False, label="Etat"
     )
     duration_min = forms.IntegerField(required=False, min_value=0, label="Durée min")
     duration_max = forms.IntegerField(required=False, min_value=0, label="Durée max")
     description = forms.CharField(required=False)
     appointment = forms.ChoiceField(
-        choices=[("", "Tous")] + Todo.APPOINTEMENT_CHOICES,
+        choices=[("", "Tous")] + Memo.APPOINTEMENT_CHOICES,
         required=False,
         label=_("Rendez-vous"),
     )
@@ -85,7 +85,7 @@ class MemoFilterForm(forms.Form):
         self.helper.label_class = "font-semibold"
         self.helper.field_class = "w-full"
         self.helper.attrs = {
-            "id": "todo-filter-form",
+            "id": "memo-filter-form",
             "novalidate": "novalidate",
             "data-autosubmit": "true",
         }

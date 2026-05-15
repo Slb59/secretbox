@@ -82,6 +82,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'config.context_processor.current_year',
+                "account.context_processors.app_access_permissions"
             ],
         },
     },
@@ -140,5 +141,5 @@ PASSWORD_HASHERS = [
 ]
 
 
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'account:login'

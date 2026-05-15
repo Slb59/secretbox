@@ -55,7 +55,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = MYUSER
     form_class = ProfileUpdateForm
     template_name = "secretbox/profile.html"
-    success_url = reverse_lazy("dashboard")
+    success_url = reverse_lazy("home")
 
     def get_object(self, queryset=None):
         return self.request.user

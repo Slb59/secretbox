@@ -73,3 +73,69 @@ class MemoForm(forms.ModelForm):
             "note",
             action_buttons(back_url_name="home", back_label="Liste"),
         )
+
+class MemoValidateForm(forms.ModelForm):
+    class Meta:
+        model = Memo
+        fields = ["planned_date", "description"]
+        widgets = {
+            "planned_date": forms.DateInput(
+                format="%Y-%m-%d", attrs={"type": "date", "class": "form-input"}
+            )
+        }
+
+    def __init__(self, *args, user=None, instance=None, **kwargs):
+        super().__init__(*args, instance=instance, **kwargs)
+
+        self.initial["planned_date"] = instance.next_date()
+
+        self.fields["planned_date"].label = _("Nouvelle date")
+        self.fields["description"].label = _("Description")
+
+        self.helper = FormHelper()
+        self.helper.form_class = "border p-8"
+        self.helper.form_method = "post"
+        self.helper.form_tag = True
+        self.helper.attrs = {"novalidate": "novalidate"}
+
+        self.helper.layout = Layout(
+            "planned_date",
+            "description",
+            action_buttons(back_url_name="home", back_label="Annuler"),
+        )
+
+class MemoReportForm(forms.ModelForm):
+    class Meta:
+        model = Memo
+        fields = ["planned_date", "description"]
+        widgets = {
+            "planned_date": forms.DateInput(
+                format="%Y-%m-%d", attrs={"type": "date", "class": "form-input"}
+            )
+        }
+
+    def __init__(self, *args, user=None, instance=None, **kwargs):
+        super().__init__(*args, instance=instance, **kwargs)
+
+        self.initial["planned_date"] = date.today() + timedelta(days=1)
+
+        self.fields["planned_date"].label = _("Date de report")
+        self.fields["description"].label = _("Description")
+
+        self.helper = FormHelper()
+        self.helper.form_class = "border p-8"
+        self.helper.form_method = "post"
+        self.helper.form_tag = True
+        self.helper.attrs = {"novalidate": "novalidate"}
+
+        self.helper.layout = Layout(
+            "planned_date",
+            "description",
+            action_buttons(back_url_name="home", back_label="Annuler"),
+        )
+
+    def clean_planned_date(self):
+        planned_date = self.cleaned_data.get("planned_date")
+        if planned_date and planned_date < date.today():
+            raise forms.ValidationError(_("La date de report doit être future."))
+        return planned_date

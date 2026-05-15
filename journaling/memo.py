@@ -1,4 +1,4 @@
-# secretbox.dashboard.models.py
+# secretbox.journaling.memo.py
 from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model

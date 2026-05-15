@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="content-block">
+    {% include "base/logo_header.html" %}
+
+    {% block history_content %}
+    <div class="overflow-x-auto w-full">
+    <table class="table_content">
+        <caption>-{{memo.description}}</caption>
+        <thead>
+        <tr class="tr_header"> 
+            <th class="th_header" scope="row">Date</th>
+            <th class="th_header" scope="row">Auteur</th>
+            <th class="th_header" scope="row">Action</th>
+            <th class="th_header" scope="row">Description</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td class="td_header">{{ h.timestamp|date:"d/m/Y H:i" }}</td>
+                <td class="td_header">{{ h.changed_by }}</td>
+                <td class="td_header">{{ h.get_action_display }}</td>
+                <td class="td_header">
+                    {% if h.changes.message %}
+                        {{ h.changes.message }}
+                    {% else %}
+                        {{ h.changes }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Aucun historique trouvé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% endblock history_content %}
+
+</div>
+{% endblock %}

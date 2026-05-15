@@ -1,29 +1,128 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView, View
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from django.urls import reverse_lazy
-from .memo import Memo
-from .forms import MemoForm
+from .memo import Memo, MemoHistory
+from .forms import MemoForm, MemoValidateForm, MemoReportForm
+from .filters import MemoFilterForm
+
 
 class DashboardView(LoginRequiredMixin,TemplateView):
     template_name = 'journaling/dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        form = MemoFilterForm(self.request.GET or None)
+        user = self.request.user
+        memos = self.get_queryset_by_rights(user)
+
+        if form.is_valid():
+            memos = self.apply_filters(memos, form.cleaned_data)
+        memos = memos.annotate(first_who=Min("who__trigram")).order_by(
+            "planned_date",
+            "priority",
+            "periodic",
+            "first_who",
+            "place",
+            "duration",
+            "pk",
+        )
         context.update(
             {
                 "title": _("Bienvenue dans SecretBox"),
-                "logo_url": "/theme/static/images/secret.jpeg",
+                "logo_url": "/static/images/secretbox/logo_sb2.png",
+                "memos": memos,
+                "form": form,
                 "request": self.request,
             }
         )
+
         return context
 
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
         context = {}
+
+        if pk:
+            # Empêcher plusieurs timers
+            if not request.user.stopwatch:
+                request.user.stopwatch = True
+                request.user.save()
+
+                memo = get_object_or_404(Memo, pk=pk, who=request.user)
+                request.session["active_timer_id"] = pk
+                request.session["active_timer_start"] = timezone.now().isoformat()
+                context["active_memo"] = memo
+                context["timer_started"] = True
+            else:
+                # Un timer est déjà en cours → on reste sur la page
+                context["timer_started"] = True
+                active_id = request.session.get("active_timer_id")
+                if active_id:
+                    context["active_memo"] = Memo.objects.filter(pk=active_id).first()
+        else:
+            context["timer_started"] = False
+
+        context["memos"] = Memo.objects.filter(who=request.user)
         return self.render_to_response(context)
+
+    
+    def apply_filters(self, memos, data):
+        """Apply filters to the queryset"""
+
+        simple_filters = {
+            "state": "state",
+            "category": "category",
+            "priority": "priority",
+            "description": lambda v: {"description__icontains": v},
+            "appointment": "appointment",
+            "who": "who",
+            "place": "place",
+            "periodic": "periodic",
+            "done_date_isnull": lambda v: {"done_date__isnull": v},
+        }
+
+        for field, target in simple_filters.items():
+            value = data.get(field)
+            if value:
+                if callable(target):
+                    memos = memos.filter(**target(value))
+                else:
+                    memos = memos.filter(**{target: value})
+
+        range_filters = {
+            "planned_date_start": ("planned_date__gte", "planned_date_start"),
+            "planned_date_end": ("planned_date__lte", "planned_date_end"),
+            "duration_min": ("duration__gte", "duration_min"),
+            "duration_max": ("duration__lte", "duration_max"),
+            "done_date_start": ("done_date__gte", "done_date_start"),
+            "done_date_end": ("done_date__lte", "done_date_end"),
+        }
+
+        for field, (lookup, data_key) in range_filters.items():
+            value = data.get(data_key)
+            if value is not None:
+                memos = memos.filter(**{lookup: value})
+                if "done_date" in lookup:
+                    memos = memos.exclude(done_date__isnull=True)
+
+        return memos
+
+    def get_queryset_by_rights(self, user):
+        """Filtering by rights"""
+        logger.info(
+            _("Recherche dans Dashboard get_queryset_by_rights par l'utilisateur %s"),
+            user,
+        )
+
+        if user.is_superuser:
+            qs = Memo.objects.all()
+        else:
+            qs = Memo.objects.filter(Q(user=user) | Q(who=user))
+
+        qs = qs.distinct().prefetch_related("who")
+        return qs
 
 class MemoCreateView(LoginRequiredMixin, CreateView):
     model = Memo
@@ -104,6 +203,7 @@ class MemoDeleteView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
 class MemoUnDeleteView(LoginRequiredMixin, View):
+
     model = Memo
     success_url = reverse_lazy("home")
 
@@ -120,3 +220,106 @@ class MemoUnDeleteView(LoginRequiredMixin, View):
             messages.error(request, _("Erreur lors de la restauration : ") + str(e))
 
         return redirect("home")
+
+class MemoValidateView(LoginRequiredMixin, UpdateView):
+    model = Memo
+    form_class = MemoValidateForm
+    template_name = "generic/add_template.html"
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        memo = form.save(commit=False)
+        date_to_validate = form.cleaned_data["planned_date"]
+        if date_to_validate <= memo.original_planned_date:
+            messages.error(
+                self.request,
+                _(
+                    f"La date {date_to_validate} doit être postérieure"
+                    + f" la date planifiée actuelle {memo.original_planned_date}."
+                ),
+            )
+            return redirect(self.success_url)
+        with transaction.atomic():
+            memo.state = "todo"
+            memo.report_date = None
+            memo.done_date = date.today()
+            log_memo_history(
+                todo=memo,
+                user=memo.user,
+                action="updated",
+                changes={"field": "description", "old": "foo", "new": "bar"},
+            )
+            memo.save()
+        return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        memo = self.get_object()
+        if memo.state == "done" or memo.state == "cancel":
+            messages.error(request, _("Impossible de valider une tâche déjà terminée."))
+            return redirect(self.success_url)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        memo = self.get_object()
+        context.update(
+            {
+                "title": _("Validation de l'opération"),
+                "logo_url": "/static/images/secretbox/logo_sb2.png",
+                "description": memo.description,
+            }
+        )
+        return context
+
+class MemoReportView(LoginRequiredMixin, UpdateView):
+    model = Memo
+    form_class = MemoReportForm
+    template_name = "generic/add_template.html"
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        memo = form.save(commit=False)
+        memo.state = "report"
+        if memo.report_date is None:
+            memo.report_date = date.today()
+        memo.save()
+        return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        memo = self.get_object()
+        if memo.state == "done" or memo.state == "cancel":
+            messages.error(
+                request, _("Impossible de reporter une tâche déjà terminée.")
+            )
+            return redirect(self.success_url)
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        todo = self.get_object()
+        context.update(
+            {
+                "title": _("Report de l'opération"),
+                "logo_url": "/static/images/secretbox/logo_sb2.png",
+                "description": todo.description,
+            }
+        )
+        return context
+
+class MemoHistoryView(LoginRequiredMixin, ListView):
+    model = MemoHistory
+    template_name = "journaling/history.html"
+    context_object_name = "history"
+
+    def get_queryset(self):
+        self.memo = get_object_or_404(Memo, pk=self.kwargs["pk"])
+        history_context = MemoHistory.objects.filter(memo=self.memo).order_by("-timestamp")
+        return history_context
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['memo'] = self.memo
+        context["title"] = _("Historique de modifications")
+        context["logo_url"] = "/static/images/secretbox/logo_sb2.png"
+        return context

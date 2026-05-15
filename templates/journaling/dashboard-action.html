@@ -1,0 +1,64 @@
+{% load static i18n custom_filters%}
+
+<!-- Chip to valide a task-->
+<!-- <button  
+                                    class="round-hicon validate-btn"
+                                    data-row-id="memo-row-{{ memo.pk }}"
+                                    data-url="{% url 'journaling:mark_done' pk=memo.pk %}"
+                                    data-check-url="{% url 'journaling:check_memo_state' pk=memo.pk %}"
+                                >
+                                    <img src="{% static 'icons/coche.png' %}" alt="valide la ligne" class="w-6 h-6">
+                                </button> -->
+{% if memo|can_edit_any:request.user and memo|is_not_done %}
+<a href="{% url 'journaling:validate_memo' pk=memo.pk %}" class="round-hicon">
+    <img src="{% static 'icons/coche.png' %}" alt="Valider la ligne" class="w-6 h-6">
+</a>
+{% endif %}
+
+<!-- Chip stopwatch -->
+{% if memo|can_edit_any:request.user and memo|is_stopwtach_inactive%}
+<a href="{% url 'journaling' pk=memo.pk %}" class="round-hicon">
+    <img src="{% static 'icons/chrono.png' %}" alt="Lancement du timer" class="w-6 h-6">
+</a>
+{% endif %}
+
+<!-- Chip for edit a task -->
+{% if memo|can_edit_any:request.user %}
+<a href="{% url 'journaling:edit_memo' pk=memo.pk %}" class="round-hicon">
+    <img src="{% static 'icons/edit.png' %}" alt="Modifier la ligne" class="w-6 h-6">
+</a>
+{% endif %}
+
+<!-- Chip for delete a task -->
+{% if memo|can_delete:request.user %}
+<form method="post" action="{% url 'journaling:delete_memo' pk=memo.pk %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="round-hicon" title="Supprimer la ligne">
+        <img src="{% static 'icons/delete.png' %}" alt="Supprimer la ligne" class="w-6 h-6">
+    </button>
+</form>
+{% endif %}
+
+<!-- Chip for delete a task -->
+{% if memo|can_undelete:request.user %}
+<form method="post" action="{% url 'journaling:undelete_memo' pk=memo.pk %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="round-hicon" title="Restaurer la ligne">
+        <img src="{% static 'icons/undelete.png' %}" alt="Restaurer la ligne" class="w-6 h-6">
+    </button>
+</form>
+{% endif %}
+
+<!-- Chip for report a task -->
+{% if memo|can_edit_any:request.user and memo|is_not_done %}
+<a href="{% url 'journaling:report_memo' pk=memo.pk %}" class="round-hicon" title="Reporter la ligne">
+    <img src="{% static 'icons/btn_passer.png' %}" alt="Reporter la ligne" class="w-6 h-6">
+</a>
+{% endif %}
+
+<!-- Chip for history -->
+{% if memo|can_edit_any:request.user %}
+<a href="{% url 'journaling:history' pk=memo.pk %}" class="round-hicon">
+    <img src="{% static 'icons/list.png' %}" alt="Historique" class="w-6 h-6">
+</a>
+{% endif %}
