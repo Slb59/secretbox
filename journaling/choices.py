@@ -5,7 +5,7 @@ to ensure consistency between models, forms and display.
 """
 
 PRIORITY_CHOICES = [
-    ("6-verylow", "Très faible"),
+    ("6-lowest", "Très faible"),
     ("5-low", "Faible"),
     ("4-normal", "Normale"),
     ("3-medium", "Moyenne"),
@@ -32,6 +32,7 @@ PERIODIC_CHOICES = [
     ("16-every6months", "Tous les 6 mois"),
     ("17-everyyear", "Tous les ans"),
     ("18-every18months", "Tous les 18 mois"),
+    ("19-every2years", "Tous les 2 ans"),
 ]
 
 CATEGORY_CHOICES = [
@@ -52,9 +53,11 @@ CATEGORY_CHOICES = [
 ]
 
 PLACE_CHOICES = [
-    ("cantin", "Cantin"),
+    ("cantin-ext", "Cantin exterieur"),
+    ("cantin-int", "Cantin interieur"),    
     ("chm", "CHM"),
     ("genese", "Genèse"),
+    ("fontaine", "Fontaine"),
 ]
 
 ACTION_CHOICES = [

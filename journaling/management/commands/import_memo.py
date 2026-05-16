@@ -26,7 +26,7 @@ class Command(BaseCommand):
             "3-medium": "3-medium",
             "4-normal": "4-normal",
             "5-low": "5-low",
-            "6-verylow": "6-verylow",
+            "6-lowest": "6-lowest,
         }
         TYPE_MAP = {
             "01-organisation": "01-organisation",
@@ -57,7 +57,91 @@ class Command(BaseCommand):
             "loisirs": "13-loisirs",
             "14-vacances": "14-vacances",
         }
+        PERIODIQUE_MAP = {
+            "None": "01-none",
+            "04-none": "01-none",
+            "01-every day": "02-everyday",
+            "02-every 2 days": "03-every2days",
+            "03-every 3 days": "04-every3days",
+            "05-every 4 days": "05-every4days",
+            "06-every 5 days": "06-every5days",
+            "07-every week": "07-everyweek",
+            "08-every 10 days": "08-every10days",
+            "every 2 weeks": "09-every2weeks",
+            "09-every 2 weeks": "09-every2weeks",
+            "10-every 3 weeks": "10-every3weeks",
+            "every month": "11-everymonth",
+            "11-every month": "11-everymonth",
+            "12-every 6 weeks": "12-every6weeks"
+            "12-every 2 months": "13-every2months",
+            "13-every 2 months": "13-every2months",
+            "14-every 3 months": "14-every3months",
+            "13-every 3 months": "14-every3months",
+            "15-every 4 months": "15-every4months",
+            "16-every 6 months": "16-every6months",
+            "every year": "17-everyyear",
+            "17-every year": "17-everyyear",
+            "18-every 18 months": "18-every18months",
+            "19-every 2 years": "19-every2years",
+        }
+
+        RDV_MAP = {
+            "x": "rdv",
+            "Rdv": "rdv",
+            "anniversaire": "birthday",
+        }
+
+        PLACE_MAP = {
+            "br30": "chm",
+            "chm": "chm",
+            "Cantin-ext": "cantin-ext",
+            "cantin_int": "cantin-int",
+            "genèse": "genese",
+            "fontaine": "fontaine",
+            "fnd": "fontaine",
+            "cantin": "cantin-ext",
+        }
+
+        USER_MAP = {
+            "syl": "slb",
+            "sylvie": "slb",
+            "laurine": "lau",
+            "jcb": "jcb",
+            "thomas": "tom",
+            "odile": "jcb",
+        }
+
         with open(csv_file, newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                
+                try:
+                    # Crée ou récupère l'utilisateur créateur
+                    creator, _ = User.objects.get_or_create(
+                        trigram="slb"
+                    )
+
+                    # Convertit les dates (ex: 02/07/2024 → 2024-07-02)
+                    planned_date = datetime.strptime(row['Date'], '%d/%m/%Y').date() if row['Date'] else None
+                    done_date = datetime.strptime(row['Done'], '%d/%m/%Y').date() if row['Done'] else None
+
+                    # Crée le memo
+                    memo = Memo.objects.create(
+                        user=creator,
+                        state=STATE_MAP.get(row['Etat'], 'todo'),
+                        duration=int(row['Durée']) if row['Durée'] else 30,
+                        description=row['Description'],
+                        appointment=APPOINTMENT_MAP.get(row['Rdv']) if row['Rdv'] else None,
+                        category=CATEGORY_MAP.get(row['Type'], '01-organisation'),  # Valeur par défaut
+                        place=PLACE_MAP.get(row['Lieu'], 'cantin-ext'),
+                        periodic=PERIODIC_MAP.get(row['Périodique']),
+                        planned_date=planned_date,
+                        priority=PRIORITY_MAP.get(row['Priorité'], '4-normal'),
+                        done_date=done_date,
+                        note=row['Note'] if row['Note'] else None,                        
+                    )
+                    memo.who.add(USER_MAP.get(row['Qui'], 'slb'))
+                    self.stdout.write(self.style.SUCCESS(f'Successfully imported memo: {memo.description}'))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f'Error importing row: {row}. Error: {e}'))
+
+

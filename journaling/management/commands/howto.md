@@ -12,11 +12,11 @@ Voici un exemple de **mappage entre ton CSV et ton modèle** :
 
 | **Champ CSV**       | **Champ Django (`Memo`)** | **Type/Conversion nécessaire**                     | **Exemple**          |
 |---------------------|---------------------------|---------------------------------------------------|----------------------|
-| Etat                | `state`                   | Mapper vers `STATE_CHOICES` (ex: `"done"` → `"done"`) | `"done"`            |
-| Durée               | `duration`                | Entier (en minutes)                                | `15`                |
-| Description         | `description`             | Texte brut                                         | `"Effectuer règlement arna"` |
-| Rdv                 | `appointment`             | Mapper vers `APPOINTEMENT_CHOICES` (ou `None`)     | `None` ou `"rdv"`    |
-| Type                | `category`                | Mapper vers `CATEGORY_CHOICES`                     | `"compta"` → `"02-comptabilite"` |
+| Etat                | `state`                   | Mapper avec `STATE_MAP` vers STATE_CHOICES  | `"done"`            |
+| Durée               | `duration`                | Entier (en minutes)      | `15`                |
+| Description         | `description`             | Texte brut                 | `"Effectuer règlement arna"` |
+| Rdv                 | `appointment`             | Mapper avec `RDV_MAP` vers APPOINTEMENT_CHOICES    | `None` ou `"rdv"`    |
+| Type                | `category`                | Mapper avec TYPE_MAP vers `CATEGORY_CHOICES`                     | `"compta"` → `"02-comptabilite"` |
 | Qui                 | `who` (ManyToManyField)   | Lier aux utilisateurs (ex: `"SLB"` → `User` Sylvie) | `"SLB"`             |
 | Lieu                | `place`                   | Mapper vers `PLACE_CHOICES`                        | `"partout"`         |
 | Périodique          | `periodic`                | Mapper vers `PERIODIC_CHOICES`                     | `"None"` → `None`   |
