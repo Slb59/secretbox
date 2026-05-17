@@ -19,7 +19,7 @@ tests:
 
 run-front:
 	clear
-	uv run manage.py tailwind start # remplacer par npm par la suite
+	uv run --active manage.py tailwind start # remplacer par npm par la suite
 
 to-build:
 	clear

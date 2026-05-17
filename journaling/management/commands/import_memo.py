@@ -3,6 +3,7 @@ import csv
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from journaling.memo import Memo
+from datetime import datetime
 
 User = get_user_model()
 
@@ -26,7 +27,7 @@ class Command(BaseCommand):
             "3-medium": "3-medium",
             "4-normal": "4-normal",
             "5-low": "5-low",
-            "6-lowest": "6-lowest,
+            "6-lowest": "6-lowest",
         }
         TYPE_MAP = {
             "01-organisation": "01-organisation",
@@ -57,8 +58,9 @@ class Command(BaseCommand):
             "loisirs": "13-loisirs",
             "14-vacances": "14-vacances",
         }
-        PERIODIQUE_MAP = {
+        PERIODIC_MAP = {
             "None": "01-none",
+            "none": "01-none",
             "04-none": "01-none",
             "01-every day": "02-everyday",
             "02-every 2 days": "03-every2days",
@@ -72,7 +74,7 @@ class Command(BaseCommand):
             "10-every 3 weeks": "10-every3weeks",
             "every month": "11-everymonth",
             "11-every month": "11-everymonth",
-            "12-every 6 weeks": "12-every6weeks"
+            "12-every 6 weeks": "12-every6weeks",
             "12-every 2 months": "13-every2months",
             "13-every 2 months": "13-every2months",
             "14-every 3 months": "14-every3months",
@@ -130,8 +132,8 @@ class Command(BaseCommand):
                         state=STATE_MAP.get(row['Etat'], 'todo'),
                         duration=int(row['Durée']) if row['Durée'] else 30,
                         description=row['Description'],
-                        appointment=APPOINTMENT_MAP.get(row['Rdv']) if row['Rdv'] else None,
-                        category=CATEGORY_MAP.get(row['Type'], '01-organisation'),  # Valeur par défaut
+                        appointment=RDV_MAP.get(row['Rdv']) if row['Rdv'] else None,
+                        category=TYPE_MAP.get(row['Type'], '01-organisation'),  # Valeur par défaut
                         place=PLACE_MAP.get(row['Lieu'], 'cantin-ext'),
                         periodic=PERIODIC_MAP.get(row['Périodique']),
                         planned_date=planned_date,
@@ -139,9 +141,12 @@ class Command(BaseCommand):
                         done_date=done_date,
                         note=row['Note'] if row['Note'] else None,                        
                     )
-                    memo.who.add(USER_MAP.get(row['Qui'], 'slb'))
+                    user = User.objects.get(trigram=USER_MAP.get(row['Qui'], 'slb'))
+                    memo.who.add(user)
+                    memo.save()
                     self.stdout.write(self.style.SUCCESS(f'Successfully imported memo: {memo.description}'))
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f'Error importing row: {row}. Error: {e}'))
+                    exit(1)
 
 

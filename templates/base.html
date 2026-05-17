@@ -1,19 +1,19 @@
-{% load static %}
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <title>{% block title %}SecretBox{% endblock %}</title>
+    {% include "base/head.html"%}
     <link href='{% static "css/dist/styles.css" %}'' rel="stylesheet">
 </head>
-<body>
-    <div id = "header">
+<body class="body-screen">
+    <div class="header">
         <span class="logo">SecretBox</span>
-
         <span class="user">
-        nom du user ici
+        Bonjour {{user.trigram}}
         </span>
     </div>
-    <div id="content">
+    <div class="content">
         {% block content %}
         {% endblock %}
     </div>
