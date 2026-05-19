@@ -1,19 +1,23 @@
-{% load static tailwind_tags %}
+{% load static tailwind_tags crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <title>{% block title %}SecretBox{% endblock %}</title>
-    {% include "base/head.html"%}
-    <link href='{% static "css/dist/styles.css" %}'' rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    {% tailwind_css %}
 </head>
-<body class="body-screen">
-    <div class="header">
-        <span class="logo">SecretBox</span>
-        <span class="user">
+<body class="body">
+    <div class="main-screen">
+        <span class="">SecretBox</span>
+        <span class="">
         Bonjour {{user.trigram}}
         </span>
     </div>
-    <div class="content">
+    <div class="">
         {% block content %}
         {% endblock %}
     </div>

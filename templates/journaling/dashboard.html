@@ -2,8 +2,10 @@
 {% load i18n crispy_forms_tags %}
 {% block title %}{{ block.super }} - Tableau de bord{% endblock %}
 {% block content %}
+    
     {% include "base/logo_header.html" %}
     {% include 'navbar/navbar.html' %}
+
     {% if messages %}
         <div class="mb-4 w-full">
             {% for message in messages %}
@@ -13,12 +15,14 @@
             {% endfor %}
         </div>
     {% endif %}
+
+    <!-- Search form -->
     {% crispy form %}
     
-    <div class="dashboard_content">
-        <table class="table_content">
+    <div class="dashboard-content">
+        <table class="table-content">
             <thead>
-                <tr class="tr_header">
+                <tr class="tr-header">
                     <th class="th_header" scope="row">État</th>
                     <th class="th_header" scope="row">Durée</th>
                     <th class="th_header" scope="row">Description</th>

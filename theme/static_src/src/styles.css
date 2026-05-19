@@ -1,11 +1,93 @@
-@import "tailwindcss";
-@plugin "daisyui";
+@source "../../**/*.{html,py,js}";
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
 
-/**
-  * A catch-all path to Django template files, JavaScript, and Python files
-  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
-  *
-  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
-  * the scope of this path.
-  */
-@source "../../../**/*.{html,py,js}";
+@theme {
+    --color-black: #221f1f;
+    --color-gray: #9ca3af;
+    --color-grey: #7c9786;
+    --color-brown: #b36739;
+    --color-darkbrown: #4f1b11;
+    --color-bleup : #2A3D66;
+    --color-or: #FFD700;
+    --color-violet: #8A2BE2;
+    --color-vert: #2E8B57;
+    --color-taupe: #c29559;
+    --color-white: #ecddd5;
+    --color-verybrown: #3a2412;    
+}
+
+@font-face {
+    font-family: 'Cinzel';
+    src: url("/static/fonts/Cinzel.ttf");
+}
+
+@layer base {
+    :root {
+        --footer-h: 3rem;
+    }
+    html,
+    body {
+        height: 100%;
+    }
+}
+
+@layer utilities {
+    .bg-taupe {
+        background-color: var(--color-taupe);
+    }
+
+    .bg-darkbrown {
+        background-color: var(--color-darkbrown);
+    }
+
+    .bg-gray {
+        background-color: var(--color-gray);
+    }
+
+    .bg-bleup {
+        background-color: var(--color-bleup);
+    }
+
+    .text-black {
+        color: var(--color-black);
+    }
+
+    .text-white {
+        color: var(--color-white);
+    }
+}
+
+@layer components {
+    .round-hicon {
+      @apply w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-500;
+    }
+
+    .body {
+        @apply bg-taupe flex flex-col min-h-screen text-black;
+    }
+
+    .main-screen {
+        @apply flex items-start justify-center pt-4 pb-6 bg-taupe w-full;
+    }
+
+    .footer {
+        @apply w-full text-center fixed bottom-0 left-0 z-10 bg-darkbrown text-white p-2 mt-auto;
+        height: var(--footer-h);
+        line-height: var(--footer-h);
+    }
+
+    .dashboard-content {
+        @apply overflow-x-auto overflow-y-auto h-[600px]
+    }
+
+    .table-content {
+        @apply min-w-full bg-white
+    }
+
+    .tr-header {
+        @apply sticky top-0 bg-brown text-left
+    }
+  } 
