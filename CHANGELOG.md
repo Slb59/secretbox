@@ -1,9 +1,13 @@
+## [0.1.2] - 2026-05-19
+### Ajouté
+
 ## [0.1.1] - 2026-05-16
 ### Ajouté
 - Ajout du tableau de bord
 - Ajout de la page de création d'un mémo
 - Ajout des liens action au tableau de bord
 - Preparation du script de chargement du memo.csv
+- Début de paramétrage des classes tailwind
 
 ## [0.1.0] - 2026-05-04
 ### Ajouté

@@ -1,5 +1,9 @@
 # secretbox
+
+## Description
 petits outils d'organisation
+- account : gestion des utilisateurs
+- journaling : tableau de bord
 
 ## Maintenance
 ### Créer une branche feature
@@ -85,7 +89,7 @@ mariadb-dump -u [user] -p secretbox_dev > secretbox_dump.sql
 scp secretbox_dump.sql user@mint-pc:/tmp/ #copie sur cle pour mint
 mariadb -u [user] -p secretbox_prod < /tmp/secretbox_dump.sql # deploiement sur mint
 
-## commandes reseau
+## Commandes reseau
 
 ### trouver l'ip local
 ip a
@@ -97,7 +101,7 @@ sudo ufw allow 3306/tcp  # MariaDB
 sudo ufw allow 5432/tcp  # PostgreSQL
 sudo ufw enable
 
-## liens utils
+## Liens utils
 
 PostgreSQL :
 
