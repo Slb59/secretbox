@@ -53,6 +53,7 @@ INSTALLED_APPS += DEV_APPS
 
 DJANGO_MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,7 +64,7 @@ DJANGO_MIDDLEWARE = [
 ]
 
 TIERS_MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",    
 ]
 
 MIDDLEWARE = TIERS_MIDDLEWARE + DJANGO_MIDDLEWARE

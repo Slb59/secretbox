@@ -143,7 +143,6 @@ if systemctl cat secretbox.service >/dev/null 2>&1; then
 else
     echo "⚠ Le service secretbox n'est pas correctement installé."
 fi
-systemctl status secretbox
 
 uv run manage.py showmigrations
 

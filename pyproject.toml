@@ -20,4 +20,5 @@ dependencies = [
     "pillow>=12.2.0",
     "mysqlclient>=2.2.8",
     "crispy-tailwind>=1.0.3",
+    "whitenoise>=6.12.0",
 ]

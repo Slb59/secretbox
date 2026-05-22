@@ -25,7 +25,8 @@ git push origin HEAD
 - mettre à jour Readme.md + VERSION
 - git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
 - git push origin v0.0.0
-- sauvegarde du code source: gitingest . -o media/digest.txt -i "*.py *.css *.js"
+- sauvegarde du code source: utils/save_src.sh
+- sauvegarde de la base de données: utils/save_db.sh
 
 ### Mise à jour depuis la branche principale
 git fetch upstream
@@ -85,7 +86,7 @@ sudo systemctl status mariadb
 sudo systemctl enable mariadb
 
 ### Exporte/importe les données
-mariadb-dump -u [user] -p secretbox_dev > secretbox_dump.sql
+/utils/save_db.sh
 scp secretbox_dump.sql user@mint-pc:/tmp/ #copie sur cle pour mint
 mariadb -u [user] -p secretbox_prod < /tmp/secretbox_dump.sql # deploiement sur mint
 
