@@ -46,7 +46,7 @@ DEV_APPS = [
     "debug_toolbar",
 ]
 
-INSTALLED_APPS = THIRD_PARTY_APPS + PROJECT_APPS + DJANGO_APPS 
+INSTALLED_APPS = DJANGO_APPS +THIRD_PARTY_APPS + PROJECT_APPS
 
 # if DEBUG:
 INSTALLED_APPS += DEV_APPS
@@ -67,11 +67,10 @@ TIERS_MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",    
 ]
 
-MIDDLEWARE = TIERS_MIDDLEWARE + DJANGO_MIDDLEWARE
+MIDDLEWARE = DJANGO_MIDDLEWARE + TIERS_MIDDLEWARE
 
 ROOT_URLCONF = 'config.urls'
 
-CRISPY_TEMPLATE_PACK = 'tailwind'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -125,7 +124,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'theme/static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "theme/static"),]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 COMPRESS_ENABLED = True

@@ -2,7 +2,7 @@ include .env
 
 run:
 	clear
-	uv run --active manage.py runserver
+	uv run manage.py runserver
 
 quality:
 	clear

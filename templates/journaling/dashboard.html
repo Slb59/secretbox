@@ -1,11 +1,8 @@
 {% extends "base.html" %}
 {% load i18n crispy_forms_tags %}
 {% block title %}{{ block.super }} - Tableau de bord{% endblock %}
-{% block content %}
+{% block content %}   
     
-    {% include "base/logo_header.html" %}
-    {% include 'navbar/navbar.html' %}
-
     {% if messages %}
         <div class="mb-4 w-full">
             {% for message in messages %}

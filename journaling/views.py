@@ -3,10 +3,13 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView, View
 from django.views.generic import CreateView, UpdateView, ListView
 from django.urls import reverse_lazy
+from django.db.models import Min, Q
+
+
 from .memo import Memo, MemoHistory
 from .forms import MemoForm, MemoValidateForm, MemoReportForm
 from .filters import MemoFilterForm
-
+from config import env
 
 class DashboardView(LoginRequiredMixin,TemplateView):
     template_name = 'journaling/dashboard.html'
@@ -31,7 +34,7 @@ class DashboardView(LoginRequiredMixin,TemplateView):
         context.update(
             {
                 "title": _("Bienvenue dans SecretBox"),
-                "logo_url": "/static/images/secretbox/logo_sb2.png",
+                "logo_url": env("SECRETBOX_LOGO_URL"),
                 "memos": memos,
                 "form": form,
                 "request": self.request,
@@ -42,7 +45,7 @@ class DashboardView(LoginRequiredMixin,TemplateView):
 
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
-        context = {}
+        context = self.get_context_data(**kwargs)
 
         if pk:
             # Empêcher plusieurs timers
@@ -111,10 +114,6 @@ class DashboardView(LoginRequiredMixin,TemplateView):
 
     def get_queryset_by_rights(self, user):
         """Filtering by rights"""
-        logger.info(
-            _("Recherche dans Dashboard get_queryset_by_rights par l'utilisateur %s"),
-            user,
-        )
 
         if user.is_superuser:
             qs = Memo.objects.all()
@@ -133,7 +132,7 @@ class MemoCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = _("Nouvelle entrée")
-        context["logo_url"] = "/static/images/secretbox/logo_sb2.png"
+        context["logo_url"] = env("SECRETBOX_LOGO_URL")
         return context
 
     def form_valid(self, form):
@@ -167,7 +166,7 @@ class MemoUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = _("Modifier l'entrée")
-        context["logo_url"] = "/static/images/secretbox/logo_sb2.png"
+        context["logo_url"] = env("SECRETBOX_LOGO_URL")
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -265,7 +264,7 @@ class MemoValidateView(LoginRequiredMixin, UpdateView):
         context.update(
             {
                 "title": _("Validation de l'opération"),
-                "logo_url": "/static/images/secretbox/logo_sb2.png",
+                "logo_url": env("SECRETBOX_LOGO_URL"),
                 "description": memo.description,
             }
         )
@@ -301,7 +300,7 @@ class MemoReportView(LoginRequiredMixin, UpdateView):
         context.update(
             {
                 "title": _("Report de l'opération"),
-                "logo_url": "/static/images/secretbox/logo_sb2.png",
+                "logo_url": env("SECRETBOX_LOGO_URL"),
                 "description": todo.description,
             }
         )
@@ -321,5 +320,5 @@ class MemoHistoryView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['memo'] = self.memo
         context["title"] = _("Historique de modifications")
-        context["logo_url"] = "/static/images/secretbox/logo_sb2.png"
+        context["logo_url"] = env("SECRETBOX_LOGO_URL"),
         return context

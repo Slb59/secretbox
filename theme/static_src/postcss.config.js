@@ -15,5 +15,12 @@ module.exports = {
     '../../**/*.js',
     // Include Python files that might contain Tailwind CSS classes
     '../../**/*.py'
-  ]
+  ],
+  theme: {
+    extend: {
+      height: {
+        '600': '600px',
+      },
+    },
+  },
 }

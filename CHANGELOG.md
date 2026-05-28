@@ -1,6 +1,7 @@
 ## [0.1.2] - 2026-05-19
 ### Ajouté
 - installation de whitenoise pour la distribution des fichiers statics en production avec gunicorn
+- reinstallation complete de tailwind en v3
 
 ## [0.1.1] - 2026-05-16
 ### Ajouté
