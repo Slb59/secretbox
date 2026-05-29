@@ -9,9 +9,12 @@
     {% tailwind_css %}
 </head>
 <body class="bg-green flex flex-col min-h-screen text-black;">
+    <aside class="w-15 p-2 bg-gray-300 space-y-2 text-white">
+        {% include 'navbar/navbarg.html' %}
+    </aside>
     {% include "base/logo_header.html" %}
     {% include 'navbar/navbar.html' %}
-    <div class="">
+    <div>
         {% block content %}
         {% endblock %}
     </div>

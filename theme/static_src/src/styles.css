@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .round-icon {
+        @apply w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-gray-500;
+    }
+
+    .round-icon-navbarg {
+        @apply bg-rose-500 hover:bg-rose-800;    
+    }
+}
