@@ -29,6 +29,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path("", views.DashboardView.as_view(), name="home"),
     path('journaling/', include('journaling.urls')),
+    path('jackietrade/', include('jackietrade.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 

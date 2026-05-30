@@ -4,7 +4,7 @@
 
 <!-- Chip for Home page -->
 {% if user.is_authenticated %}
-    <a href="{% url 'home' %}" class="round-icon round-icon-navbarg" title="Tableau de bord">
+    <a href="{% url 'home' %}" class="round-icon round-icon--rose" title="Tableau de bord">
         <svg 
         xmlns="http://www.w3.org/2000/svg" 
         width="24" height="24" 
@@ -24,9 +24,9 @@
 {% endif %}
 
 
-{% if can_access_jackietrade %}
-<!-- Chip for escapevault -->
-    <a href="{% url 'escapevault:evmap' %}" class="round-icon round-icon-navbarg" title="JackieTrade">
+{% if user.is_authenticated %}
+<!-- Chip for jackietrade -->
+    <a href="{% url 'jackietrade:dashboard' %}" class="round-icon round-icon--rose" title="JackieTrade">
         <svg 
         xmlns="http://www.w3.org/2000/svg" 
         width="24" height="24" 
@@ -42,4 +42,9 @@
         <path d="M2 8v1a2 2 0 0 0 2 2h1"/>
         </svg>
     </a>
+{% endif %}
+
+{% if can_access_diarylab %}
+<!-- Chip for diarylab -->
+
 {% endif %}

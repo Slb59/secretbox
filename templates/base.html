@@ -9,15 +9,19 @@
     {% tailwind_css %}
 </head>
 <body class="bg-green flex flex-col min-h-screen text-black;">
-    <aside class="w-15 p-2 bg-gray-300 space-y-2 text-white">
-        {% include 'navbar/navbarg.html' %}
-    </aside>
-    {% include "base/logo_header.html" %}
-    {% include 'navbar/navbar.html' %}
-    <div>
-        {% block content %}
-        {% endblock %}
-    </div>
+    <main class="flex items-start justify-center pt-4 pb-6 bg-amber-200 w-full">
+        <aside class="w-15 p-2 bg-amber-300 space-y-2 text-white">
+            {% include 'navbar/navbarg.html' %}
+        </aside>
+        <section class="flex flex-col bg-amber-200 p-4 overflow-y-auto items-center w-full;">
+            {% include "base/logo_header.html" %}            
+            {% block content %}
+            {% endblock %}
+        </section>
+        <aside class="w-15 p-2 space-y-2 bg-amber-300 text-white">
+            {% include 'navbar/navbard.html' %}
+        </aside>
+    </main>
     <footer class="w-full fixed bottom-0 left-0 z-10 bg-stone-800 text-white text-center flex items-center justify-center p-2 shadow-lg;">
         {% include "base/footer.html"%}
     </footer>

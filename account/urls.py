@@ -3,7 +3,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from .views import PasswordResetView, ProfileUpdateView, MyLoginView
+from .views import PasswordResetView, ProfileUpdateView, MyLoginView, MyLogoutView
 
 app_name = "account"
 
@@ -40,4 +40,5 @@ urlpatterns = [
     # profile urls
     path("profile/", ProfileUpdateView.as_view(), name="profile"),
     # path('profile/request-app-modification/', request_app_modification, name='request_app_modification'),
+    path("logout/", MyLogoutView.as_view(), name="logout"),
 ]

@@ -2,6 +2,7 @@
 ### Ajouté
 - installation de whitenoise pour la distribution des fichiers statics en production avec gunicorn
 - reinstallation complete de tailwind en v3
+- ajout de l'application jackietrade - version vierge
 
 ## [0.1.1] - 2026-05-16
 ### Ajouté

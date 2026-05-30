@@ -13,10 +13,12 @@
         </div>
     {% endif %}
 
+    {% include 'navbar/navbar.html' %}
     <!-- Search form -->
-    {% crispy form %}
-    
-    <div class="dashboard-content">
+    {% crispy form %}  
+ 
+ 
+    <div class="overflow-x-auto overflow-y-auto h-[600px] overflow-scroll;">
         <table class="table-content">
             <thead>
                 <tr class="tr-header">

@@ -40,7 +40,6 @@ class MemoForm(forms.ModelForm):
         self.fields["duration"].widget.field_class = "w-full sm:w-[90px]"
         self.fields["who"].widget = forms.CheckboxSelectMultiple()
 
-        print(user)
         if instance and user and instance.can_edit_limited(user):
             for name, field in self.fields.items():
                 if name not in ["state", "priority"]:
@@ -54,7 +53,7 @@ class MemoForm(forms.ModelForm):
                 #         field.widget.attrs.update({"class": "editable"})
 
         self.helper = FormHelper()
-        self.helper.form_class = "border p-8"
+        self.helper.form_class = "border p-8 bg-red-500"
         self.helper.form_method = "post"
         self.helper.form_tag = True
         self.helper.attrs = {"novalidate": "novalidate"}

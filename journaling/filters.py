@@ -81,7 +81,7 @@ class MemoFilterForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = "get"
-        self.helper.form_class = "p-4 bg-gray-100 rounded mb-4"
+        self.helper.form_class = "p-4 bg-amber-300 rounded mb-4"
         self.helper.label_class = "font-semibold"
         self.helper.field_class = "w-full"
         self.helper.attrs = {
