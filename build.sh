@@ -33,12 +33,40 @@ cp VERSION "$BUILD_DIR"
 echo "▶ Création de l’archive $VERSION dans build"
 cd "$BUILD_DIR/app"
 7z a "$BUILD_DIR"/"app.7z" .
-GLOBAL_ARCHIVE_NAME="$BUILD_DIR"/"$VERSION"_"$APP_NAME"_"$(date +%Y.%m.%d)"_linux.7z
+ARCHIVE_NAME="$VERSION"_"$APP_NAME"_"$(date +%Y.%m.%d)"_linux
+GLOBAL_ARCHIVE_NAME="$BUILD_DIR"/"$ARCHIVE_NAME".7z
 echo "global archive name $GLOBAL_ARCHIVE_NAME"
 7z a "$GLOBAL_ARCHIVE_NAME" "$BUILD_DIR"/VERSION
 7z a "$GLOBAL_ARCHIVE_NAME" "$BUILD_DIR"/install.sh
 7z a "$GLOBAL_ARCHIVE_NAME" "$BUILD_DIR"/"app.7z"
 
 echo "✔ Archive de téléchargement créée : $GLOBAL_ARCHIVE_NAME"
-echo "cp '$GLOBAL_ARCHIVE_NAME' '$EXEMPLE_DEST'"
+read -rp "Voulez-vous procéder à l'installation ? [O/n] " REPONSE
+
+case "$REPONSE" in
+    ""|[Oo])
+        cd "$BASE_DIR"
+        set -a
+        source .env
+        set +a
+        echo "cp '$GLOBAL_ARCHIVE_NAME' '$EXEMPLE_DEST'"
+        cp "$GLOBAL_ARCHIVE_NAME" "$EXEMPLE_DEST"
+        echo "cd '$EXEMPLE_DEST'"
+        cd "$EXEMPLE_DEST"
+        7z x "$ARCHIVE_NAME".7z -y
+        cd "$EXEMPLE_DEST""$ARCHIVE_NAME"
+        echo "Installation de l'application..."
+        sudo ./install.sh
+        ;;
+    [Nn])
+        echo "Annulé."
+        exit 0
+        ;;
+    *)
+        echo "Réponse invalide."
+        exit 1
+        ;;
+esac
+
+
 
