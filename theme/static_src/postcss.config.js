@@ -13,7 +13,7 @@ module.exports = {
     // Ignore files in node_modules
     '!../../**/node_modules',
     // Include JavaScript files that might contain Tailwind CSS classes
-    '../../**/*.js',
+    "../../theme/static_src/**/*.js", 
     // Include Python files that might contain Tailwind CSS classes
     '../../**/*.py'
   ],

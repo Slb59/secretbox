@@ -12,3 +12,4 @@ versions/
 media/
 .env
 node_modules
+makefile-prod

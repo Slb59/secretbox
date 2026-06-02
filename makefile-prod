@@ -1,0 +1,11 @@
+list_users:
+	clear
+	sudo ENV_FILE=/var/lib/secretbox/.env \
+     DJANGO_SETTINGS_MODULE=config.settings.prod \
+     uv run manage.py list_users
+
+create_user:
+    clear
+    sudo ENV_FILE=/var/lib/secretbox/.env \
+     DJANGO_SETTINGS_MODULE=config.settings.prod \
+     uv run manage.py create_user

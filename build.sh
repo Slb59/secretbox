@@ -29,6 +29,7 @@ rsync -av --exclude-from='.buildignore' ./ "$BUILD_DIR/app/"
 echo "▶ Copie des fichiers d'installation "
 cp install.sh "$BUILD_DIR"
 cp VERSION "$BUILD_DIR"
+cp makefile-prod "$BUILD_DIR"/app/makefile
 
 echo "▶ Création de l’archive $VERSION dans build"
 cd "$BUILD_DIR/app"
@@ -54,7 +55,6 @@ case "$REPONSE" in
         echo "cd '$EXEMPLE_DEST'"
         cd "$EXEMPLE_DEST"
         7z x "$ARCHIVE_NAME".7z -y
-        cd "$EXEMPLE_DEST""$ARCHIVE_NAME"
         echo "Installation de l'application..."
         sudo ./install.sh
         ;;

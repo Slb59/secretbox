@@ -97,6 +97,15 @@ else
   chmod 600 "$DATA_DIR/.env"
 fi
 export ENV_FILE=$DATA_DIR/.env
+  set -a
+  source $ENV_FILE
+  set +a
+# ------------------------------------------------------------------------------
+# Installation de tailwind
+# ------------------------------------------------------------------------------
+cd "$APP_DIR""/theme/static_src"
+npm install
+npx update-browserslist-db@latest
 
 # ------------------------------------------------------------------------------
 # Base de données
@@ -152,4 +161,4 @@ uv run manage.py showmigrations
 echo
 echo "✅ SecretBox est installé et démarré"
 echo "🌐 Ouvrir : http://localhost:$APP_PORT"
-echo "📋 Statut : systemctl status SecretBox"
+echo "📋 Statut : systemctl status secretbox"
