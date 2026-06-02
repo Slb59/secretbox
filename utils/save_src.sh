@@ -22,6 +22,6 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-gitingest .. \
+uv run gitingest .. \
   -o "$BACKUPS"/digest-"$VERSION".txt \
   -i "*.py,*.css,*.js,*.html"
