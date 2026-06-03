@@ -30,6 +30,7 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     'account',
     'journaling',
+    'jackietrade',
 ]
 
 THIRD_PARTY_APPS = [

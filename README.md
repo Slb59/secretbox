@@ -4,6 +4,7 @@
 petits outils d'organisation
 - account : gestion des utilisateurs
 - journaling : tableau de bord
+- jackietrade :  outil d'analyse boursière
 
 ## Maintenance
 ### Créer une branche feature
@@ -13,6 +14,21 @@ git checkout -b feature/ma-fonctionnalite
 git add .
 git commit -m "feat: Description de la fonctionnalité"
 
+### Deploiement
+- construire le zip avec make to-build
+- copier le zip dans le dossier hôte
+- lancer le script de déploiement : install.sh
+- verifier le service : systemctl status secretbox
+- en cas d'erreur, revoir les logs : journalctl -u secretbox
+
+### Tagger la version après deploiement
+
+- mettre à jour Readme.md
+- git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
+- git push origin v0.0.0
+- sauvegarde du code source: utils/save_src.sh
+- sauvegarde de la base de données: utils/save_db.sh
+
 ### Retourner sur main et fusionner
 git checkout main
 git merge feature/ma-fonctionnalite
@@ -20,25 +36,8 @@ git merge feature/ma-fonctionnalite
 ### Envoyer les modifications
 git push origin HEAD
 
-### Tagger la version après deploiement
-
-- mettre à jour Readme.md + VERSION
-- git tag -a v0.0.0 -m "Version 0.0.0 : Création du projet"
-- git push origin v0.0.0
-- sauvegarde du code source: utils/save_src.sh
-- sauvegarde de la base de données: utils/save_db.sh
-
-### Mise à jour depuis la branche principale
-git fetch upstream
-git rebase upstream/main
-
-
-### Deploiement
-- construire le zip avec make to-build
-- copier le zip dans le dossier hôte
-- lancer le script de déploiement : install.sh
-- verifier le service : systemctl status secretbox
-- en cas d'erreur, revoir les logs : journalctl -u secretbox
+### Initialiser la nouvelle version
+- mettre à jour VERSION + CHANGELOG
 
 ## Dépendances
 
