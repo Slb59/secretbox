@@ -27,7 +27,7 @@ class Sector(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                condition=Q(code__regex=r"{4}$"),
+                condition=Q(code__regex=r"[A-Z]{4}$"),
                 name="sector_code_four_uppercase_letters",
             )
         ]

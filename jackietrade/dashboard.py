@@ -19,7 +19,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # )
         context.update(
             {
-                "title": _("Bienvenue dans JackieTrade"),
+                "title": _("Suivi de portefeuille"),
                 "logo_url": env("JACKIETRADE_LOGO_URL"),
             }
         )

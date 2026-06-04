@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n crispy_forms_tags %}
-{% block title %}{{ block.super }} - Synchronisation des données du marché{% endblock %}
+{% block title %}{{ block.super }} - JackieTrade{% endblock %}
 {% block content %}
 
     {% if messages %}
@@ -12,5 +12,7 @@
             {% endfor %}
         </div>
     {% endif %}
+
+    {% crispy form %}
 
 {% endblock %}

@@ -103,25 +103,17 @@ sudo ufw enable
 
 ## Liens utils
 
-PostgreSQL :
-
-Documentation officielle : https://www.postgresql.org/docs/
-
+PostgreSQL : Documentation officielle : https://www.postgresql.org/docs/
 
 MariaDB :
-
 Documentation MariaDB : https://mariadb.com/kb/en/
 Configuration sous Arch Linux : https://wiki.archlinux.org/title/MariaDB
 
-
 Django :
-
 Documentation Django : https://docs.djangoproject.com/fr/4.2/
 Tutoriel officiel : https://docs.djangoproject.com/fr/4.2/intro/tutorial01/
 
-
 Raspberry Pi :
-
 Documentation officielle : https://www.raspberrypi.org/documentation/
 Installation d’Ubuntu Server : https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi
 

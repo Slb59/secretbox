@@ -5,8 +5,9 @@ from .models import Asset
 
 class MarketDataSyncForm(forms.Form):
 
-// 1d 5d 1mo 3mo 6mo 1y 5y max
     PERIOD_CHOICES = [
+        ("1d", "1 jour"),
+        ("5d", "5 jours"),
         ("1mo", "1 mois"),
         ("3mo", "3 mois"),
         ("6mo", "6 mois"),
@@ -14,11 +15,15 @@ class MarketDataSyncForm(forms.Form):
         ("5y", "5 ans"),
     ]
 
-// 1m 5m 15m 1h 1d 1wk 1mo
     INTERVAL_CHOICES = [
-        ("1d", "1 jour"),
+        ("1m", "1 minute"),
+        ("5m", "5 minutes"),
+        ("15m", "15 minutes"),
         ("1h", "1 heure"),
         ("4h", "4 heures"),
+        ("1d", "1 jour"),
+        ("1wk", "1 semaine"),
+        ("1mo", "1 mois"),
     ]
 
     assets = forms.ModelMultipleChoiceField(
@@ -35,3 +40,11 @@ class MarketDataSyncForm(forms.Form):
         choices=INTERVAL_CHOICES,
         initial="1d",
     )
+
+    def __init__(self, *args, user=None, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.fields["assets"].queryset = Asset.objects.filter(
+            watchlistitem__watchlist__user=user
+        ).distinct()

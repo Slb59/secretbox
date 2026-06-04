@@ -1,28 +1,39 @@
 from django.contrib import messages
 from django.shortcuts import render
-from django.views import View
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.translation import gettext_lazy as _
+from config import env
 
 from .forms import MarketDataSyncForm
-from market_data.services.importers.yfinance_importer import (
-    YFinanceImporter,
-)
+from .import_data import YFinanceImporter
 
 
-class MarketDataSyncView(View):
+class MarketDataSyncView(LoginRequiredMixin, TemplateView):
 
-    template_name = "jackietrade/sync_market_data.html"
+    template_name = "jackietrade/import_data.html"
 
-    def get(self, request):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        form = MarketDataSyncForm(
+            self.request.POST or None,
+            user=self.request.user,
+        )
 
-        form = MarketDataSyncForm()
+        user = self.request.user
 
-        return render(
-            request,
-            self.template_name,
+        context.update(
             {
+                "title": _("Synchronisation des données marché"),
+                "logo_url": env("JACKIETRADE_LOGO_URL"),
                 "form": form,
+                "request": self.request,
             }
         )
+
+        return context
+    
 
     def post(self, request):
 
