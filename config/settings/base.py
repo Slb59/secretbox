@@ -28,6 +28,7 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
+    'core',
     'account',
     'journaling',
     'jackietrade',

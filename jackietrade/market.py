@@ -1,12 +1,18 @@
+import logging
+
 from django.contrib import messages
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from config import env
 
 from .forms import MarketDataSyncForm
 from .import_data import YFinanceImporter
+
+
+logger = logging.getLogger(__name__)
 
 
 class MarketDataSyncView(LoginRequiredMixin, TemplateView):
@@ -37,7 +43,7 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
 
     def post(self, request):
 
-        form = MarketDataSyncForm(request.POST)
+        form = MarketDataSyncForm(request.POST,  user=self.request.user)
 
         if form.is_valid():
 
@@ -45,11 +51,26 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
             period = form.cleaned_data["period"]
             interval = form.cleaned_data["interval"]
 
+            logger.info(
+                "Synchronisation demandée par %s",
+                self.request.user.username,
+            )
+            
             importer = YFinanceImporter()
 
             total_created = 0
 
+            logger.info(
+                "%s actifs sélectionnés",
+                len(assets),
+            )
+            
             for asset in assets:
+
+                logger.info(
+                    "Traitement de %s",
+                    asset.symbol,
+                )
 
                 created_count = importer.import_history(
                     asset=asset,
@@ -57,9 +78,16 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
                     interval=interval,
                 )
 
-                total_created += created_count
-                asset.last_sync_at = timestamps
+                logger.info(
+                    "%s : %s candles créées",
+                    asset.symbol,
+                    created_count,
+                )
 
+                total_created += created_count
+                asset.last_sync_at = timezone.now()
+                asset.save(update_fields=["last_sync_at"])
+                
             messages.success(
                 request,
                 f"{total_created} candles importées."

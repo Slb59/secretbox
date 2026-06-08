@@ -1,15 +1,26 @@
 import yfinance as yf
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class YFinanceImporter:
 
-	def fetch_history(
+	def import_history(
 		self,
 		asset,
 		period="1y",
 		interval="1d",
 	):
     
+		logger.info(
+            "Début import %s (period=%s interval=%s)",
+            asset.symbol,
+            period,
+            interval,
+        )
+
 		ticker = yf.Ticker(asset.symbol)  
 
 		df = ticker.history(  
@@ -18,6 +29,12 @@ class YFinanceImporter:
 			auto_adjust=True,  
 		)
 		
+		logger.info(
+            "%s : %s lignes récupérées",
+            asset.symbol,
+            len(df),
+        )
+
 		candles_created = 0
 		
 		for timestamp, row in df.iterrows():  
@@ -39,4 +56,10 @@ class YFinanceImporter:
 			if created:  
 				candles_created += 1  
 	
+		logger.info(
+            "%s : %s nouvelles candles",
+            asset.symbol,
+            candles_created,
+        )
+		
 		return candles_created

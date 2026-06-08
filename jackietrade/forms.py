@@ -1,7 +1,11 @@
 from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Field, Layout, Div
+from core.forms_helpers import action_buttons
+from django.utils.translation import gettext_lazy as _
 
 from .models import Asset
-
+from .models import Watchlist
 
 class MarketDataSyncForm(forms.Form):
 
@@ -26,6 +30,11 @@ class MarketDataSyncForm(forms.Form):
         ("1mo", "1 mois"),
     ]
 
+    SELECTION_CHOICES = [
+        ("all", "Tous les assets"),
+        ("selected", "Actifs sélectionnés")
+    ]
+
     assets = forms.ModelMultipleChoiceField(
         queryset=Asset.objects.filter(is_active=True),
         widget=forms.CheckboxSelectMultiple,
@@ -41,10 +50,47 @@ class MarketDataSyncForm(forms.Form):
         initial="1d",
     )
 
-    def __init__(self, *args, user=None, **kwargs):
+    selection_mode = forms.ChoiceField(
+        choices=SELECTION_CHOICES,
+        widget=forms.RadioSelect,
+        initial="selected",
+    )
 
+    watchlist = forms.ModelChoiceField(
+        queryset=Watchlist.objects.none(),
+        required=False,
+    )
+
+
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields["period"].label = _("Période")
+        self.fields["interval"].label = _("Intervalle")
+        self.fields["assets"].label = _("Actifs à synchroniser")
+        self.fields["selection_mode"].label = _("Mode de sélection")
+        self.fields["watchlist"].label = _("Liste de surveillance")
 
         self.fields["assets"].queryset = Asset.objects.filter(
             watchlistitem__watchlist__user=user
         ).distinct()
+
+        self.fields["watchlist"].queryset = Watchlist.objects.filter(user=user)
+
+        self.helper = FormHelper()
+        self.helper.form_class = "border p-8 bg-yellow-600"
+        self.helper.form_method = "post"
+        self.helper.form_tag = True
+        self.helper.attrs = {"novalidate": "novalidate"}
+
+        self.helper.layout = Layout(
+            Div(
+                Div("period", css_class="w-full md:w-1/2",),
+                Div("interval", css_class="w-full md:w-1/2",),
+                css_class="flex flex-col md:flex-row gap-4",
+            ),
+            "selection_mode",
+            "watchlist",
+            "assets",
+            action_buttons(submit_label=_("Importer"), back_url_name="jackietrade:dashboard", back_label=_("Retour")),
+        )
