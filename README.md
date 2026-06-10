@@ -10,7 +10,7 @@ petits outils d'organisation
 ### Créer une branche feature
 git checkout -b feature/ma-fonctionnalite
 
-### Faire vos modifications et commits
+### Faire les modifications et commits
 git add .
 git commit -m "feat: Description de la fonctionnalité"
 
