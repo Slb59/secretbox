@@ -1,3 +1,10 @@
+## [0.2.1] - 
+- ajout des données de paramétrage jackietrade en production
+
+## [0.2.0] - 2026-06-10
+### Ajouté
+- initialisation de l'aplication jackietrade
+
 ## [0.1.2] - 2026-05-19
 ### Ajouté
 - installation de whitenoise pour la distribution des fichiers statics en production avec gunicorn

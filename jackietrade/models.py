@@ -109,13 +109,18 @@ class Asset(models.Model):
 
     currency = models.CharField(
         max_length=10,
-        default="USD",
+        default="EUR",
     )
 
     web_site = models.URLField(
         max_length=255,
         null=True,
         blank=True,
+    )
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name="Notes"
     )
 
     is_active = models.BooleanField(default=True)
