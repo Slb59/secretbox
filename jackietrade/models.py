@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.db.models import Q
-
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
@@ -96,9 +96,8 @@ class Asset(models.Model):
     
     sector = models.ForeignKey(  
 		Sector,  
-		on_delete=models.SET_NULL,  
-		null=True,  
-		blank=True,  
+		on_delete=models.PROTECT,
+        verbose_name=_("Secteur"),
 	)
 
     exchange = models.ForeignKey(  
@@ -134,6 +133,18 @@ class Asset(models.Model):
 
     def __str__(self):
         return self.symbol
+
+    def clean(self):    
+        super().clean()
+
+        if self.symbol:
+            self.symbol = self.symbol.upper()
+
+    def save(self, *args, **kwargs):
+        if self.symbol:
+            self.symbol = self.symbol.upper()
+        super().save(*args, **kwargs)
+    
 
 class Watchlist(models.Model):  
   

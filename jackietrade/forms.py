@@ -7,6 +7,49 @@ from django.utils.translation import gettext_lazy as _
 from .models import Asset
 from .models import Watchlist
 
+
+class AssetForm(forms.ModelForm):
+
+    watchlists = forms.ModelMultipleChoiceField(
+        queryset=Watchlist.objects.none(),
+        required=False,
+    )
+
+    notes = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "class": "w-full h-64 resize-y",
+            }
+        ),
+        required=False,
+    )
+
+    class Meta:
+        model = Asset
+        fields = "__all__"
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["watchlists"].queryset = (
+            Watchlist.objects.filter(user=user)
+        )
+
+    def save(self, commit=True):
+
+        asset = super().save(commit=commit)
+
+        if commit:
+
+            for watchlist in self.cleaned_data["watchlists"]:
+
+                WatchlistItem.objects.get_or_create(
+                    watchlist=watchlist,
+                    asset=asset,
+                )
+
+        return asset
+
 class MarketDataSyncForm(forms.Form):
 
     PERIOD_CHOICES = [

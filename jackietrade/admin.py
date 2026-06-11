@@ -48,6 +48,16 @@ class ExchangeAdmin(admin.ModelAdmin):
         "country",
     )
 
+class WatchlistItemInline(admin.TabularInline):
+
+    model = WatchlistItem
+
+    extra = 1
+
+    autocomplete_fields = (
+        "asset",
+    )
+
 @admin.register(Asset)
 class AssetAdmin(admin.ModelAdmin):
 
@@ -78,15 +88,14 @@ class AssetAdmin(admin.ModelAdmin):
         "exchange",
     )
 
-class WatchlistItemInline(admin.TabularInline):
+    inlines = [
+        WatchlistItemInline,
+    ]
 
-    model = WatchlistItem
-
-    extra = 0
-
-    autocomplete_fields = (
-        "asset",
-    )
+    class Media:
+        css = {
+            "all": ("css/admin.css",)
+        }
 
 @admin.register(Watchlist)
 class WatchlistAdmin(admin.ModelAdmin):
