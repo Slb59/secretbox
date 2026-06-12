@@ -103,6 +103,7 @@ class WatchlistAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "user",
+        "is_default",
     )
 
     search_fields = (

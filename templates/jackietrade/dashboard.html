@@ -15,4 +15,33 @@
 
     {% include './navbar.html' %}
 
+
+    <div class="watchlist-box">
+        <div class="flex justify-between items-center mb-4">
+            <select id="watchlist-selector" class="border rounded px-2 py-1">
+
+                {% for watchlist in watchlists %}
+                <option
+                    value="{{ watchlist.id }}"
+                    {% if watchlist == current_watchlist %}
+                        selected
+                    {% endif %}
+                >
+                    {{ watchlist.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <a href="{% url 'jackietrade:watchlist_create' %}">+</a>
+        </div>
+
+        <div class="asset-scroll">
+            {% for asset in assets %}
+                <div class="asset-row">
+                    {{ asset.name }} - {{ asset.sector }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock %}
