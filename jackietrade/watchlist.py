@@ -3,9 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
+from django.utils.translation import gettext_lazy as _
+from django.contrib import messages
 
 from .models import Watchlist, Asset
 from .watchlistforms import WatchlistForm
+from config import env
 
 class WatchlistListView(LoginRequiredMixin, ListView):
     model = Watchlist
@@ -13,6 +16,12 @@ class WatchlistListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Watchlist.objects.filter(user=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = _("Mes watchlistes")
+        context["logo_url"] = env("JACKIETRADE_LOGO_URL")
+        return context
 
 
 class WatchlistCreateView(LoginRequiredMixin, CreateView):
@@ -31,15 +40,42 @@ class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
     model = Watchlist
     form_class = WatchlistForm
 
+    template_name = "jackietrade/watchlist_form.html"
+    success_url = reverse_lazy("jackietrade:dashboard")
 
-class WatchlistDeleteView(LoginRequiredMixin, DeleteView):
-    model = Watchlist
-    template_name = "jackietrade/confirm_delete.html"
-    success_url = reverse_lazy("jackietrade:watchlist_list")
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-    def get_queryset(self):
-        return Watchlist.objects.filter(user=self.request.user)
 
+class WatchlistDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+
+        watchlist = get_object_or_404(
+            Watchlist,
+            pk=pk,
+            user=request.user,
+        )
+
+        if watchlist.assets.count() > 0 :
+
+            messages.error(
+                request,
+                "Cette liste contient des actifs."
+            )
+
+        else:
+
+            watchlist.delete()
+
+            messages.success(
+                request,
+                "Suppression effectuée."
+            )
+
+        return redirect(
+            "jackietrade:watchlist_list"
+        )
 
 
 class ToggleAssetWatchlistView(LoginRequiredMixin, View):
