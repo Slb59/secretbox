@@ -13,6 +13,91 @@
         </div>
     {% endif %}
 
-    {% crispy form %}
+    
+
+    <div class="flex flex-col gap-2">
+
+        {% crispy form %}
+
+        <div>
+
+            <h2 class="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">Actifs de la watchlist</h2>
+
+            <a
+                href="{% url 'jackietrade:watchlist_add_asset' object.pk %}"
+                class="block
+                    w-full
+                    rounded-xl
+                    border
+                    border-rose-800
+                    bg-rose-600
+                    px-4
+                    py-3
+                    text-center
+                    font-medium
+                    text-white
+                    shadow-sm
+                    hover:bg-rose-700
+                    transition
+                    mb-6"
+            >
+                Ajouter des actifs
+            </a>
+
+        </div>
+
+        <table class="table-content">
+
+            <thead>
+                <tr class="tr-header">
+                    <th>Symbole</th>
+                    <th>Nom</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for asset in assets %}
+
+                <tr class="tr-content">
+
+                    <td class="td-content">{{ asset.symbol }}</td>
+                    <td class="td-content">{{ asset.name }}</td>
+
+                    <td class="td-content">
+
+                        <!-- watchlist_remove_asset asset.pk -->
+                        <form
+                            method="post"
+                            action="{% url 'jackietrade:watchlist_update' object.pk %}"
+                        >
+                            {% csrf_token %}
+
+                            <button type="submit">
+                                {% include "components/icon-trash.html" %}
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr class="tr-content">
+                    <td colspan="3">
+                        Aucun actif.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
    
 {% endblock %}

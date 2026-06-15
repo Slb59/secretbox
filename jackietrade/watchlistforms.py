@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from core.forms_helpers import action_buttons
-from .models import Watchlist
+from .models import Watchlist, Asset
 
 
 class WatchlistForm(forms.ModelForm):
@@ -27,5 +27,32 @@ class WatchlistForm(forms.ModelForm):
         self.helper.layout = Layout(
             "name", 
             "is_default",
-            action_buttons(back_url_name="jackietrade:dashboard", back_label=_("Retour"))
+            action_buttons(back_url_name="jackietrade:watchlist_list")
+        )
+
+
+class WatchlistAddAssetForm(forms.Form):
+    
+    assets = forms.ModelMultipleChoiceField(
+        queryset=Asset.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        label=_("Sélectionner les actifs à ajouter"),
+    )
+
+    def __init__(self, *args, watchlist=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        existings_assets = watchlist.assets.all() 
+
+        self.fields["assets"].queryset = (Asset.objects
+            .filter(is_active=True)
+            .exclude(pk__in=existings_assets)
+            .order_by("symbol")
+        )
+
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.Layout = Layout(
+            "assets",
+            action_buttons(back_url_name = "jackietrade:watchlist_update")
         )

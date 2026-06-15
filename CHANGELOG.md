@@ -1,4 +1,5 @@
 ## [0.2.2] -
+- jackietrade : ajout du CRUD Watchlist
 
 
 ## [0.2.1] - 2026-06-12
