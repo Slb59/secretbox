@@ -85,6 +85,13 @@ class Asset(models.Model):
     symbol = models.CharField(
         max_length=30,
         unique=True,
+        help_text="Symbole Yahoo Finance",
+    )
+
+    code = models.CharField(
+        max_length=30,
+        help_text="Code trading view",
+        default="????",
     )
 
     name = models.CharField(max_length=255)
@@ -98,6 +105,7 @@ class Asset(models.Model):
 		Sector,  
 		on_delete=models.PROTECT,
         verbose_name=_("Secteur"),
+        related_name="assets",
 	)
 
     exchange = models.ForeignKey(  
@@ -194,6 +202,7 @@ class WatchlistItem(models.Model):
     asset = models.ForeignKey(
         Asset,
         on_delete=models.CASCADE,
+        related_name="watchlists",
     )
 
     added_at = models.DateTimeField(auto_now_add=True)

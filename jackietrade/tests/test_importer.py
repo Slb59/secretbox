@@ -23,7 +23,7 @@ class YFinanceImporterTests(TestCase):
             sector=self.sector,
         )
 
-        df = pd.DataFrame(
+        self.df = pd.DataFrame(
             {
                 "Open": [100, 101],
                 "High": [105, 106],
@@ -38,18 +38,19 @@ class YFinanceImporterTests(TestCase):
                 ]
             ),
         )
-        mock_ticker.return_value.history.return_value = df
 
-        importer = YFinanceImporter()
+        self.importer = YFinanceImporter()
 
     @patch("jackietrade.import_data.yf.Ticker")
     def test_import_creates_candles(self, mock_ticker):
+        mock_ticker.return_value.history.return_value = self.df
         created = self.importer.import_history(self.asset)
         self.assertEqual(created, 2)
         self.assertEqual(Candle.objects.count(), 2,)
     
-    patch("jackietrade.import_data.yf.Ticker")
+    @patch("jackietrade.import_data.yf.Ticker")
     def test_import_is_idempotent(self, mock_ticker):
+        mock_ticker.return_value.history.return_value = self.df
         created = self.importer.import_history(self.asset)
         created = self.importer.import_history(self.asset)
         self.assertEqual(created, 0)

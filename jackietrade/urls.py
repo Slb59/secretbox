@@ -11,6 +11,7 @@ from .watchlist import (
     WatchlistAddAssetView,
     ToggleAssetWatchlistView,
 )
+from .asset import AssetListView, AssetUpdateView
 
 app_name = "jackietrade"
 
@@ -24,6 +25,7 @@ urlpatterns = [
     path("watchlists/<int:pk>/delete/", WatchlistDeleteView.as_view(), name="watchlist_delete"),
     path("watchlists/<int:pk>/add-asset/", WatchlistAddAssetView.as_view(), name="watchlist_add_asset"),
 
-    path("watchlists/<int:pk>/toggle-asset/", ToggleAssetWatchlistView.as_view(), name="toggle_asset"),
+    path("assets/", AssetListView.as_view(), name="asset_list"),
+    path("assets/<int:pk>/edit/", AssetUpdateView.as_view(), name="asset_update"),
 
 ]
