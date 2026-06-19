@@ -1,7 +1,7 @@
 import yfinance as yf
 import logging
 
-from .models import Candle
+from .assetmodels import Candle
 
 logger = logging.getLogger(__name__)
 

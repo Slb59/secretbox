@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from config import env
-from .models import Watchlist
+from .assetmodels import Watchlist
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):

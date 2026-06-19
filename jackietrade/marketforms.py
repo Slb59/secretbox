@@ -4,8 +4,8 @@ from crispy_forms.layout import Field, Layout, Div
 from core.forms_helpers import action_buttons
 from django.utils.translation import gettext_lazy as _
 
-from .models import Asset
-from .models import Watchlist
+from .assetmodels import Asset
+from .assetmodels import Watchlist
 
 
 class AssetForm(forms.ModelForm):

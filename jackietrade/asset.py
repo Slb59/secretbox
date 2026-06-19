@@ -4,8 +4,9 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
 from itertools import groupby
 
-from .models import Asset, Sector
+from .assetmodels import Asset, Sector
 from config import env
+from .assetforms import AssetForm
 
 
 class AssetListView(LoginRequiredMixin, ListView):
@@ -34,7 +35,6 @@ class AssetListView(LoginRequiredMixin, ListView):
                 }
             )
 
-        context = super().get_context_data(**kwargs)
         context["title"] = _("Les actifs")
         context["logo_url"] = env("JACKIETRADE_LOGO_URL")
         context["sectors"] = (
@@ -47,6 +47,19 @@ class AssetListView(LoginRequiredMixin, ListView):
     
 class AssetUpdateView(LoginRequiredMixin, UpdateView):
     model = Asset
-    form_class = None
+    form_class = AssetForm
     template_name = "jackietrade/asset_form.html"
     success_url = reverse_lazy("jackietrade:asset_list")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = _("Les actifs")
+        context["logo_url"] = env("JACKIETRADE_LOGO_URL")
+        
+        return context

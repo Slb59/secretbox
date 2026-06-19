@@ -28,4 +28,5 @@ urlpatterns = [
     path("assets/", AssetListView.as_view(), name="asset_list"),
     path("assets/<int:pk>/edit/", AssetUpdateView.as_view(), name="asset_update"),
 
+
 ]

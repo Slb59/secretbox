@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django import forms
 
-from .models import Watchlist, Asset
+from .assetmodels import Watchlist, Asset
 from .watchlistforms import WatchlistForm, WatchlistAddAssetForm
 from config import env
 
@@ -50,11 +50,6 @@ class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
     
-    def get_success_url(self):
-        print("VIEW USED:", self.__class__)
-        print("SUCCESS URL:", self.success_url)
-        return self.success_url
-
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)

@@ -25,9 +25,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                     <div>
-                        <label class="block text-sm font-medium mb-1">
-                            Secteur
-                        </label>
+                    
+                        <div class="flex items-center mb-1">
+                            <label class="text-sm font-medium">
+                                Secteur
+                            </label>
+
+
+                        </div>
 
                         <select
                             name="sector"
@@ -106,8 +111,6 @@
                                     Watchlists
                                 </th>
 
-                                <th class="px-4 py-2 w-24">
-                                </th>
 
                             </tr>
 
@@ -160,21 +163,6 @@
 
                                     </td>
 
-                                    <td class="px-4 py-3 text-right">
-
-                                        <a
-                                            href="{% url 'jackietrade:asset_update' asset.pk %}"
-                                            class="
-                                                inline-flex
-                                                items-center
-                                                text-rose-600
-                                                hover:text-rose-800
-                                            "
-                                        >
-                                            {% include "components/icon-pencil.html" %}
-                                        </a>
-
-                                    </td>
 
                                 </tr>
 
