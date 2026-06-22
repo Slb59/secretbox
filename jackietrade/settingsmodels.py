@@ -8,7 +8,7 @@ class TradingSettings(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="watchlists",
+        related_name="trading_settings",
     )
 
     risk_budget = 2000

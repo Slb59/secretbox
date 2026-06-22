@@ -1,13 +1,16 @@
 from django.contrib import admin
 
 
-from .models import (
+from ..assetmodels import (
     Asset,
     Sector,
     Exchange,
+    Candle,
+)
+
+from ..watchlistmodels import (
     Watchlist,
     WatchlistItem,
-    Candle,
 )
 
 

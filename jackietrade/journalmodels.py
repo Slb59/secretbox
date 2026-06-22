@@ -15,6 +15,10 @@ class TradeJournalEntry(models.Model):
         HIGH = 4, "Haute"
         VERY_HIGH = 5, "Très haute"
 
+    class ExitReason(models.TextChoices):
+        STOP_LOSS = "stop_loss", "Stop Loss"
+        TAKE_PROFIT = "take_profit", "Take Profit"
+        OPEN = "open", "Position ouverte"
 
     asset = models.ForeignKey(
         Asset,
@@ -39,12 +43,9 @@ class TradeJournalEntry(models.Model):
 	# l'actualité économique
     # exemple : RSI 14 : 72, Cours au-dessus de la MM20 et MM50.
     # Volume supérieur à la moyenne. Résistance à 72€.
-    analysis_notes = models.TextField(blank=True,)
-
-	# dire j'achète x actions à ... avec un stop_loss...
-    execution_notes = models.TextField(
-        blank=True,
-    )
+    observation_notes = models.TextField(blank=True,)
+    # dire en quoi l'actualité peut influencer le marché guerre, annonce présidentielle ...
+    market_context = models.TextField(blank=True,)
 
     entry_price = models.DecimalField(
         max_digits=12,
@@ -67,23 +68,56 @@ class TradeJournalEntry(models.Model):
         blank=True,
     )
 
+    # niveau de confiance dans la décision de 1 à 5
+    confidence_level = models.IntegerField(
+        choices= ConfidenceLevel.choices,
+        blank=True, null=True
+    )
+
+    # dire j'achète x actions à ... avec un stop_loss...
+    execution_notes = models.TextField(
+        blank=True,
+    )
+
+    entry_order_at = models.DateTimeField(null=True, blank=True,)
+    entry_quantity = models.IntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(2000)]
+    )
+    entry_price_executed = models.DecimalField(
+        max_digits=12,
+        decimal_places=4,
+        null=True,
+        blank=True,
+    )
+
 	# après revue: mettre j'aurai pas du faire ca, ou l'hypothèse est
 	# bonne ...
     result_notes = models.TextField(
         blank=True,
     )
-   
-    # niveau de confiance dans la décision de 1 à 5
-    confidence_level = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)]
+
+    exit_order_at = models.DateTimeField(null=True, blank=True,)
+    exit_quantity = models.IntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(2000)]
     )
-    
-    snapshots = models.ManyToManyField(
-        IndicatorSnapshot,
+    exit_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=4,
+        null=True,
         blank=True,
-	)
+    )
+
+    exit_reason = models.CharField(
+        max_length=20,
+        choices=ExitReason.choices,
+        blank=True,
+        default=ExitReason.OPEN,
+    )
+
 	
-	def __str__(self):  
+    def __str__(self):  
   
 	    return (  
 	        f"{self.session_date} - "  
@@ -93,10 +127,11 @@ class TradeJournalEntry(models.Model):
     @property
     def quantity(self):
 
-        if not self.entry_price:
+        settings = TradingSettings.objects.first()
+        
+        if not self.entry_price or not settings.risk_budget:
             return 0
 
-        settings = TradingSettings()
         return int(settings.risk_budget / self.entry_price)
 
     @property
@@ -111,6 +146,23 @@ class TradeJournalEntry(models.Model):
     def potential_loss(self):
         return self.quantity * (self.entry_price - self.stop_loss)
     
+    @property
+    def risk_reward_ratio(self):
+
+        if (
+            not self.entry_price
+            or not self.stop_loss
+            or not self.take_profit
+        ):
+            return None
+
+        risk = self.entry_price - self.stop_loss
+        reward = self.take_profit - self.entry_price
+
+        if reward <= 0:
+            return None
+
+        return round(risk / reward, 2)
 
 
 class TradeJournalScreenshot(models.Model):

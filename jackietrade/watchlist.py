@@ -7,7 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django import forms
 
-from .assetmodels import Watchlist, Asset
+from .assetmodels import Asset
+from .watchlistmodels import Watchlist
 from .watchlistforms import WatchlistForm, WatchlistAddAssetForm
 from config import env
 

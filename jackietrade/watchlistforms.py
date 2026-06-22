@@ -2,8 +2,10 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
+
 from core.forms_helpers import action_buttons
-from .assetmodels import Watchlist, Asset
+from .assetmodels import Asset
+from .watchlistmodels import Watchlist
 
 
 class WatchlistForm(forms.ModelForm):

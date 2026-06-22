@@ -5,7 +5,7 @@ from core.forms_helpers import action_buttons
 from django.utils.translation import gettext_lazy as _
 
 from .assetmodels import Asset
-from .assetmodels import Watchlist
+from .watchlistmodels import Watchlist, WatchlistItem
 
 
 class AssetForm(forms.ModelForm):
