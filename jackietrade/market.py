@@ -26,8 +26,6 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
             user=self.request.user,
         )
 
-        user = self.request.user
-
         context.update(
             {
                 "title": _("Synchronisation des données marché"),

@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout
 from django import forms
@@ -50,10 +52,8 @@ class MemoForm(forms.ModelForm):
                     Field(name, wrapper_class="readonly")
                     if name == "who":
                         field.widget.attrs["disabled"] = True
-                    #         field.widget.attrs.update({"class": "readonly text-gray-500 pointer-events-none"})
                 else:
                     Field(name, wrapper_class="editable")
-                #         field.widget.attrs.update({"class": "editable"})
 
         self.helper = FormHelper()
         self.helper.form_class = "border p-8 bg-red-500"

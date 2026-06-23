@@ -5,8 +5,10 @@
 
 
 # class UserRegisterForm(forms.ModelForm):
-#     password = forms.CharField(label='Mot de passe', widget=forms.PasswordInput)
-#     password2 = forms.CharField(label='Confirmer le mot de passe', widget=forms.PasswordInput)
+#     password = forms.CharField(
+#       label='Mot de passe', widget=forms.PasswordInput)
+#     password2 = forms.CharField(
+#       label='Confirmer le mot de passe', widget=forms.PasswordInput)
 
 #     class Meta:
 #         model = User
@@ -34,9 +36,9 @@ from django.contrib.auth.forms import (
 )
 from django.utils.translation import gettext_lazy as _
 
-MyUser = get_user_model()
-
 from .models import MemberProfile
+
+MyUser = get_user_model()
 
 
 class LoginForm(auth_forms.AuthenticationForm):
@@ -166,7 +168,7 @@ class ProfileUpdateForm(UserChangeForm):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if CQUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+        if MyUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("Cet email est déjà utilisé.")
         return email
 

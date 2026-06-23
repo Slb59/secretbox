@@ -162,13 +162,15 @@ class Memo(models.Model):
         # print(f"next date: {days_to_add}")
         return date_of_start + timedelta(days=days_to_add)
 
-    def report_element(self, date_of_report=date.today()):
+    def report_element(self, date_of_report):
         """
         Reports the element to the user at today+1.
 
-        This method sets the element's state to "report" and updates the date to the next date.
+        This method sets the element's state to "report" 
+        and updates the date to the next date.
         """
-
+        if not date_of_report:
+            date_of_report = date.today()
         if self.state != "done":
             self.planned_date = date_of_report + timedelta(days=1)
             self.state = "report"
@@ -176,31 +178,41 @@ class Memo(models.Model):
                 self.report_date = date_of_report
             self.save()
 
-    def delete_element(self, date_of_delete=date.today()):
+    def delete_element(self, date_of_delete):
+        if not date_of_delete:
+            date_of_delete = date.today()
         if self.state != "cancel":
             self.state = "cancel"
             self.note = f"*** supprimé {date_of_delete} ***\n{self.note}"
             self.save()
 
-    def undelete_element(self, date_of_undelete=date.today()):
+    def undelete_element(self, date_of_undelete):
+        if not date_of_undelete:
+            date_of_undelete = date.today()
         if self.state == "cancel":
             self.state = "todo"
             self.note = f"*** restauré {date_of_undelete} ***\n{self.note}"
             self.save()
 
-    def report_element_if_not_done(self, date_of_report=date.today()):
+    def report_element_if_not_done(self, date_of_report):
+        if not date_of_report:
+            date_of_report = date.today()
         if self.state != "done" and self.planned_date < date_of_report:
             self.report_element(date_of_report)
 
-    def new_day(self, new_planned_date=date.today()):
+    def new_day(self, new_planned_date):
         """
         Updates the element's current date to now.
         Updates all planned dates to now.
         set the state to "report" if the element is not done.
 
-        This method updates the element's current date to the next day and saves the changes.
+        This method updates the element's current date to 
+        the next day and saves the changes.
 
         """
+        if not new_planned_date:
+            new_planned_date = date.today()
+
         if self.state != "done" and self.planned_date < new_planned_date:
             self.planned_date = new_planned_date
             self.state = "report"
@@ -208,10 +220,12 @@ class Memo(models.Model):
                 self.report_date = new_planned_date
             self.save()
 
-    def set_done(self, date_of_done=date.today()):
+    def set_done(self, date_of_done):
         """
         Sets the element's state to "done" and updates the date done_date.
         """
+        if not date_of_done:
+            date_of_done = date.today()
         if self.state != "cancel":
             self.state = "done"
             self.done_date = date_of_done
@@ -336,5 +350,5 @@ class MemoHistory(models.Model):
         ordering = ["-timestamp"]
 
     def __str__(self):
-        ts = localtime(self.timestamp)
+        ts = timezone.localtime(self.timestamp)
         return f"{self.memo} - {self.get_action_display()} ({ts:%Y-%m-%d %H:%M:%S%z})"

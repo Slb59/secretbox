@@ -36,7 +36,8 @@ class ColorParameter(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.priority} / {self.periodic} / {self.category} / {self.place} → {self.color}"
+        return f"{self.priority} / {self.periodic} /"
+        f" {self.category} / {self.place} → {self.color}"
 
     def get_color_parameter_coverage():
         nb_total = (
@@ -46,4 +47,5 @@ class ColorParameter(models.Model):
             * len(PLACE_CHOICES)
         )
         nb_elements = ColorParameter.objects.count()
-        return f"{nb_elements} / {nb_total} combinaisons définies ({round(100 * nb_elements / nb_total, 2)}%)"
+        return (f"{nb_elements} / {nb_total} "
+                f"combinaisons définies ({round(100 * nb_elements / nb_total, 2)}%)")

@@ -1,5 +1,7 @@
 from django import forms
 
+from .assetmodels import Asset
+
 
 class AssetAdminForm(forms.ModelForm):
     class Meta:

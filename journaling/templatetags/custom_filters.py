@@ -48,4 +48,4 @@ def is_not_done(memo):
 
 @register.filter
 def is_stopwtach_inactive(user):
-    return user.stopwatch == False
+    return not user.stopwatch

@@ -1,5 +1,12 @@
+import logging
+from datetime import date, timezone
+
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Min, Q
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView, View
@@ -9,6 +16,9 @@ from config import env
 from .filters import MemoFilterForm
 from .forms import MemoForm, MemoReportForm, MemoValidateForm
 from .memo import Memo, MemoHistory
+from .utils import log_memo_history
+
+logger = logging.getLogger(__name__)
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -102,7 +112,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "done_date_end": ("done_date__lte", "done_date_end"),
         }
 
-        for field, (lookup, data_key) in range_filters.items():
+        for _field, (lookup, data_key) in range_filters.items():
             value = data.get(data_key)
             if value is not None:
                 memos = memos.filter(**{lookup: value})
@@ -244,7 +254,7 @@ class MemoValidateView(LoginRequiredMixin, UpdateView):
             memo.report_date = None
             memo.done_date = date.today()
             log_memo_history(
-                todo=memo,
+                memo=memo,
                 user=memo.user,
                 action="updated",
                 changes={"field": "description", "old": "foo", "new": "bar"},
