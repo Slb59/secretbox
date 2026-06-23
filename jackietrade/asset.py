@@ -1,12 +1,14 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, UpdateView
-from django.utils.translation import gettext_lazy as _
-from django.urls import reverse_lazy
 from itertools import groupby
 
-from .assetmodels import Asset, Sector
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import ListView, UpdateView
+
 from config import env
+
 from .assetforms import AssetForm
+from .assetmodels import Asset, Sector
 
 
 class AssetListView(LoginRequiredMixin, ListView):
@@ -15,10 +17,12 @@ class AssetListView(LoginRequiredMixin, ListView):
     context_object_name = "assets"
 
     def get_queryset(self):
-        return Asset.objects.filter(is_active=True)\
-            .select_related("sector")\
-            .prefetch_related("watchlists")\
+        return (
+            Asset.objects.filter(is_active=True)
+            .select_related("sector")
+            .prefetch_related("watchlists")
             .order_by("sector__name", "name")
+        )
 
     def get_context_data(self, **kwargs):
 
@@ -37,14 +41,11 @@ class AssetListView(LoginRequiredMixin, ListView):
 
         context["title"] = _("Les actifs")
         context["logo_url"] = env("JACKIETRADE_LOGO_URL")
-        context["sectors"] = (
-            Sector.objects
-            .prefetch_related("assets")
-            .order_by("name")
-        )
+        context["sectors"] = Sector.objects.prefetch_related("assets").order_by("name")
         context["grouped_assets"] = grouped_assets
         return context
-    
+
+
 class AssetUpdateView(LoginRequiredMixin, UpdateView):
     model = Asset
     form_class = AssetForm
@@ -61,5 +62,5 @@ class AssetUpdateView(LoginRequiredMixin, UpdateView):
 
         context["title"] = _("Les actifs")
         context["logo_url"] = env("JACKIETRADE_LOGO_URL")
-        
+
         return context

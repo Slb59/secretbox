@@ -1,17 +1,13 @@
 from unittest.mock import patch
 
 import pandas as pd
-
 from django.test import TestCase
 
-from jackietrade.models import Asset
-from jackietrade.models import Candle
-from jackietrade.models import Sector
+from jackietrade.assetmodels import Asset, Candle, Sector
 from jackietrade.import_data import YFinanceImporter
 
 
 class YFinanceImporterTests(TestCase):
-
     def setUp(self):
 
         self.sector = Sector.objects.create(code="FINA", name="Finance")
@@ -46,8 +42,11 @@ class YFinanceImporterTests(TestCase):
         mock_ticker.return_value.history.return_value = self.df
         created = self.importer.import_history(self.asset)
         self.assertEqual(created, 2)
-        self.assertEqual(Candle.objects.count(), 2,)
-    
+        self.assertEqual(
+            Candle.objects.count(),
+            2,
+        )
+
     @patch("jackietrade.import_data.yf.Ticker")
     def test_import_is_idempotent(self, mock_ticker):
         mock_ticker.return_value.history.return_value = self.df
@@ -55,4 +54,3 @@ class YFinanceImporterTests(TestCase):
         created = self.importer.import_history(self.asset)
         self.assertEqual(created, 0)
         self.assertEqual(Candle.objects.count(), 2)
-        

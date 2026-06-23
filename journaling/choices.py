@@ -54,7 +54,7 @@ CATEGORY_CHOICES = [
 
 PLACE_CHOICES = [
     ("cantin-ext", "Cantin exterieur"),
-    ("cantin-int", "Cantin interieur"),    
+    ("cantin-int", "Cantin interieur"),
     ("chm", "CHM"),
     ("genese", "Genèse"),
     ("fontaine", "Fontaine"),

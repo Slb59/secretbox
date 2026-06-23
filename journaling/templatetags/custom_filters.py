@@ -45,6 +45,7 @@ def can_undelete(memo, user):
 def is_not_done(memo):
     return memo.state != "done"
 
+
 @register.filter
 def is_stopwtach_inactive(user):
     return user.stopwatch == False

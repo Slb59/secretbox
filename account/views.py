@@ -1,25 +1,27 @@
-#account/views.py
+# account/views.py
 
 from django.contrib import messages
-from django.shortcuts import render
 from django.contrib.auth import get_user_model, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView as DjangoLoginView,
+)
+from django.contrib.auth.views import (
     LogoutView as DjangoLogoutView,
+)
+from django.contrib.auth.views import (
     PasswordResetView as DjangoPasswordResetView,
 )
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
 
 from .forms import LoginForm, PasswordResetForm, ProfileUpdateForm
 
 MYUSER = get_user_model()
 
-class MyLoginView(DjangoLoginView):
 
+class MyLoginView(DjangoLoginView):
     form_class = LoginForm
     template_name = "account/login.html"
     success_url = reverse_lazy("home")

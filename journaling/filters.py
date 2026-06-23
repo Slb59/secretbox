@@ -15,7 +15,6 @@ from .choices import (
     PLACE_CHOICES,
     PRIORITY_CHOICES,
 )
-
 from .memo import Memo
 
 Member = get_user_model()

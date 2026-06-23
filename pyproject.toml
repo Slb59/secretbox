@@ -24,3 +24,21 @@ dependencies = [
     "pypdf2>=3.0.1",
     "yfinance>=1.4.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.18",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "B",
+    "UP",
+]

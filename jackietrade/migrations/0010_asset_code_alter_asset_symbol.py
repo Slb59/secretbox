@@ -4,20 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0009_alter_asset_symbol_alter_watchlistitem_watchlist_and_more'),
+        (
+            "jackietrade",
+            "0009_alter_asset_symbol_alter_watchlistitem_watchlist_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='asset',
-            name='code',
-            field=models.CharField(default='????', help_text='Code trading view', max_length=30),
+            model_name="asset",
+            name="code",
+            field=models.CharField(
+                default="????", help_text="Code trading view", max_length=30
+            ),
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='symbol',
-            field=models.CharField(help_text='Symbole Yahoo Finance', max_length=30, unique=True),
+            model_name="asset",
+            name="symbol",
+            field=models.CharField(
+                help_text="Symbole Yahoo Finance", max_length=30, unique=True
+            ),
         ),
     ]

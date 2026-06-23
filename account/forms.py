@@ -1,8 +1,7 @@
-#account/forms.py
+# account/forms.py
 
 
 # from django.contrib.auth.models import User
-
 
 
 # class UserRegisterForm(forms.ModelForm):
@@ -12,7 +11,7 @@
 #     class Meta:
 #         model = User
 #         fields = ['username', 'email']
-    
+
 #     def clean_password2(self):
 #         cd = self.cleaned_data
 #         if cd['password1'] != cd['password2']:
@@ -22,13 +21,15 @@
 # ----
 
 
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Layout, Submit
 from django import forms
-from django.contrib.auth import authenticate, forms as auth_forms, get_user_model
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.forms import (
     PasswordResetForm as DjangoPasswordResetForm,
+)
+from django.contrib.auth.forms import (
     UserChangeForm,
 )
 from django.utils.translation import gettext_lazy as _
@@ -39,7 +40,6 @@ from .models import MemberProfile
 
 
 class LoginForm(auth_forms.AuthenticationForm):
-
     username = forms.EmailField(
         label=_("Identifiant"),
         widget=forms.EmailInput(
@@ -58,8 +58,6 @@ class LoginForm(auth_forms.AuthenticationForm):
             attrs={"placeholder": _("Votre mot de passe"), "class": "form-input"}
         ),
     )
-
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -183,7 +181,6 @@ class ProfileUpdateForm(UserChangeForm):
 
 
 class PasswordResetForm(DjangoPasswordResetForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -4,18 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0004_remove_exchange_is_24h_asset_web_site_and_more'),
+        ("jackietrade", "0004_remove_exchange_is_24h_asset_web_site_and_more"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='sector',
-            name='sector_code_four_uppercase_letters',
+            model_name="sector",
+            name="sector_code_four_uppercase_letters",
         ),
         migrations.AddConstraint(
-            model_name='sector',
-            constraint=models.CheckConstraint(condition=models.Q(('code__regex', '[A-Z]{4}$')), name='sector_code_four_uppercase_letters'),
+            model_name="sector",
+            constraint=models.CheckConstraint(
+                condition=models.Q(("code__regex", "[A-Z]{4}$")),
+                name="sector_code_four_uppercase_letters",
+            ),
         ),
     ]

@@ -5,28 +5,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0008_watchlist_is_default_alter_watchlist_user'),
+        ("jackietrade", "0008_watchlist_is_default_alter_watchlist_user"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='asset',
-            name='symbol',
+            model_name="asset",
+            name="symbol",
             field=models.CharField(max_length=30, unique=True),
         ),
         migrations.AlterField(
-            model_name='watchlistitem',
-            name='watchlist',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assets', to='jackietrade.watchlist'),
+            model_name="watchlistitem",
+            name="watchlist",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="assets",
+                to="jackietrade.watchlist",
+            ),
         ),
         migrations.AddIndex(
-            model_name='watchlistitem',
-            index=models.Index(fields=['watchlist', 'asset'], name='jackietrade_watchli_fafa72_idx'),
+            model_name="watchlistitem",
+            index=models.Index(
+                fields=["watchlist", "asset"], name="jackietrade_watchli_fafa72_idx"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='watchlistitem',
-            constraint=models.UniqueConstraint(fields=('watchlist', 'asset'), name='unique_asset_per_watchlist'),
+            model_name="watchlistitem",
+            constraint=models.UniqueConstraint(
+                fields=("watchlist", "asset"), name="unique_asset_per_watchlist"
+            ),
         ),
     ]

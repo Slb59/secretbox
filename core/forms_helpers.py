@@ -24,9 +24,9 @@ def action_buttons(
         "dark:focus:ring-gray-900"
     )
     submit_classe = (
-        "block w-full rounded-xl bg-rose-500 hover:bg-rose-800 focus:outline-none " 
-        "focus:ring-4 focus:ring-rose-300 font-medium rounded-lg " 
-        "text-sm px-5 py-2.5 mb-2 " 
+        "block w-full rounded-xl bg-rose-500 hover:bg-rose-800 focus:outline-none "
+        "focus:ring-4 focus:ring-rose-300 font-medium rounded-lg "
+        "text-sm px-5 py-2.5 mb-2 "
         "dark:focus:ring-rose-900"
     )
 
@@ -35,4 +35,3 @@ def action_buttons(
         HTML(f'<a href="{back_url}" class="{back_classes}">{back_label}</a>'),
         css_class="flex gap-4",
     )
-    

@@ -4,20 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0005_remove_sector_sector_code_four_uppercase_letters_and_more'),
+        (
+            "jackietrade",
+            "0005_remove_sector_sector_code_four_uppercase_letters_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='asset',
-            name='notes',
-            field=models.TextField(blank=True, verbose_name='Notes'),
+            model_name="asset",
+            name="notes",
+            field=models.TextField(blank=True, verbose_name="Notes"),
         ),
         migrations.AlterField(
-            model_name='asset',
-            name='currency',
-            field=models.CharField(default='EUR', max_length=10),
+            model_name="asset",
+            name="currency",
+            field=models.CharField(default="EUR", max_length=10),
         ),
     ]

@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -8,14 +8,13 @@ User = get_user_model()
 
 
 class Sector(models.Model):
-
     code = models.CharField(
         max_length=4,
         unique=True,
         validators=[
             RegexValidator(
                 regex=r"^[A-Za-z]{4}$",
-                message="Le code doit contenir exactement 4 lettres."
+                message="Le code doit contenir exactement 4 lettres.",
             )
         ],
     )
@@ -32,7 +31,6 @@ class Sector(models.Model):
             )
         ]
 
-
     def __str__(self):
         return self.name
 
@@ -47,8 +45,8 @@ class Sector(models.Model):
             self.code = self.code.upper()
         super().save(*args, **kwargs)
 
-class Exchange(models.Model):
 
+class Exchange(models.Model):
     code = models.CharField(
         max_length=20,
         unique=True,
@@ -73,14 +71,13 @@ class Exchange(models.Model):
     def __str__(self):
         return self.name
 
-class Asset(models.Model):
 
+class Asset(models.Model):
     class AssetType(models.TextChoices):
         STOCK = "stock", "Stock"
         ETF = "etf", "ETF"
         CRYPTO = "crypto", "Crypto"
         FOREX = "forex", "Forex"
-    
 
     symbol = models.CharField(
         max_length=30,
@@ -100,19 +97,19 @@ class Asset(models.Model):
         max_length=20,
         choices=AssetType.choices,
     )
-    
-    sector = models.ForeignKey(  
-		Sector,  
-		on_delete=models.PROTECT,
+
+    sector = models.ForeignKey(
+        Sector,
+        on_delete=models.PROTECT,
         verbose_name=_("Secteur"),
         related_name="assets",
-	)
+    )
 
-    exchange = models.ForeignKey(  
-		Exchange,  
-		on_delete=models.SET_NULL,  
-		null=True,  
-	)
+    exchange = models.ForeignKey(
+        Exchange,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
 
     currency = models.CharField(
         max_length=10,
@@ -125,24 +122,21 @@ class Asset(models.Model):
         blank=True,
     )
 
-    notes = models.TextField(
-        blank=True,
-        verbose_name="Notes"
-    )
+    notes = models.TextField(blank=True, verbose_name="Notes")
 
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     last_sync_at = models.DateTimeField(
-    null=True,
-    blank=True,
-	)
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.symbol
 
-    def clean(self):    
+    def clean(self):
         super().clean()
 
         if self.symbol:
@@ -152,14 +146,9 @@ class Asset(models.Model):
         if self.symbol:
             self.symbol = self.symbol.upper()
         super().save(*args, **kwargs)
-    
-
-
-        
 
 
 class Candle(models.Model):
-
     class Timeframe(models.TextChoices):
         DAY_1 = "1d", "1 Day"
         HOUR_4 = "4h", "4 Hours"
@@ -193,9 +182,11 @@ class Candle(models.Model):
         )
 
         indexes = [
-            models.Index(fields=[
-                "asset",
-                "timeframe",
-                "timestamp",
-            ])
+            models.Index(
+                fields=[
+                    "asset",
+                    "timeframe",
+                    "timestamp",
+                ]
+            )
         ]

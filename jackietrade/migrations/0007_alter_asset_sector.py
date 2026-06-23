@@ -5,15 +5,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0006_asset_notes_alter_asset_currency'),
+        ("jackietrade", "0006_asset_notes_alter_asset_currency"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='asset',
-            name='sector',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='jackietrade.sector', verbose_name='Secteur'),
+            model_name="asset",
+            name="sector",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                to="jackietrade.sector",
+                verbose_name="Secteur",
+            ),
         ),
     ]

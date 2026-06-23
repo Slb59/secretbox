@@ -1,19 +1,29 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
+
 from core.forms_helpers import action_buttons
+
 from .assetmodels import Asset
 
 
 class AssetForm(forms.ModelForm):
     class Meta:
         model = Asset
-        fields = ["symbol", "code", "name", "asset_type", "sector", "exchange", "is_active"]
-    
+        fields = [
+            "symbol",
+            "code",
+            "name",
+            "asset_type",
+            "sector",
+            "exchange",
+            "is_active",
+        ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         self.fields["symbol"].label = _("Symbole Yahoo Finance")
         self.fields["code"].label = _("Code TradingView")
         self.fields["name"].label = _("Nom de l'actif")
@@ -36,5 +46,5 @@ class AssetForm(forms.ModelForm):
             "sector",
             "exchange",
             "is_active",
-            action_buttons(back_url_name="jackietrade:asset_list")
+            action_buttons(back_url_name="jackietrade:asset_list"),
         )

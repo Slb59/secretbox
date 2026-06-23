@@ -5,20 +5,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0010_asset_code_alter_asset_symbol'),
+        ("jackietrade", "0010_asset_code_alter_asset_symbol"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='asset',
-            name='sector',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='assets', to='jackietrade.sector', verbose_name='Secteur'),
+            model_name="asset",
+            name="sector",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="assets",
+                to="jackietrade.sector",
+                verbose_name="Secteur",
+            ),
         ),
         migrations.AlterField(
-            model_name='watchlistitem',
-            name='asset',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='watchlists', to='jackietrade.asset'),
+            model_name="watchlistitem",
+            name="asset",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="watchlists",
+                to="jackietrade.asset",
+            ),
         ),
     ]

@@ -1,7 +1,7 @@
 from django import forms
 
-class AssetAdminForm(forms.ModelForm):
 
+class AssetAdminForm(forms.ModelForm):
     class Meta:
         model = Asset
         fields = "__all__"

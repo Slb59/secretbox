@@ -1,18 +1,18 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import TemplateView, View
-from django.views.generic import CreateView, UpdateView, ListView
-from django.urls import reverse_lazy
 from django.db.models import Min, Q
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView, View
 
-
-from .memo import Memo, MemoHistory
-from .forms import MemoForm, MemoValidateForm, MemoReportForm
-from .filters import MemoFilterForm
 from config import env
 
-class DashboardView(LoginRequiredMixin,TemplateView):
-    template_name = 'journaling/dashboard.html'
+from .filters import MemoFilterForm
+from .forms import MemoForm, MemoReportForm, MemoValidateForm
+from .memo import Memo, MemoHistory
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "journaling/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,7 +70,6 @@ class DashboardView(LoginRequiredMixin,TemplateView):
         context["memos"] = Memo.objects.filter(who=request.user)
         return self.render_to_response(context)
 
-    
     def apply_filters(self, memos, data):
         """Apply filters to the queryset"""
 
@@ -123,6 +122,7 @@ class DashboardView(LoginRequiredMixin,TemplateView):
         qs = qs.distinct().prefetch_related("who")
         return qs
 
+
 class MemoCreateView(LoginRequiredMixin, CreateView):
     model = Memo
     form_class = MemoForm
@@ -157,6 +157,7 @@ class MemoCreateView(LoginRequiredMixin, CreateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+
 class MemoUpdateView(LoginRequiredMixin, UpdateView):
     model = Memo
     form_class = MemoForm
@@ -186,7 +187,6 @@ class MemoUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class MemoDeleteView(LoginRequiredMixin, View):
-
     def post(self, request, pk, *args, **kwargs):
         memo = get_object_or_404(Memo, pk=pk)
         if memo.state != "cancel":
@@ -201,8 +201,8 @@ class MemoDeleteView(LoginRequiredMixin, View):
             return HttpResponseForbidden(_("Vous ne pouvez pas supprimer cet élément."))
         return super().dispatch(request, *args, **kwargs)
 
-class MemoUnDeleteView(LoginRequiredMixin, View):
 
+class MemoUnDeleteView(LoginRequiredMixin, View):
     model = Memo
     success_url = reverse_lazy("home")
 
@@ -219,6 +219,7 @@ class MemoUnDeleteView(LoginRequiredMixin, View):
             messages.error(request, _("Erreur lors de la restauration : ") + str(e))
 
         return redirect("home")
+
 
 class MemoValidateView(LoginRequiredMixin, UpdateView):
     model = Memo
@@ -270,6 +271,7 @@ class MemoValidateView(LoginRequiredMixin, UpdateView):
         )
         return context
 
+
 class MemoReportView(LoginRequiredMixin, UpdateView):
     model = Memo
     form_class = MemoReportForm
@@ -306,6 +308,7 @@ class MemoReportView(LoginRequiredMixin, UpdateView):
         )
         return context
 
+
 class MemoHistoryView(LoginRequiredMixin, ListView):
     model = MemoHistory
     template_name = "journaling/history.html"
@@ -313,12 +316,14 @@ class MemoHistoryView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         self.memo = get_object_or_404(Memo, pk=self.kwargs["pk"])
-        history_context = MemoHistory.objects.filter(memo=self.memo).order_by("-timestamp")
+        history_context = MemoHistory.objects.filter(memo=self.memo).order_by(
+            "-timestamp"
+        )
         return history_context
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['memo'] = self.memo
+        context["memo"] = self.memo
         context["title"] = _("Historique de modifications")
-        context["logo_url"] = env("SECRETBOX_LOGO_URL"),
+        context["logo_url"] = (env("SECRETBOX_LOGO_URL"),)
         return context

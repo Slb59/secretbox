@@ -39,37 +39,14 @@ git push origin HEAD
 ### Initialiser la nouvelle version
 - mettre à jour VERSION + CHANGELOG
 
-## Dépendances
-
-Django 6.0.3
-Django Tailwind 4.4.2
-Django Debug Toolbar 6.3.0
-MySQL (mysqlclient)
-
 ## Exploitation
 
 ### Creer le fichier .env
-DEBUG=True
-ALLOWED_HOSTS=localhost
-DJANGO_SECRET_KEY=
-DJANGO_SETTINGS_MODULE=config.settings.dev
-
-DATABASE_URL=sqlite:///db.sqlite3
-
-NPM_BIN_PATH=
-
-DEFAULT_FROM_EMAIL=
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=
-EMAIL_HOST_PASSWORD=
-ADMIN_EMAIL=
-
+voir .env.example
 
 ### Exécuter des commandes Python
 uv run python manage.py migrate
-uv run python manage.py runserver
+uv run python manage.py runserver (make run)
 
 ### Lancer le shell Django
 uv run python manage.py shell
@@ -116,4 +93,6 @@ Tutoriel officiel : https://docs.djangoproject.com/fr/4.2/intro/tutorial01/
 Raspberry Pi :
 Documentation officielle : https://www.raspberrypi.org/documentation/
 Installation d’Ubuntu Server : https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi
+
+# Contrôle qualité
 

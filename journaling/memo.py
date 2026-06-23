@@ -8,7 +8,13 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .choices import CATEGORY_CHOICES, PERIODIC_CHOICES, PLACE_CHOICES, PRIORITY_CHOICES, ACTION_CHOICES
+from .choices import (
+    ACTION_CHOICES,
+    CATEGORY_CHOICES,
+    PERIODIC_CHOICES,
+    PLACE_CHOICES,
+    PRIORITY_CHOICES,
+)
 from .colors import ColorParameter
 
 User = get_user_model()

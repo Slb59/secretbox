@@ -1,13 +1,11 @@
 from django.contrib import admin
 
-
 from ..assetmodels import (
     Asset,
-    Sector,
-    Exchange,
     Candle,
+    Exchange,
+    Sector,
 )
-
 from ..watchlistmodels import (
     Watchlist,
     WatchlistItem,
@@ -16,7 +14,6 @@ from ..watchlistmodels import (
 
 @admin.register(Sector)
 class SectorAdmin(admin.ModelAdmin):
-
     list_display = (
         "name",
         "code",
@@ -28,13 +25,11 @@ class SectorAdmin(admin.ModelAdmin):
     )
 
     class Media:
-        css = {
-            "all": ("css/admin.css",)
-        }
+        css = {"all": ("css/admin.css",)}
+
 
 @admin.register(Exchange)
 class ExchangeAdmin(admin.ModelAdmin):
-
     list_display = (
         "name",
         "code",
@@ -47,23 +42,19 @@ class ExchangeAdmin(admin.ModelAdmin):
         "code",
     )
 
-    list_filter = (
-        "country",
-    )
+    list_filter = ("country",)
+
 
 class WatchlistItemInline(admin.TabularInline):
-
     model = WatchlistItem
 
     extra = 1
 
-    autocomplete_fields = (
-        "asset",
-    )
+    autocomplete_fields = ("asset",)
+
 
 @admin.register(Asset)
 class AssetAdmin(admin.ModelAdmin):
-
     list_display = (
         "symbol",
         "name",
@@ -96,13 +87,11 @@ class AssetAdmin(admin.ModelAdmin):
     ]
 
     class Media:
-        css = {
-            "all": ("css/admin.css",)
-        }
+        css = {"all": ("css/admin.css",)}
+
 
 @admin.register(Watchlist)
 class WatchlistAdmin(admin.ModelAdmin):
-
     list_display = (
         "name",
         "user",
@@ -118,9 +107,9 @@ class WatchlistAdmin(admin.ModelAdmin):
         WatchlistItemInline,
     ]
 
+
 @admin.register(Candle)
 class CandleAdmin(admin.ModelAdmin):
-
     list_display = (
         "asset",
         "timeframe",
@@ -129,17 +118,11 @@ class CandleAdmin(admin.ModelAdmin):
         "volume",
     )
 
-    list_filter = (
-        "timeframe",
-    )
+    list_filter = ("timeframe",)
 
-    search_fields = (
-        "asset__symbol",
-    )
+    search_fields = ("asset__symbol",)
 
-    autocomplete_fields = (
-        "asset",
-    )
+    autocomplete_fields = ("asset",)
 
     date_hierarchy = "timestamp"
 

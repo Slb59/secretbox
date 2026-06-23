@@ -1,14 +1,12 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 from .assetmodels import Asset
-
 
 User = get_user_model()
 
 
 class Watchlist(models.Model):
-
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -26,26 +24,18 @@ class Watchlist(models.Model):
         super().save(*args, **kwargs)
 
         if self.is_default:
-            Watchlist.objects.filter(
-                user=self.user,
-                is_default=True
-            ).exclude(pk=self.pk).update(is_default=False)
+            Watchlist.objects.filter(user=self.user, is_default=True).exclude(
+                pk=self.pk
+            ).update(is_default=False)
 
     def add_asset(self, asset):
-        WatchlistItem.objects.get_or_create(
-            watchlist=self,
-            asset=asset
-        )
+        WatchlistItem.objects.get_or_create(watchlist=self, asset=asset)
 
     def remove_asset(self, asset):
-        WatchlistItem.objects.filter(
-            watchlist=self,
-            asset=asset
-        ).delete()
+        WatchlistItem.objects.filter(watchlist=self, asset=asset).delete()
 
 
 class WatchlistItem(models.Model):
-  
     watchlist = models.ForeignKey(
         Watchlist,
         on_delete=models.CASCADE,
@@ -63,8 +53,7 @@ class WatchlistItem(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["watchlist", "asset"],
-                name="unique_asset_per_watchlist"
+                fields=["watchlist", "asset"], name="unique_asset_per_watchlist"
             )
         ]
         indexes = [

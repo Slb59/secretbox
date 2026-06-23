@@ -10,7 +10,6 @@ class TradeJournalScreenshotInline(admin.TabularInline):
 
 @admin.register(TradeJournalEntry)
 class TradeJournalEntryAdmin(admin.ModelAdmin):
-
     list_display = (
         "session_date",
         "asset",
@@ -40,9 +39,7 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
         "result_notes",
     )
 
-    autocomplete_fields = (
-        "asset",
-    )
+    autocomplete_fields = ("asset",)
 
     readonly_fields = (
         "created_at",
@@ -59,7 +56,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
     ]
 
     fieldsets = (
-
         (
             "Informations générales",
             {
@@ -72,7 +68,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
                 )
             },
         ),
-
         (
             "Observations",
             {
@@ -82,7 +77,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
                 )
             },
         ),
-
         (
             "Analyse",
             {
@@ -98,7 +92,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
                 )
             },
         ),
-
         (
             "Décision",
             {
@@ -110,7 +103,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
                 )
             },
         ),
-
         (
             "Conclusion",
             {
@@ -144,11 +136,7 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
     @admin.display(description="Profit potentiel")
     def potential_profit_display(self, obj):
 
-        if (
-            not obj.pk
-            or not obj.entry_price
-            or not obj.take_profit
-        ):
+        if not obj.pk or not obj.entry_price or not obj.take_profit:
             return "-"
 
         return f"{obj.potential_profit:.2f} €"
@@ -156,11 +144,7 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
     @admin.display(description="Perte potentielle")
     def potential_loss_display(self, obj):
 
-        if (
-            not obj.pk
-            or not obj.entry_price
-            or not obj.stop_loss
-        ):
+        if not obj.pk or not obj.entry_price or not obj.stop_loss:
             return "-"
 
         return f"{obj.potential_loss:.2f} €"

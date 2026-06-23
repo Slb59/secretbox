@@ -1,9 +1,12 @@
-from django import forms
-from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout
+from django import forms
+from django.utils.translation import gettext_lazy as _
+
 from core.forms_helpers import action_buttons
+
 from .memo import Memo
+
 
 class MemoForm(forms.ModelForm):
     class Meta:
@@ -73,6 +76,7 @@ class MemoForm(forms.ModelForm):
             action_buttons(back_url_name="home", back_label="Liste"),
         )
 
+
 class MemoValidateForm(forms.ModelForm):
     class Meta:
         model = Memo
@@ -102,6 +106,7 @@ class MemoValidateForm(forms.ModelForm):
             "description",
             action_buttons(back_url_name="home", back_label="Annuler"),
         )
+
 
 class MemoReportForm(forms.ModelForm):
     class Meta:

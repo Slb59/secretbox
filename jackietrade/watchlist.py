@@ -1,16 +1,22 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
-from django.views import View
-from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
-from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views import View
+from django.views.generic import (
+    CreateView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
+
+from config import env
 
 from .assetmodels import Asset
+from .watchlistforms import WatchlistAddAssetForm, WatchlistForm
 from .watchlistmodels import Watchlist
-from .watchlistforms import WatchlistForm, WatchlistAddAssetForm
-from config import env
+
 
 class WatchlistListView(LoginRequiredMixin, ListView):
     model = Watchlist
@@ -18,7 +24,7 @@ class WatchlistListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Watchlist.objects.filter(user=self.request.user)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = _("Mes watchlistes")
@@ -38,8 +44,6 @@ class WatchlistCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-
-
 class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
     model = Watchlist
     form_class = WatchlistForm
@@ -50,7 +54,7 @@ class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
@@ -71,35 +75,20 @@ class WatchlistDeleteView(LoginRequiredMixin, View):
             user=request.user,
         )
 
-        if watchlist.assets.count() > 0 :
-
-            messages.error(
-                request,
-                "Cette liste contient des actifs."
-            )
+        if watchlist.assets.count() > 0:
+            messages.error(request, "Cette liste contient des actifs.")
 
         else:
-
             watchlist.delete()
 
-            messages.success(
-                request,
-                "Suppression effectuée."
-            )
+            messages.success(request, "Suppression effectuée.")
 
-        return redirect(
-            "jackietrade:watchlist_list"
-        )
+        return redirect("jackietrade:watchlist_list")
 
 
 class ToggleAssetWatchlistView(LoginRequiredMixin, View):
-
     def post(self, request, pk):
-        watchlist = get_object_or_404(
-            Watchlist,
-            pk=pk,
-            user=request.user
-        )
+        watchlist = get_object_or_404(Watchlist, pk=pk, user=request.user)
 
         asset_id = request.POST.get("asset_id")
         asset = get_object_or_404(Asset, pk=asset_id)
@@ -112,8 +101,7 @@ class ToggleAssetWatchlistView(LoginRequiredMixin, View):
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
-class WatchlistAddAssetView(LoginRequiredMixin,TemplateView):
-
+class WatchlistAddAssetView(LoginRequiredMixin, TemplateView):
     template_name = "jackietrade/watchlist_add_asset.html"
 
     def dispatch(self, request, *args, **kwargs):
@@ -140,16 +128,12 @@ class WatchlistAddAssetView(LoginRequiredMixin,TemplateView):
         form = WatchlistAddAssetForm(request.POST, watchlist=self.watchlist)
 
         if form.is_valid():
-
             assets = form.cleaned_data["assets"]
 
             for asset in assets:
                 self.watchlist.add_asset(asset)
 
-            messages.success(
-                request,
-                f"{len(assets)} actif(s) ajouté(s)."
-            )
+            messages.success(request, f"{len(assets)} actif(s) ajouté(s).")
 
             return redirect(
                 "jackietrade:watchlist_update",

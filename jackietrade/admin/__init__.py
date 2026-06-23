@@ -1,2 +1,2 @@
-from .journal import *
 from .asset import *
+from .journal import *
