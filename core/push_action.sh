@@ -11,6 +11,7 @@ uv run ruff format .
 
 echo "▶ execution du commit"
 read -rp "Veuillez commenter le commit: " REPONSE
+echo
 
 git add .
 git commit -m "$REPONSE"

@@ -47,14 +47,10 @@ class AssetListView(LoginRequiredMixin, ListView):
 
 
 class AssetUpdateView(LoginRequiredMixin, UpdateView):
-    model = Asset
-    form_class = AssetForm
+    model: type[Asset] = Asset
+    form_class: type[AssetForm] = AssetForm
     template_name = "jackietrade/asset_form.html"
     success_url = reverse_lazy("jackietrade:asset_list")
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
 

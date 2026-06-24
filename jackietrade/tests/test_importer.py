@@ -13,7 +13,7 @@ class YFinanceImporterTests(TestCase):
         self.sector = Sector.objects.create(code="FINA", name="Finance")
 
         self.asset = Asset.objects.create(
-            symbol="BNP Paribas S.A. Class A",
+            symbol="BNP.PA",
             name="BNP Paribas S.A. Class A",
             asset_type="stock",
             sector=self.sector,
@@ -31,7 +31,8 @@ class YFinanceImporterTests(TestCase):
                 [
                     "2026-01-01",
                     "2026-01-02",
-                ]
+                ],
+                utc=True,
             ),
         )
 
