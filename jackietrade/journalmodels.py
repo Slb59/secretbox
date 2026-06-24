@@ -1,4 +1,3 @@
-
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -51,7 +50,7 @@ class TradeJournalEntry(models.Model):
     observation_notes = models.TextField(
         blank=True,
     )
-    # dire en quoi l'actualité peut influencer le marché 
+    # dire en quoi l'actualité peut influencer le marché
     # guerre, annonce présidentielle ...
     market_context = models.TextField(
         blank=True,

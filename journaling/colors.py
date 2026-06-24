@@ -47,5 +47,7 @@ class ColorParameter(models.Model):
             * len(PLACE_CHOICES)
         )
         nb_elements = ColorParameter.objects.count()
-        return (f"{nb_elements} / {nb_total} "
-                f"combinaisons définies ({round(100 * nb_elements / nb_total, 2)}%)")
+        return (
+            f"{nb_elements} / {nb_total} "
+            f"combinaisons définies ({round(100 * nb_elements / nb_total, 2)}%)"
+        )

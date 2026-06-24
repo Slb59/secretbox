@@ -111,8 +111,8 @@ class Migration(migrations.Migration):
                         max_length=7,
                         validators=[
                             django.core.validators.RegexValidator(
-                                message="Entrez une couleur au " +
-                                "format hexadécimal valide (ex: #1A2B3C).",
+                                message="Entrez une couleur au "
+                                + "format hexadécimal valide (ex: #1A2B3C).",
                                 regex="^#[0-9A-Fa-f]{6}$",
                             )
                         ],

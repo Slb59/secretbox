@@ -37,8 +37,8 @@ class Migration(migrations.Migration):
                     "is_superuser",
                     models.BooleanField(
                         default=False,
-                        help_text="Designates that this user has all" + 
-                        " permissions without explicitly assigning them.",
+                        help_text="Designates that this user has all"
+                        + " permissions without explicitly assigning them.",
                         verbose_name="superuser status",
                     ),
                 ),
@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
                     "is_staff",
                     models.BooleanField(
                         default=False,
-                        help_text="Designates whether the user" + 
-                        " can log into this admin site.",
+                        help_text="Designates whether the user"
+                        + " can log into this admin site.",
                         verbose_name="staff status",
                     ),
                 ),
@@ -55,9 +55,9 @@ class Migration(migrations.Migration):
                     "is_active",
                     models.BooleanField(
                         default=True,
-                        help_text="Designates whether this user should be" + 
-                        " treated as active. Unselect this instead of" +
-                        " deleting accounts.",
+                        help_text="Designates whether this user should be"
+                        + " treated as active. Unselect this instead of"
+                        + " deleting accounts.",
                         verbose_name="active",
                     ),
                 ),

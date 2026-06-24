@@ -132,7 +132,7 @@ class Memo(models.Model):
             return False, _("Cette tâche est déjà annulée")
         return True, ""
 
-    def next_date(self, date_of_start=date.today()):
+    def next_date(self, date_of_start):
         """
         Calculate the next date based on the periodicity choice.
 
@@ -158,6 +158,9 @@ class Memo(models.Model):
             "16-everyyear": 365,
         }
 
+        if not date_of_start:
+            date_of_start = date.today()
+
         days_to_add = PERIODIC_DAYS_MAPPING[self.periodic]
         # print(f"next date: {days_to_add}")
         return date_of_start + timedelta(days=days_to_add)
@@ -166,7 +169,7 @@ class Memo(models.Model):
         """
         Reports the element to the user at today+1.
 
-        This method sets the element's state to "report" 
+        This method sets the element's state to "report"
         and updates the date to the next date.
         """
         if not date_of_report:
@@ -206,7 +209,7 @@ class Memo(models.Model):
         Updates all planned dates to now.
         set the state to "report" if the element is not done.
 
-        This method updates the element's current date to 
+        This method updates the element's current date to
         the next day and saves the changes.
 
         """

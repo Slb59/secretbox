@@ -1,2 +1,2 @@
-from .asset import *
-from .journal import *
+# ruff: noqa: F401
+from . import asset, journal

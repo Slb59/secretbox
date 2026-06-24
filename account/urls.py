@@ -21,11 +21,7 @@ urlpatterns = [
         name="password_change_done",
     ),
     # password reset urls
-    path(
-        "password-reset/", 
-        PasswordResetView.as_view(), 
-        name="password_reset"
-    ),
+    path("password-reset/", PasswordResetView.as_view(), name="password_reset"),
     path(
         "password-reset/done/",
         auth_views.PasswordResetDoneView.as_view(),

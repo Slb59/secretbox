@@ -15,7 +15,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         email = options["email"]
         password = options["password"]
-        trigram = options["trigram"]
 
         if User.objects.filter(email=email).exists():
             self.stdout.write(

@@ -1,5 +1,10 @@
 # config.settings.prod.py
-from .base import *
+
+import os
+
+from config import env
+
+from .base import *  # noqa: F403
 
 DEBUG = False
 
@@ -18,7 +23,7 @@ DATABASES = {
         "OPTIONS": {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
             # Pour supporter les caractères spéciaux (émojis, etc.)
-            "charset": "utf8mb4",  
+            "charset": "utf8mb4",
         },
     }
 }
@@ -33,9 +38,6 @@ INTERNAL_IPS = [
 ]
 
 MEDIA_ROOT = os.path.join("/var/lib/secretbox/", "media")
-
-NPM_BIN_PATH = env("NPM_BIN_PATH")
-
 
 LOGGING = {
     "version": 1,
@@ -59,3 +61,5 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+NPM_BIN_PATH = env("NPM_BIN_PATH")
