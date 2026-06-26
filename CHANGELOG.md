@@ -1,5 +1,8 @@
 ## [0.2.2] -
 - jackietrade : ajout du CRUD Watchlist
+- jackietrade : ajout du CRUD asset
+- jackietrade : ajout du model journal
+- jackietrade : ajout de tests qualité ruff
 
 
 ## [0.2.1] - 2026-06-12
