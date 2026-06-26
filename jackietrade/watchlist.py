@@ -60,7 +60,7 @@ class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
 
         context["assets"] = Asset.objects.filter(
-            watchlistitem__watchlist=self.object
+            watchlist_items__watchlist=self.object
         ).order_by("symbol")
 
         return context

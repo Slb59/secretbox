@@ -39,13 +39,13 @@ class WatchlistItem(models.Model):
     watchlist = models.ForeignKey(
         Watchlist,
         on_delete=models.CASCADE,
-        related_name="assets",
+        related_name="items",
     )
 
     asset = models.ForeignKey(
         Asset,
         on_delete=models.CASCADE,
-        related_name="watchlists",
+        related_name="watchlist_items",
     )
 
     added_at = models.DateTimeField(auto_now_add=True)

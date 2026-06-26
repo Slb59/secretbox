@@ -7,19 +7,23 @@ petits outils d'organisation
 - jackietrade :  outil d'analyse boursière
 
 ## Maintenance
-### Créer une branche feature
-git checkout -b feature/ma-fonctionnalite
 
-### Faire les modifications et commits
-git add .
-git commit -m "feat: Description de la fonctionnalité"
+### Envoyer les modifications
+make push
+    - lance les tests
+    - lance le contrôle qualité via ruff
+    - effectue le commit
+    - push les modifications
 
 ### Deploiement
 - construire le zip avec make to-build
-- copier le zip dans le dossier hôte
-- lancer le script de déploiement : install.sh
-- verifier le service : systemctl status secretbox
-- en cas d'erreur, revoir les logs : journalctl -u secretbox
+- si installation manuelle:
+    - copier le zip dans le dossier hôte
+    - lancer le script de déploiement : install.sh
+    - verifier le service : systemctl status secretbox
+    - en cas d'erreur, revoir les logs : 
+        journalctl -u secretbox ou /var/log/secretbox/errors.log
+- effectuer quelques manipulations en production
 
 ### Tagger la version après deploiement
 
@@ -33,8 +37,8 @@ git commit -m "feat: Description de la fonctionnalité"
 git checkout main
 git merge feature/ma-fonctionnalite
 
-### Envoyer les modifications
-git push origin HEAD
+### Créer une branche feature
+git checkout -b feature/ma-fonctionnalite
 
 ### Initialiser la nouvelle version
 - mettre à jour VERSION + CHANGELOG
@@ -93,6 +97,4 @@ Tutoriel officiel : https://docs.djangoproject.com/fr/4.2/intro/tutorial01/
 Raspberry Pi :
 Documentation officielle : https://www.raspberrypi.org/documentation/
 Installation d’Ubuntu Server : https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi
-
-# Contrôle qualité
 
