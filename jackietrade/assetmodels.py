@@ -6,6 +6,12 @@ from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
+isin_validator = RegexValidator(
+    regex=r"^[A-Z]{2}[A-Z0-9]{9}[0-9]$",
+    message="L'ISIN doit être composé de 2 lettres,"
+    + "9 caractères alphanumériques et 1 chiffre.",
+)
+
 
 class Sector(models.Model):
     code = models.CharField(
@@ -89,6 +95,14 @@ class Asset(models.Model):
         max_length=30,
         help_text="Code trading view",
         default="????",
+    )
+
+    isin = models.CharField(
+        max_length=12,
+        null=True,
+        blank=True,
+        unique=True,
+        validators=[isin_validator],
     )
 
     name = models.CharField(max_length=255)

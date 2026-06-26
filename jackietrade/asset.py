@@ -20,7 +20,7 @@ class AssetListView(LoginRequiredMixin, ListView):
         return (
             Asset.objects.filter(is_active=True)
             .select_related("sector")
-            .prefetch_related("watchlists")
+            .prefetch_related("watchlist_items")
             .order_by("sector__name", "name")
         )
 

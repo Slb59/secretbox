@@ -1,4 +1,5 @@
 ## [0.2.3] - 
+- jackietrade : ajout de l'attribut isin à l'asset
 
 
 ## [0.2.2] - 2026-06-26
