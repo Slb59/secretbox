@@ -1,4 +1,7 @@
-## [0.2.2] -
+## [0.2.3] - 
+
+
+## [0.2.2] - 2026-06-26
 - jackietrade : ajout du CRUD Watchlist
 - jackietrade : ajout du CRUD asset
 - jackietrade : ajout du model journal
