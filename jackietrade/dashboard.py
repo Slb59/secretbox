@@ -30,7 +30,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 "logo_url": env("JACKIETRADE_LOGO_URL"),
                 "watchlists": watchlists,
                 "current_watchlist": current_watchlist,
-                "assets": current_watchlist.assets.all() if current_watchlist else [],
+                "assets": current_watchlist.items.all() if current_watchlist else [],
             }
         )
 
