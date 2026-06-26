@@ -54,5 +54,5 @@ class WatchlistAddAssetForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.Layout = Layout(
-            "assets", action_buttons(back_url_name="jackietrade:watchlist_update")
+            "assets", action_buttons(back_url_name="jackietrade:watchlist_list")
         )
