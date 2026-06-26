@@ -43,7 +43,7 @@ class WatchlistAddAssetForm(forms.Form):
     def __init__(self, *args, watchlist=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        existings_assets = watchlist.assets.all()
+        existings_assets = watchlist.items.all()
 
         self.fields["assets"].queryset = (
             Asset.objects.filter(is_active=True)
