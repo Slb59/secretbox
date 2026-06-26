@@ -5,28 +5,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0003_remove_sector_description'),
+        ("jackietrade", "0003_remove_sector_description"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='exchange',
-            name='is_24h',
+            model_name="exchange",
+            name="is_24h",
         ),
         migrations.AddField(
-            model_name='asset',
-            name='web_site',
+            model_name="asset",
+            name="web_site",
             field=models.URLField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='sector',
-            name='code',
-            field=models.CharField(max_length=4, unique=True, validators=[django.core.validators.RegexValidator(message='Le code doit contenir exactement 4 lettres.', regex='^[A-Za-z]{4}$')]),
+            model_name="sector",
+            name="code",
+            field=models.CharField(
+                max_length=4,
+                unique=True,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message="Le code doit contenir exactement 4 lettres.",
+                        regex="^[A-Za-z]{4}$",
+                    )
+                ],
+            ),
         ),
         migrations.AddConstraint(
-            model_name='sector',
-            constraint=models.CheckConstraint(condition=models.Q(('code__regex', '[A-Z]{4}$')), name='sector_code_four_uppercase_letters'),
+            model_name="sector",
+            constraint=models.CheckConstraint(
+                condition=models.Q(("code__regex", "[A-Z]{4}$")),
+                name="sector_code_four_uppercase_letters",
+            ),
         ),
     ]

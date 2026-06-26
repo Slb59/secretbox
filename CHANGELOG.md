@@ -1,4 +1,11 @@
-## [0.2.1] - 
+## [0.2.2] -
+- jackietrade : ajout du CRUD Watchlist
+- jackietrade : ajout du CRUD asset
+- jackietrade : ajout du model journal
+- jackietrade : ajout de tests qualité ruff
+
+
+## [0.2.1] - 2026-06-12
 - jakcietrade: ajout des données de paramétrage jackietrade en production
 - jakcietrade: différentes correction/optimisation sur la saisie des assets
 - jackietrade: watchlist, notion de liste par défaut

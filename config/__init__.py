@@ -17,8 +17,9 @@ else:
     env.read_env(str(BASE_DIR / ".env"))
 
 VERSION_FILE = BASE_DIR / "VERSION"
-with open(VERSION_FILE, "r") as f:
+with open(VERSION_FILE) as f:
     VERSION = f.read().strip()
+
 
 def get_version():
     """Retourne la version de l'application"""

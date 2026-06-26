@@ -1,18 +1,19 @@
-#account/forms.py
+# account/forms.py
 
 
 # from django.contrib.auth.models import User
 
 
-
 # class UserRegisterForm(forms.ModelForm):
-#     password = forms.CharField(label='Mot de passe', widget=forms.PasswordInput)
-#     password2 = forms.CharField(label='Confirmer le mot de passe', widget=forms.PasswordInput)
+#     password = forms.CharField(
+#       label='Mot de passe', widget=forms.PasswordInput)
+#     password2 = forms.CharField(
+#       label='Confirmer le mot de passe', widget=forms.PasswordInput)
 
 #     class Meta:
 #         model = User
 #         fields = ['username', 'email']
-    
+
 #     def clean_password2(self):
 #         cd = self.cleaned_data
 #         if cd['password1'] != cd['password2']:
@@ -22,24 +23,25 @@
 # ----
 
 
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Layout, Submit
 from django import forms
-from django.contrib.auth import authenticate, forms as auth_forms, get_user_model
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.forms import (
     PasswordResetForm as DjangoPasswordResetForm,
+)
+from django.contrib.auth.forms import (
     UserChangeForm,
 )
 from django.utils.translation import gettext_lazy as _
 
-MyUser = get_user_model()
-
 from .models import MemberProfile
+
+MyUser = get_user_model()
 
 
 class LoginForm(auth_forms.AuthenticationForm):
-
     username = forms.EmailField(
         label=_("Identifiant"),
         widget=forms.EmailInput(
@@ -58,8 +60,6 @@ class LoginForm(auth_forms.AuthenticationForm):
             attrs={"placeholder": _("Votre mot de passe"), "class": "form-input"}
         ),
     )
-
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -168,7 +168,7 @@ class ProfileUpdateForm(UserChangeForm):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if CQUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+        if MyUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("Cet email est déjà utilisé.")
         return email
 
@@ -183,7 +183,6 @@ class ProfileUpdateForm(UserChangeForm):
 
 
 class PasswordResetForm(DjangoPasswordResetForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

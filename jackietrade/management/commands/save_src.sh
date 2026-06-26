@@ -1,0 +1,1 @@
+uv run gitingest jackietrade -o build/digest-jackietrade-0.2.2.txt -i "*.py,*.css,*.js,*.html"

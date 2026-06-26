@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -8,14 +8,13 @@ User = get_user_model()
 
 
 class Sector(models.Model):
-
     code = models.CharField(
         max_length=4,
         unique=True,
         validators=[
             RegexValidator(
                 regex=r"^[A-Za-z]{4}$",
-                message="Le code doit contenir exactement 4 lettres."
+                message="Le code doit contenir exactement 4 lettres.",
             )
         ],
     )
@@ -32,7 +31,6 @@ class Sector(models.Model):
             )
         ]
 
-
     def __str__(self):
         return self.name
 
@@ -47,8 +45,8 @@ class Sector(models.Model):
             self.code = self.code.upper()
         super().save(*args, **kwargs)
 
-class Exchange(models.Model):
 
+class Exchange(models.Model):
     code = models.CharField(
         max_length=20,
         unique=True,
@@ -73,18 +71,24 @@ class Exchange(models.Model):
     def __str__(self):
         return self.name
 
-class Asset(models.Model):
 
+class Asset(models.Model):
     class AssetType(models.TextChoices):
         STOCK = "stock", "Stock"
         ETF = "etf", "ETF"
         CRYPTO = "crypto", "Crypto"
         FOREX = "forex", "Forex"
-    
 
     symbol = models.CharField(
-        max_length=20,
+        max_length=30,
         unique=True,
+        help_text="Symbole Yahoo Finance",
+    )
+
+    code = models.CharField(
+        max_length=30,
+        help_text="Code trading view",
+        default="????",
     )
 
     name = models.CharField(max_length=255)
@@ -93,18 +97,19 @@ class Asset(models.Model):
         max_length=20,
         choices=AssetType.choices,
     )
-    
-    sector = models.ForeignKey(  
-		Sector,  
-		on_delete=models.PROTECT,
-        verbose_name=_("Secteur"),
-	)
 
-    exchange = models.ForeignKey(  
-		Exchange,  
-		on_delete=models.SET_NULL,  
-		null=True,  
-	)
+    sector = models.ForeignKey(
+        Sector,
+        on_delete=models.PROTECT,
+        verbose_name=_("Secteur"),
+        related_name="assets",
+    )
+
+    exchange = models.ForeignKey(
+        Exchange,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
 
     currency = models.CharField(
         max_length=10,
@@ -117,24 +122,21 @@ class Asset(models.Model):
         blank=True,
     )
 
-    notes = models.TextField(
-        blank=True,
-        verbose_name="Notes"
-    )
+    notes = models.TextField(blank=True, verbose_name="Notes")
 
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     last_sync_at = models.DateTimeField(
-    null=True,
-    blank=True,
-	)
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.symbol
 
-    def clean(self):    
+    def clean(self):
         super().clean()
 
         if self.symbol:
@@ -144,75 +146,9 @@ class Asset(models.Model):
         if self.symbol:
             self.symbol = self.symbol.upper()
         super().save(*args, **kwargs)
-    
-
-class Watchlist(models.Model):
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="watchlists",
-    )
-
-    name = models.CharField(max_length=100)
-
-    is_default = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        if self.is_default:
-            Watchlist.objects.filter(
-                user=self.user,
-                is_default=True
-            ).exclude(pk=self.pk).update(is_default=False)
-
-    def add_asset(self, asset):
-        WatchlistItem.objects.get_or_create(
-            watchlist=self,
-            asset=asset
-        )
-
-    def remove_asset(self, asset):
-        WatchlistItem.objects.filter(
-            watchlist=self,
-            asset=asset
-        ).delete()
-
-
-class WatchlistItem(models.Model):
-  
-    watchlist = models.ForeignKey(
-        Watchlist,
-        on_delete=models.CASCADE,
-        related_name="assets",
-    )
-
-    asset = models.ForeignKey(
-        Asset,
-        on_delete=models.CASCADE,
-    )
-
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["watchlist", "asset"],
-                name="unique_asset_per_watchlist"
-            )
-        ]
-        indexes = [
-            models.Index(fields=["watchlist", "asset"]),
-        ]
-        
 
 
 class Candle(models.Model):
-
     class Timeframe(models.TextChoices):
         DAY_1 = "1d", "1 Day"
         HOUR_4 = "4h", "4 Hours"
@@ -246,9 +182,11 @@ class Candle(models.Model):
         )
 
         indexes = [
-            models.Index(fields=[
-                "asset",
-                "timeframe",
-                "timestamp",
-            ])
+            models.Index(
+                fields=[
+                    "asset",
+                    "timeframe",
+                    "timestamp",
+                ]
+            )
         ]

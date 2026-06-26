@@ -1,12 +1,17 @@
 from django.urls import path
 
-from .views import MemoCreateView
-from .views import MemoDeleteView, MemoUnDeleteView
-from .views import MemoUpdateView, MemoValidateView, MemoReportView
-from .views import MemoHistoryView
 from .utils import (
     check_memo_state,
     memo_mark_done,
+)
+from .views import (
+    MemoCreateView,
+    MemoDeleteView,
+    MemoHistoryView,
+    MemoReportView,
+    MemoUnDeleteView,
+    MemoUpdateView,
+    MemoValidateView,
 )
 
 app_name = "journaling"

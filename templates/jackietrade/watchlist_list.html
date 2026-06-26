@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block title %}{{ block.super }} - JackieTrade{% endblock %}
+{% block content %}
+
+    {% if messages %}
+        <div class="mb-4 w-full">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <table class="table-content">
+
+        <thead>
+            <tr class="tr-header">
+                <th class="th_header">Nom</th>
+                <th class="th_header">Nombre d'actifs</th>
+                <th class="th_header">Défaut</th>
+                <th class="th_header">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for watchlist in object_list %}
+
+            <tr>
+
+                <td class="td_header">{{ watchlist.name }}</td>
+
+                <td class="td_header">
+                    {{ watchlist.assets.count }}
+                </td>
+
+                <td class="td_header">
+                    {% if watchlist.is_default %}
+                        ✓
+                    {% endif %}
+                </td>
+
+                <td class="td_header">
+
+                    <a href="{% url 'jackietrade:watchlist_update' watchlist.pk %}">
+                        {% include "components/icon-pencil.html" %}
+                    </a>
+                    <form
+                        method="post"
+                        action="{% url 'jackietrade:watchlist_delete' watchlist.pk %}"
+                    >
+                        {% csrf_token %}
+
+                        <button type="submit">
+
+                            {% include "components/icon-trash.html" %}
+
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+   
+{% endblock %}

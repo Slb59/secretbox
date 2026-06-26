@@ -13,14 +13,13 @@ uv run python manage.py shell
 ### **2. Exécute ce code dans le shell :**
 ```python
 from django.contrib.auth import get_user_model
-User = get_user_model()  # Récupère le modèle User (par défaut ou personnalisé)
+User = get_user_model()
 
 # Crée un utilisateur standard
 user = User.objects.create_user(
     email="email@example.com",    # Optionnel (selon ton modèle)
     password="mot_de_passe",      # Remplace par un mot de passe sécurisé
-    trigram="ppp",           # Optionnel
-    )
+)
 
 # Sauvegarde l'utilisateur
 user.save()

@@ -5,19 +5,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0001_initial'),
+        ("jackietrade", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WatchlistItem',
+            name="WatchlistItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('asset', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='jackietrade.asset')),
-                ('watchlist', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='jackietrade.watchlist')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "asset",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="jackietrade.asset",
+                    ),
+                ),
+                (
+                    "watchlist",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="jackietrade.watchlist",
+                    ),
+                ),
             ],
         ),
     ]

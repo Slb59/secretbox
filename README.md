@@ -7,19 +7,23 @@ petits outils d'organisation
 - jackietrade :  outil d'analyse boursière
 
 ## Maintenance
-### Créer une branche feature
-git checkout -b feature/ma-fonctionnalite
 
-### Faire les modifications et commits
-git add .
-git commit -m "feat: Description de la fonctionnalité"
+### Envoyer les modifications
+make push
+    - lance les tests
+    - lance le contrôle qualité via ruff
+    - effectue le commit
+    - push les modifications
 
 ### Deploiement
 - construire le zip avec make to-build
-- copier le zip dans le dossier hôte
-- lancer le script de déploiement : install.sh
-- verifier le service : systemctl status secretbox
-- en cas d'erreur, revoir les logs : journalctl -u secretbox
+- si installation manuelle:
+    - copier le zip dans le dossier hôte
+    - lancer le script de déploiement : install.sh
+    - verifier le service : systemctl status secretbox
+    - en cas d'erreur, revoir les logs : 
+        journalctl -u secretbox ou /var/log/secretbox/errors.log
+- effectuer quelques manipulations en production
 
 ### Tagger la version après deploiement
 
@@ -33,43 +37,20 @@ git commit -m "feat: Description de la fonctionnalité"
 git checkout main
 git merge feature/ma-fonctionnalite
 
-### Envoyer les modifications
-git push origin HEAD
+### Créer une branche feature
+git checkout -b feature/ma-fonctionnalite
 
 ### Initialiser la nouvelle version
 - mettre à jour VERSION + CHANGELOG
 
-## Dépendances
-
-Django 6.0.3
-Django Tailwind 4.4.2
-Django Debug Toolbar 6.3.0
-MySQL (mysqlclient)
-
 ## Exploitation
 
 ### Creer le fichier .env
-DEBUG=True
-ALLOWED_HOSTS=localhost
-DJANGO_SECRET_KEY=
-DJANGO_SETTINGS_MODULE=config.settings.dev
-
-DATABASE_URL=sqlite:///db.sqlite3
-
-NPM_BIN_PATH=
-
-DEFAULT_FROM_EMAIL=
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=
-EMAIL_HOST_PASSWORD=
-ADMIN_EMAIL=
-
+voir .env.example
 
 ### Exécuter des commandes Python
 uv run python manage.py migrate
-uv run python manage.py runserver
+uv run python manage.py runserver (make run)
 
 ### Lancer le shell Django
 uv run python manage.py shell

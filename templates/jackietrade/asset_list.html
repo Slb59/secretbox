@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block title %}{{ block.super }} - JackieTrade{% endblock %}
+{% block content %}
+
+    {% if messages %}
+        <div class="mb-4 w-full">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <div class="space-y-8">
+
+        <!-- Filtres -->
+
+        <div class="bg-white rounded-xl shadow p-4 border">
+
+            <form method="get">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div>
+                    
+                        <div class="flex items-center mb-1">
+                            <label class="text-sm font-medium">
+                                Secteur
+                            </label>
+
+
+                        </div>
+
+                        <select
+                            name="sector"
+                            class="w-full rounded-lg border-gray-300"
+                        >
+                            <option value="">
+                                Tous
+                            </option>
+
+                            {% for sector in sectors %}
+                                <option value="{{ sector.pk }}">
+                                    {{ sector.name }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Recherche
+                        </label>
+
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ request.GET.q }}"
+                            placeholder="Symbole ou nom..."
+                            class="w-full rounded-lg border-gray-300"
+                        >
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- Actifs groupés -->
+
+        {% for group in grouped_assets %}
+
+            <div class="bg-white rounded-xl shadow border">
+
+                <div class="px-4 py-3 border-b bg-gray-50">
+
+                    <h2 class="text-lg font-semibold">
+
+                        {{ group.sector.name }}
+
+                        <span class="text-sm text-gray-500">
+                            ({{ group.assets|length }})
+                        </span>
+
+                    </h2>
+
+                </div>
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full">
+
+                        <thead>
+
+                            <tr class="text-left text-sm text-gray-600 border-b">
+
+                                <th class="px-4 py-2">
+                                    Symbole
+                                </th>
+
+                                <th class="px-4 py-2">
+                                    Nom
+                                </th>
+
+                                <th class="px-4 py-2">
+                                    Watchlists
+                                </th>
+
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for asset in group.assets %}
+
+                                <tr class="border-b hover:bg-gray-50">
+
+                                    <td class="px-4 py-3 font-medium">
+                                        {{ asset.symbol }}
+                                    </td>
+
+                                    <td class="px-4 py-3">
+                                        {{ asset.name }}
+                                    </td>
+
+                                    <td class="px-4 py-3">
+
+                                        <div class="flex flex-wrap gap-1">
+
+                                            {% for watchlist in asset.watchlists.all %}
+
+                                                <span
+                                                    class="
+                                                        inline-flex
+                                                        rounded-full
+                                                        bg-rose-100
+                                                        px-2
+                                                        py-1
+                                                        text-xs
+                                                        font-medium
+                                                        text-rose-800
+                                                    "
+                                                >
+                                                    {{ watchlist.name }}
+                                                </span>
+
+                                            {% empty %}
+
+                                                <span class="text-gray-400 text-sm">
+                                                    —
+                                                </span>
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <div class="bg-white rounded-xl p-6 text-center text-gray-500">
+
+                Aucun actif trouvé.
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+
+
+{% endblock %}

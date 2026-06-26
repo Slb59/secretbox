@@ -6,21 +6,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jackietrade', '0007_alter_asset_sector'),
+        ("jackietrade", "0007_alter_asset_sector"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='watchlist',
-            name='is_default',
+            model_name="watchlist",
+            name="is_default",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='watchlist',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='watchlists', to=settings.AUTH_USER_MODEL),
+            model_name="watchlist",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="watchlists",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

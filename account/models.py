@@ -1,8 +1,8 @@
-#account/models.py
-from django.db import models
+# account/models.py
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.mail import send_mail
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_stubs_ext.db.models import TypedModelMeta
 
@@ -10,23 +10,25 @@ from .managers import CustomUserManager
 
 
 class BaseUserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name=_("profile"))
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name=_("profile")
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    avatar = models.ImageField(upload_to='users/%Y/%m/%d', blank=True, null=True)
+    avatar = models.ImageField(upload_to="users/%Y/%m/%d", blank=True, null=True)
     date_of_birth = models.IntegerField(blank=True, null=True)
     theme = models.CharField(max_length=20, default="light")
     language = models.CharField(max_length=10, default="fr")
 
     class Meta:
         abstract = True
-        verbose_name_plural = "users profil"  
+        verbose_name_plural = "users profil"
 
     def __str__(self) -> str:
-        return f'Profile de {self.user.trigram}'
+        return f"Profile de {self.user.trigram}"
+
 
 class MyUser(AbstractUser):
-
     class UserTypes(models.TextChoices):
         MEMBER = "member", "Member"
         SUPERMEMBER = "supermember", "Supermember"
@@ -58,17 +60,17 @@ class MyUser(AbstractUser):
 
     groups = models.ManyToManyField(
         Group,
-        verbose_name='groups',
+        verbose_name="groups",
         blank=True,
-        help_text=_('Les groupes auxquels appartient l\'utilisateur'),
-        related_name="myuser_set",  
+        help_text=_("Les groupes auxquels appartient l'utilisateur"),
+        related_name="myuser_set",
     )
 
     user_permissions = models.ManyToManyField(
         Permission,
-        verbose_name='user permissions',
+        verbose_name="user permissions",
         blank=True,
-        help_text=_('Les permissions de l\'utilisateur'),
+        help_text=_("Les permissions de l'utilisateur"),
         related_name="myuser_permission_set",
     )
 
@@ -88,7 +90,7 @@ class MyUser(AbstractUser):
         message = f"""
         L'utilisateur {self.trigram} ({self.email})
         a demandé une modification de ses applications autorisées.
-        Applications demandées : {', '.join(requested_apps)}
+        Applications demandées : {", ".join(requested_apps)}
 
         Veuillez traiter cette demande via l'interface d'administration.
         """
@@ -109,6 +111,7 @@ class MyUser(AbstractUser):
             models.Index(fields=["-trigram"]),
         ]
 
+
 class MemberProfile(BaseUserProfile):
     """specific data to member"""
 
@@ -117,6 +120,7 @@ class MemberProfile(BaseUserProfile):
             return self.avatar.url
         return "/theme/static/images/secret.jpeg"  # Chemin vers l'avatar par défaut
 
+
 class MemberManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(usertype=MyUser.UserTypes.MEMBER)
@@ -124,8 +128,8 @@ class MemberManager(models.Manager):
     def get_by_natural_key(self, email):
         return self.get(email=email)
 
-class Member(MyUser):
 
+class Member(MyUser):
     class Meta(TypedModelMeta):
         proxy = True
 

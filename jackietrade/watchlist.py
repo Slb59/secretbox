@@ -1,11 +1,22 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+from django.views.generic import (
+    CreateView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
-from .models import Watchlist, Asset
-from .watchlistforms import WatchlistForm
+from config import env
+
+from .assetmodels import Asset
+from .watchlistforms import WatchlistAddAssetForm, WatchlistForm
+from .watchlistmodels import Watchlist
+
 
 class WatchlistListView(LoginRequiredMixin, ListView):
     model = Watchlist
@@ -13,6 +24,12 @@ class WatchlistListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Watchlist.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = _("Mes watchlistes")
+        context["logo_url"] = env("JACKIETRADE_LOGO_URL")
+        return context
 
 
 class WatchlistCreateView(LoginRequiredMixin, CreateView):
@@ -31,25 +48,47 @@ class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
     model = Watchlist
     form_class = WatchlistForm
 
-
-class WatchlistDeleteView(LoginRequiredMixin, DeleteView):
-    model = Watchlist
-    template_name = "jackietrade/confirm_delete.html"
+    template_name = "jackietrade/watchlist_form.html"
     success_url = reverse_lazy("jackietrade:watchlist_list")
 
-    def get_queryset(self):
-        return Watchlist.objects.filter(user=self.request.user)
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context["assets"] = Asset.objects.filter(
+            watchlist_items__watchlist=self.object
+        ).order_by("symbol")
+
+        return context
 
 
-
-class ToggleAssetWatchlistView(LoginRequiredMixin, View):
-
+class WatchlistDeleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
+
         watchlist = get_object_or_404(
             Watchlist,
             pk=pk,
-            user=request.user
+            user=request.user,
         )
+
+        if watchlist.assets.count() > 0:
+            messages.error(request, "Cette liste contient des actifs.")
+
+        else:
+            watchlist.delete()
+
+            messages.success(request, "Suppression effectuée.")
+
+        return redirect("jackietrade:watchlist_list")
+
+
+class ToggleAssetWatchlistView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        watchlist = get_object_or_404(Watchlist, pk=pk, user=request.user)
 
         asset_id = request.POST.get("asset_id")
         asset = get_object_or_404(Asset, pk=asset_id)
@@ -60,3 +99,50 @@ class ToggleAssetWatchlistView(LoginRequiredMixin, View):
             watchlist.assets.add(asset)
 
         return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+class WatchlistAddAssetView(LoginRequiredMixin, TemplateView):
+    template_name = "jackietrade/watchlist_add_asset.html"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        self.watchlist = get_object_or_404(
+            Watchlist,
+            pk=kwargs["pk"],
+            user=request.user,
+        )
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context["watchlist"] = self.watchlist
+        context["form"] = WatchlistAddAssetForm(watchlist=self.watchlist)
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+
+        form = WatchlistAddAssetForm(request.POST, watchlist=self.watchlist)
+
+        if form.is_valid():
+            assets = form.cleaned_data["assets"]
+
+            for asset in assets:
+                self.watchlist.add_asset(asset)
+
+            messages.success(request, f"{len(assets)} actif(s) ajouté(s).")
+
+            return redirect(
+                "jackietrade:watchlist_update",
+                pk=self.watchlist.pk,
+            )
+
+        return self.render_to_response(
+            {
+                "watchlist": self.watchlist,
+                "form": form,
+            }
+        )

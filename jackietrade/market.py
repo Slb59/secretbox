@@ -1,33 +1,30 @@
 import logging
 
 from django.contrib import messages
-from django.shortcuts import render
-from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import TemplateView
+
 from config import env
 
-from .marketforms import MarketDataSyncForm
 from .import_data import YFinanceImporter
-
+from .marketforms import MarketDataSyncForm
 
 logger = logging.getLogger(__name__)
 
 
 class MarketDataSyncView(LoginRequiredMixin, TemplateView):
-
     template_name = "jackietrade/import_data.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         form = MarketDataSyncForm(
             self.request.POST or None,
             user=self.request.user,
         )
-
-        user = self.request.user
 
         context.update(
             {
@@ -39,14 +36,12 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
         )
 
         return context
-    
 
     def post(self, request):
 
-        form = MarketDataSyncForm(request.POST,  user=self.request.user)
+        form = MarketDataSyncForm(request.POST, user=self.request.user)
 
         if form.is_valid():
-
             assets = form.cleaned_data["assets"]
             period = form.cleaned_data["period"]
             interval = form.cleaned_data["interval"]
@@ -55,7 +50,7 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
                 "Synchronisation demandée par %s",
                 self.request.user.username,
             )
-            
+
             importer = YFinanceImporter()
 
             total_created = 0
@@ -64,9 +59,8 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
                 "%s actifs sélectionnés",
                 len(assets),
             )
-            
-            for asset in assets:
 
+            for asset in assets:
                 logger.info(
                     "Traitement de %s",
                     asset.symbol,
@@ -87,16 +81,13 @@ class MarketDataSyncView(LoginRequiredMixin, TemplateView):
                 total_created += created_count
                 asset.last_sync_at = timezone.now()
                 asset.save(update_fields=["last_sync_at"])
-                
-            messages.success(
-                request,
-                f"{total_created} candles importées."
-            )
+
+            messages.success(request, f"{total_created} candles importées.")
 
         return render(
             request,
             self.template_name,
             {
                 "form": form,
-            }
+            },
         )

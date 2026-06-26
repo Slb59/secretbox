@@ -1,9 +1,14 @@
-from django import forms
-from django.utils.translation import gettext_lazy as _
+from datetime import date, timedelta
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout
+from django import forms
+from django.utils.translation import gettext_lazy as _
+
 from core.forms_helpers import action_buttons
+
 from .memo import Memo
+
 
 class MemoForm(forms.ModelForm):
     class Meta:
@@ -47,10 +52,8 @@ class MemoForm(forms.ModelForm):
                     Field(name, wrapper_class="readonly")
                     if name == "who":
                         field.widget.attrs["disabled"] = True
-                    #         field.widget.attrs.update({"class": "readonly text-gray-500 pointer-events-none"})
                 else:
                     Field(name, wrapper_class="editable")
-                #         field.widget.attrs.update({"class": "editable"})
 
         self.helper = FormHelper()
         self.helper.form_class = "border p-8 bg-red-500"
@@ -72,6 +75,7 @@ class MemoForm(forms.ModelForm):
             "note",
             action_buttons(back_url_name="home", back_label="Liste"),
         )
+
 
 class MemoValidateForm(forms.ModelForm):
     class Meta:
@@ -102,6 +106,7 @@ class MemoValidateForm(forms.ModelForm):
             "description",
             action_buttons(back_url_name="home", back_label="Annuler"),
         )
+
 
 class MemoReportForm(forms.ModelForm):
     class Meta:

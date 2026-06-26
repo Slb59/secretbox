@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class JournalingConfig(AppConfig):
-    name = 'journaling'
+    name = "journaling"
