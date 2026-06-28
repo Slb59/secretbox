@@ -13,11 +13,10 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
     list_display = (
         "session_date",
         "asset",
-        "title",
         "confidence_level",
-        "entry_price",
-        "stop_loss",
-        "take_profit",
+        "planned_entry_price",
+        "planned_stop_loss",
+        "planned_take_profit",
         "exit_reason",
         "reviewed_at",
     )
@@ -30,7 +29,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "title",
         "asset__symbol",
         "asset__name",
         "observation_notes",
@@ -62,7 +60,6 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
                 "fields": (
                     "asset",
                     "session_date",
-                    "title",
                     "created_at",
                     "reviewed_at",
                 )
@@ -81,9 +78,9 @@ class TradeJournalEntryAdmin(admin.ModelAdmin):
             "Analyse",
             {
                 "fields": (
-                    "entry_price",
-                    "stop_loss",
-                    "take_profit",
+                    "planned_entry_price",
+                    "planned_stop_loss",
+                    "planned_take_profit",
                     "confidence_level",
                     "quantity_display",
                     "invested_amount_display",

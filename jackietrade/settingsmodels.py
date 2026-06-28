@@ -12,3 +12,7 @@ class TradingSettings(models.Model):
     )
 
     risk_budget = 2000
+
+    strategy = models.CharField(
+        max_length=500,
+    )

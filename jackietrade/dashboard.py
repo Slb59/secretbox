@@ -8,7 +8,7 @@ from .watchlistmodels import Watchlist
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "jackietrade/dashboard.html"
+    template_name = "dashboard.html"
 
     def get_context_data(self, **kwargs):
 

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block title %}{{ block.super }} - JackieTrade{% endblock %}
+{% block content %}
+
+    <a href="{% url 'jackietrade:journal_create' %}">
+        {% include "components/icon-plus.html" %}
+    </a>
+
+    <table class="table-content">
+
+        <thead>
+            <tr class="tr-header">
+                <th class="th_header">Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for journal in journals %}
+
+            <tr>
+
+                <td class="td_header">{{ journal.date }}</td>
+
+                <td class="td_header">
+
+                    <a href="{% url 'jackietrade:journal_edit' journal.pk %}">
+                        {% include "components/icon-pencil.html" %}
+                    </a>
+                    <form
+                        method="post"
+                        action="{% url 'jackietrade:journal_delete' journal.pk %}"
+                    >
+                        {% csrf_token %}
+
+                        <button type="submit">
+
+                            {% include "components/icon-trash.html" %}
+
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+{% endblock%}

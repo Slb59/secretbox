@@ -14,7 +14,16 @@
             {% include 'navbar/navbarg.html' %}
         </aside>
         <section class="flex flex-col bg-amber-200 p-4 overflow-y-auto items-center w-full;">
-            {% include "base/logo_header.html" %}            
+            {% include "base/logo_header.html" %}
+            {% if messages %}
+                <div class="mb-4 w-full">
+                    {% for message in messages %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}            
             {% block content %}
             {% endblock %}
         </section>

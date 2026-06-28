@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -6,6 +7,8 @@ from django.db import models
 
 from .assetmodels import Asset
 from .settingsmodels import TradingSettings
+
+User = get_user_model()
 
 
 class TradeJournalEntry(models.Model):
@@ -21,6 +24,19 @@ class TradeJournalEntry(models.Model):
         TAKE_PROFIT = "take_profit", "Take Profit"
         OPEN = "open", "Position ouverte"
 
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Préparation"
+        OPEN = "open", "Position ouverte"
+        CLOSED = "closed", "Position clôturée"
+        CANCELLED = "cancelled", "Scénario abandonné"
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="journals",
+        default=1,
+    )
+
     asset = models.ForeignKey(
         Asset,
         on_delete=models.CASCADE,
@@ -32,14 +48,15 @@ class TradeJournalEntry(models.Model):
 
     session_date = models.DateField()
 
-    # pour mettre un resumé de la session
-    title = models.CharField(
-        max_length=200,
-    )
-
     reviewed_at = models.DateTimeField(
         null=True,
         blank=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.DRAFT,
     )
 
     # mettre en literraire les observations et ensuite expliquer un plan
@@ -56,21 +73,21 @@ class TradeJournalEntry(models.Model):
         blank=True,
     )
 
-    entry_price = models.DecimalField(
+    planned_entry_price = models.DecimalField(
         max_digits=12,
         decimal_places=4,
         null=True,
         blank=True,
     )
 
-    stop_loss = models.DecimalField(
+    planned_stop_loss = models.DecimalField(
         max_digits=12,
         decimal_places=4,
         null=True,
         blank=True,
     )
 
-    take_profit = models.DecimalField(
+    planned_take_profit = models.DecimalField(
         max_digits=12,
         decimal_places=4,
         null=True,

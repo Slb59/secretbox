@@ -3,16 +3,6 @@
 {% block title %}{{ block.super }} - JackieTrade{% endblock %}
 {% block content %}
 
-    {% if messages %}
-        <div class="mb-4 w-full">
-            {% for message in messages %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <table class="table-content">
 
         <thead>

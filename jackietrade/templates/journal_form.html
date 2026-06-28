@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block title %}{{ block.super }} - JackieTrade{% endblock %}
+{% block content %}
+
+<div class="flex flex-col gap-2">
+
+        {% crispy form %}
+
+</div>
+
+{% endblock %}

@@ -13,7 +13,7 @@ from .assetmodels import Asset, Sector
 
 class AssetListView(LoginRequiredMixin, ListView):
     model = Asset
-    template_name = "jackietrade/asset_list.html"
+    template_name = "asset_list.html"
     context_object_name = "assets"
 
     def get_queryset(self):
@@ -49,7 +49,7 @@ class AssetListView(LoginRequiredMixin, ListView):
 class AssetUpdateView(LoginRequiredMixin, UpdateView):
     model: type[Asset] = Asset
     form_class: type[AssetForm] = AssetForm
-    template_name = "jackietrade/asset_form.html"
+    template_name = "asset_form.html"
     success_url = reverse_lazy("jackietrade:asset_list")
 
     def get_context_data(self, **kwargs):

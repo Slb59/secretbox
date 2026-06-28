@@ -20,7 +20,7 @@ from .watchlistmodels import Watchlist
 
 class WatchlistListView(LoginRequiredMixin, ListView):
     model = Watchlist
-    template_name = "jackietrade/watchlist_list.html"
+    template_name = "watchlist_list.html"
 
     def get_queryset(self):
         return Watchlist.objects.filter(user=self.request.user)
@@ -36,7 +36,7 @@ class WatchlistCreateView(LoginRequiredMixin, CreateView):
     model = Watchlist
     form_class = WatchlistForm
 
-    template_name = "jackietrade/watchlist_form.html"
+    template_name = "watchlist_form.html"
     success_url = reverse_lazy("jackietrade:dashboard")
 
     def form_valid(self, form):
@@ -48,7 +48,7 @@ class WatchlistUpdateView(LoginRequiredMixin, UpdateView):
     model = Watchlist
     form_class = WatchlistForm
 
-    template_name = "jackietrade/watchlist_form.html"
+    template_name = "watchlist_form.html"
     success_url = reverse_lazy("jackietrade:watchlist_list")
 
     def form_valid(self, form):
@@ -102,7 +102,7 @@ class ToggleAssetWatchlistView(LoginRequiredMixin, View):
 
 
 class WatchlistAddAssetView(LoginRequiredMixin, TemplateView):
-    template_name = "jackietrade/watchlist_add_asset.html"
+    template_name = "watchlist_add_asset.html"
 
     def dispatch(self, request, *args, **kwargs):
 
