@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block title %}{{ block.super }} - JackieTrade{% endblock %}
+{% block content %}
+
+<div class="grid grid-cols-2 gap-4">
+
+    <div>
+        {% crispy header_form %}
+    </div>
+
+    <div>
+        {{ analysis.stop_loss }}
+    </div>
+
+    <div>
+        {% crispy observation_form %}
+    </div>
+
+    <div>
+        {% crispy decision_form %}
+    </div>
+
+    <div>
+        {% crispy result_form %}
+    </div>
+
+</div>
+
+{% endblock %}

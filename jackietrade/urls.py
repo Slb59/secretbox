@@ -2,11 +2,10 @@ from django.urls import path
 
 from .asset import AssetListView, AssetUpdateView
 from .dashboard import DashboardView
-from .journal import (
-    JournalCreateView,
+from .journal.journal import (
     JournalDeleteView,
     JournalListView,
-    JournalUpdateView,
+    JournalView,
 )
 from .market import MarketDataSyncView
 from .watchlist import (
@@ -42,9 +41,8 @@ urlpatterns = [
     path("assets/", AssetListView.as_view(), name="asset_list"),
     path("assets/<int:pk>/edit/", AssetUpdateView.as_view(), name="asset_update"),
     path("journal/", JournalListView.as_view(), name="journal_list"),
-    path("journal/<int:pk>/edit/", JournalUpdateView.as_view(), name="journal_update"),
+    path("journal/new/", JournalView.as_view(), name="journal_create"),
     path(
         "journal/<int:pk>/delete/", JournalDeleteView.as_view(), name="journal_delete"
     ),
-    path("journal/new/", JournalCreateView.as_view(), name="journal_create"),
 ]

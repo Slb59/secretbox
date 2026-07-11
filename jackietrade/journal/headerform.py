@@ -8,7 +8,7 @@ from core.forms_helpers import action_buttons
 from .journalmodels import TradeJournalEntry
 
 
-class JournalForm(forms.ModelForm):
+class HeaderForm(forms.ModelForm):
     class Meta:
         model = TradeJournalEntry
         fields = ["session_date", "asset"]
@@ -28,5 +28,8 @@ class JournalForm(forms.ModelForm):
         self.helper.layout = Layout(
             "session_date",
             "asset",
-            action_buttons(back_url_name="jackietrade:journal_list"),
+            action_buttons(
+                back_url_name="jackietrade:journal_list",
+                submit_label=_("Créer le journal"),
+            ),
         )

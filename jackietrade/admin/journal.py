@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ..journalmodels import TradeJournalEntry, TradeJournalScreenshot
+from ..journal.journalmodels import TradeJournalEntry, TradeJournalScreenshot
 
 
 class TradeJournalScreenshotInline(admin.TabularInline):

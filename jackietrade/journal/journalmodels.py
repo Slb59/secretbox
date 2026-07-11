@@ -4,31 +4,33 @@ from django.core.validators import (
     MinValueValidator,
 )
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
-from .assetmodels import Asset
-from .settingsmodels import TradingSettings
+from ..assetmodels import Asset
+from ..settingsmodels import TradingSettings
 
 User = get_user_model()
 
 
 class TradeJournalEntry(models.Model):
     class ConfidenceLevel(models.IntegerChoices):
-        VERY_LOW = 1, "Très faible"
-        LOW = 2, "Faible"
-        MEDIUM = 3, "Moyenne"
-        HIGH = 4, "Haute"
-        VERY_HIGH = 5, "Très haute"
+        VERY_LOW = 1, _("Très faible")
+        LOW = 2, _("Faible")
+        MEDIUM = 3, _("Moyenne")
+        HIGH = 4, _("Haute")
+        VERY_HIGH = 5, _("Très haute")
 
     class ExitReason(models.TextChoices):
-        STOP_LOSS = "stop_loss", "Stop Loss"
-        TAKE_PROFIT = "take_profit", "Take Profit"
-        OPEN = "open", "Position ouverte"
+        STOP_LOSS = "stop_loss", _("Stop Loss")
+        TAKE_PROFIT = "take_profit", _("Take Profit")
+        OPEN = "open", _("Position ouverte")
 
     class Status(models.TextChoices):
-        DRAFT = "draft", "Préparation"
-        OPEN = "open", "Position ouverte"
-        CLOSED = "closed", "Position clôturée"
-        CANCELLED = "cancelled", "Scénario abandonné"
+        DRAFT = "draft", _("Préparation")
+        WATCHING = "watching", _("Sous surveillance")
+        OPEN = "open", _("Position ouverte")
+        CLOSED = "closed", _("Position clôturée")
+        CANCELLED = "cancelled", _("Scénario abandonné")
 
     user = models.ForeignKey(
         User,
@@ -209,3 +211,8 @@ class TradeJournalScreenshot(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
+
+
+class Analysis:
+    @staticmethod
+    def compute(entry): ...
