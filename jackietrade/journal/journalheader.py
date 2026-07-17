@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django import forms
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from core.forms_helpers import action_buttons
@@ -12,6 +13,9 @@ class JournalHeaderForm(forms.ModelForm):
     class Meta:
         model = TradeJournalEntry
         fields = ["session_date", "asset"]
+        widgets = {
+            "session_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,6 +28,9 @@ class JournalHeaderForm(forms.ModelForm):
         self.helper.form_method = "post"
         self.helper.form_tag = True
         self.helper.attrs = {"novalidate": "novalidate"}
+
+        if not self.instance.pk:
+            self.fields["session_date"].initial = timezone.now().date()
 
         self.helper.layout = Layout(
             "session_date",

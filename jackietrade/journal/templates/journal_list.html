@@ -3,7 +3,7 @@
 {% block title %}{{ block.super }} - JackieTrade{% endblock %}
 {% block content %}
 
-    <a href="{% url 'jackietrade:journal_create' %}">
+    <a href="{% url 'jackietrade:journal_detail' %}">
         {% include "components/icon-plus.html" %}
     </a>
 
@@ -25,7 +25,7 @@
 
                 <td class="td_header">
 
-                    <a href="{% url 'jackietrade:journal_create' %}">
+                    <a href="{% url 'jackietrade:journal_detail' journal.pk %}">
                         {% include "components/icon-pencil.html" %}
                     </a>
                     <form

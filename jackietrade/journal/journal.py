@@ -37,7 +37,6 @@ class JournalListView(LoginRequiredMixin, ListView):
 
 class JournalView(LoginRequiredMixin, View):
     model = TradeJournalEntry
-
     template_name = "journal_form.html"
     success_url = reverse_lazy("jackietrade:journal_list")
 
@@ -45,24 +44,45 @@ class JournalView(LoginRequiredMixin, View):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, pk=None):
 
-        context = super().get_context_data(**kwargs)
-        obj = self.object
+        journal = None
 
-        context["header_form"] = JournalHeaderForm(instance=obj, prefix="header")
+        if pk:
+            journal = get_object_or_404(TradeJournalEntry, pk=pk, user=request.user)
 
-        context["observation_form"] = ObservationForm(
-            instance=obj, prefix="observation"
+        context = {
+            "header_form": JournalHeaderForm(instance=journal, prefix="header"),
+            "observation_form": ObservationForm(instance=journal, prefix="observation"),
+            "decision_form": DecisionForm(instance=journal, prefix="decision"),
+            "result_form": ResultForm(instance=journal, prefix="result"),
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk=None):
+
+        form_name = request.POST.get("form_name")
+
+        if form_name == "header":
+            form = JournalHeaderForm(request.POST, instance=None, prefix="header")
+
+            if form.is_valid():
+                journal = form.save(commit=False)
+                journal.user = request.user
+                journal.status = TradeJournalEntry.Status.DRAFT
+                journal.save()
+
+                return redirect(
+                    "jackietrade:journal_detail",
+                    pk=journal.pk,
+                )
+
+        return render(
+            request,
+            "journal_form.html",
+            {"form": form},
         )
-
-        context["decision_form"] = DecisionForm(instance=obj, prefix="decision")
-
-        context["result_form"] = ResultForm(instance=obj, prefix="result")
-
-        context["analysis"] = Analysis.compute(obj)
-
-        return context
 
 
 class JournalDeleteView(LoginRequiredMixin, DeleteView):
