@@ -42,6 +42,7 @@ urlpatterns = [
     path("assets/<int:pk>/edit/", AssetUpdateView.as_view(), name="asset_update"),
     path("journal/", JournalListView.as_view(), name="journal_list"),
     path("journal/<int:pk>/", JournalView.as_view(), name="journal_detail"),
+    path("journal/new/", JournalView.as_view(), name="journal_detail_empty"),
     path(
         "journal/<int:pk>/delete/", JournalDeleteView.as_view(), name="journal_delete"
     ),

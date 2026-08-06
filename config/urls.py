@@ -31,6 +31,7 @@ urlpatterns = [
     path("", views.DashboardView.as_view(), name="home"),
     path("journaling/", include("journaling.urls")),
     path("jackietrade/", include("jackietrade.urls")),
+    path("dictavoix/", include("dictavoix.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 

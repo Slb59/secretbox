@@ -12,5 +12,7 @@ def app_access_permissions(request):
             or user.groups.filter(name="escapevault_access").exists(),
             "can_access_sami": user.is_superuser
             or user.groups.filter(name="sami_access").exists(),
+            "can_access_dictavoix": user.is_superuser
+            or user.groups.filter(name="dictavoix_access").exists(),
         }
     return {}

@@ -33,6 +33,7 @@ PROJECT_APPS = [
     "account",
     "journaling",
     "jackietrade",
+    "dictavoix",
 ]
 
 THIRD_PARTY_APPS = [
