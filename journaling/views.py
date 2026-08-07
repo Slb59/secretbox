@@ -1,11 +1,11 @@
 import logging
-from datetime import date, timezone
+from datetime import date
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import Min, Q
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -52,33 +52,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
 
         return context
-
-    def get(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-        context = self.get_context_data(**kwargs)
-
-        if pk:
-            # Empêcher plusieurs timers
-            if not request.user.stopwatch:
-                request.user.stopwatch = True
-                request.user.save()
-
-                memo = get_object_or_404(Memo, pk=pk, who=request.user)
-                request.session["active_timer_id"] = pk
-                request.session["active_timer_start"] = timezone.now().isoformat()
-                context["active_memo"] = memo
-                context["timer_started"] = True
-            else:
-                # Un timer est déjà en cours → on reste sur la page
-                context["timer_started"] = True
-                active_id = request.session.get("active_timer_id")
-                if active_id:
-                    context["active_memo"] = Memo.objects.filter(pk=active_id).first()
-        else:
-            context["timer_started"] = False
-
-        context["memos"] = Memo.objects.filter(who=request.user)
-        return self.render_to_response(context)
 
     def apply_filters(self, memos, data):
         """Apply filters to the queryset"""
@@ -131,6 +104,55 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         qs = qs.distinct().prefetch_related("who")
         return qs
+
+
+class DashboardDataView(DashboardView):
+    """Return memos as JSON for Tabulator consumption.
+
+    Reuses DashboardView filtering logic so URL query params keep parity
+    with the HTML form filters.
+    """
+
+    def get(self, request, *args, **kwargs):
+        form = MemoFilterForm(request.GET or None)
+        memos = self.get_queryset_by_rights(request.user)
+
+        if form.is_valid():
+            memos = self.apply_filters(memos, form.cleaned_data)
+
+        memos = memos.annotate(first_who=Min("who__trigram")).order_by(
+            "planned_date",
+            "priority",
+            "periodic",
+            "first_who",
+            "place",
+            "duration",
+            "pk",
+        )
+
+        data = []
+        for m in memos.prefetch_related("who"):
+            data.append(
+                {
+                    "pk": m.pk,
+                    "state": m.get_state_display(),
+                    "duration": m.duration,
+                    "description": m.description,
+                    "appointment": m.get_appointment_display()
+                    if hasattr(m, "get_appointment_display")
+                    else (m.appointment or ""),
+                    "category": m.get_category_display(),
+                    "who": ", ".join([u.trigram for u in m.who.all()]),
+                    "place": m.place,
+                    "periodic": m.get_periodic_display(),
+                    "planned_date": m.get_planned_date_display(),
+                    "priority": m.get_priority_display(),
+                    "done_date": m.get_done_date_display(),
+                    "note": m.note or "",
+                }
+            )
+
+        return JsonResponse(data, safe=False)
 
 
 class MemoCreateView(LoginRequiredMixin, CreateView):

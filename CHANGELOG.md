@@ -1,3 +1,6 @@
+## [0.3.0]
+- dictavoix : creation de nouvelle application, fonctions de base
+
 ## [0.2.3] - 
 - jackietrade : ajout de l'attribut isin à l'asset
 

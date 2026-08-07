@@ -5,6 +5,7 @@ from .utils import (
     memo_mark_done,
 )
 from .views import (
+    DashboardDataView,
     MemoCreateView,
     MemoDeleteView,
     MemoHistoryView,
@@ -26,4 +27,5 @@ urlpatterns = [
     path("validate/<int:pk>/", MemoValidateView.as_view(), name="validate_memo"),
     path("report/<int:pk>/", MemoReportView.as_view(), name="report_memo"),
     path("history/<int:pk>/", MemoHistoryView.as_view(), name="history"),
+    path("api/memos/", DashboardDataView.as_view(), name="memos_api"),
 ]

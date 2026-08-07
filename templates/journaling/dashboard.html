@@ -14,55 +14,119 @@
     {% endif %}
 
     {% include './navbar.html' %}
-    <!-- Search form -->
-    {% crispy form %}  
- 
- 
-    <div class="overflow-x-auto overflow-y-auto h-[600px] overflow-scroll;">
-        <table class="table-content">
-            <thead>
-                <tr class="tr-header">
-                    <th class="th_header" scope="row">État</th>
-                    <th class="th_header" scope="row">Durée</th>
-                    <th class="th_header" scope="row">Description</th>
-                    <th class="th_header" scope="row">Rendez-vous</th>
-                    <th class="th_header" scope="row">Catégorie</th>
-                    <th class="th_header" scope="row">Qui</th>
-                    <th class="th_header" scope="row">Lieu</th>
-                    <th class="th_header" scope="row">Fréquence</th>
-                    <th class="th_header" scope="row">Planifié</th>
-                    <th class="th_header" scope="row">Priorité</th>
-                    <th class="th_header" scope="row">Fait</th>
-                    <th class="th_header" scope="row">Note</th>
-                    <th class="th_header" scope="row">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for memo in memos %}
-                <tr id="memo-row-{{ memo.pk }}" >
-                    <td class="td_header">{{ memo.get_state_display }}</td>
-                    <td class="td_header">{{ memo.duration }}</td>
-                    <td class="td_header">{{ memo.description }}</td>
-                    <td class="td_header">
-                        {{ memo.get_appointment_display|default_if_none:"" }}
-                    </td>
-                    <td class="td_header">{{ memo.get_category_display }}</td>
-                    <td class="td_header">
-                        {{ memo.who.all|join:", " }}
-                    </td>
-                    <td class="td_header">{{ memo.place }}</td>
-                    <td class="td_header">{{ memo.get_periodic_display }}</td>
-                    <td class="td_header">{{ memo.get_planned_date_display }}</td>
-                    <td class="td_header">{{ memo.get_priority_display }}</td>
-                    <td class="td_header">{{ memo.get_done_date_display }}</td>
-                    <td class="td_header">{{ memo.note }}</td>
 
-                    <td class="action-icons">
-                        {% include 'journaling/dashboard-action.html' %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+ 
+ 
+    <div class="w-full">
+        <div class="flex items-center space-x-2 mb-2">
+            <input id="global-search" type="search" placeholder="Recherche globale..." class="px-3 py-2 rounded border" />
+            <button id="reset-filters" class="px-3 py-2 bg-gray-200 rounded">Réinitialiser</button>
+        </div>
+
+        <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
+
+        <div id="memos-table" class="w-full"></div>
+
+        <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
+        <script>
+            (function(){
+                const apiUrl = "{% url 'journaling:memos_api' %}";
+                const editUrlTemplate = "{% url 'journaling:edit_memo' 0 %}";
+                const deleteUrlTemplate = "{% url 'journaling:delete_memo' 0 %}";
+
+                function pkReplace(template, pk){
+                    return template.replace(/0(?![0-9])/g, pk);
+                }
+
+                // create Tabulator
+                const table = new Tabulator("#memos-table", {
+                    layout: "fitColumns",
+                    placeholder: "Aucune donnée",
+                    pagination: "local",
+                    paginationSize: 25,
+                    reactiveData: true,
+                    columns:[
+                        {title:"État", field:"state", headerFilter:true},
+                        {title:"Durée", field:"duration", hozAlign:"center", headerFilter:true},
+                        {title:"Description", field:"description", headerFilter:"input", headerFilterPlaceholder:"Filtrer...", widthGrow:2},
+                        {title:"Rendez-vous", field:"appointment", headerFilter:true},
+                        {title:"Catégorie", field:"category", headerFilter:true},
+                        {title:"Qui", field:"who", headerFilter:"input"},
+                        {title:"Lieu", field:"place", headerFilter:true},
+                        {title:"Fréquence", field:"periodic", headerFilter:true},
+                        {title:"Planifié", field:"planned_date", headerFilter:true},
+                        {title:"Priorité", field:"priority", headerFilter:true},
+                        {title:"Fait", field:"done_date", headerFilter:true},
+                        {title:"Note", field:"note", headerFilter:"input"},
+                        {title:"Actions", field:"pk", hozAlign:"center", formatter:function(cell, formatterParams){
+                            const pk = cell.getValue();
+                            const edit = pkReplace(editUrlTemplate, pk);
+                            const del = pkReplace(deleteUrlTemplate, pk);
+                            return `<a href="${edit}" class="px-2 py-1 bg-amber-200 rounded mr-1">Éditer</a>` +
+                                   `<form method="post" action="${del}" style="display:inline;" onsubmit="return confirm('Supprimer ?');">` +
+                                   `<input type=hidden name=csrfmiddlewaretoken value="{{ csrf_token }}">` +
+                                   `<button type="submit" class="px-2 py-1 bg-rose-200 rounded">Suppr</button></form>`;
+                        }}
+                    ],
+                });
+
+                // fetch data including any current query params so server-side filters apply
+                fetch(apiUrl + window.location.search)
+                    .then(r => r.json())
+                    .then(data => {
+                        table.setData(data);
+
+                        // apply simple URL-based filters to Tabulator (for persistence)
+                        const params = new URLSearchParams(window.location.search);
+                        const keys = ["description","who","place","category","state","priority"];
+                        keys.forEach(k => {
+                            const v = params.get(k);
+                            if(v){
+                                table.addFilter(k,"like",v);
+                            }
+                        });
+                    });
+
+                // global search
+                document.getElementById('global-search').addEventListener('input', function(e){
+                    const v = e.target.value;
+                    if(!v){
+                        table.clearFilter(true);
+                        // reapply header filters if any
+                        applyUrlFiltersToTable();
+                        return;
+                    }
+                    table.setFilter([
+                        {field:"description", type:"like", value:v},
+                        {field:"who", type:"like", value:v},
+                        {field:"place", type:"like", value:v},
+                    ]);
+                    updateUrlParam('q', v);
+                });
+
+                document.getElementById('reset-filters').addEventListener('click', function(){
+                    history.replaceState(null, '', window.location.pathname);
+                    table.clearFilter(true);
+                    document.getElementById('global-search').value = '';
+                });
+
+                function applyUrlFiltersToTable(){
+                    const params = new URLSearchParams(window.location.search);
+                    const mapping = ['description','who','place','category','state','priority'];
+                    mapping.forEach(k=>{
+                        const v = params.get(k);
+                        if(v){ table.addFilter(k,'like',v); }
+                    });
+                }
+
+                function updateUrlParam(key, value){
+                    const params = new URLSearchParams(window.location.search);
+                    if(value){ params.set(key, value); }
+                    else{ params.delete(key); }
+                    const newUrl = window.location.pathname + '?' + params.toString();
+                    history.replaceState(null, '', newUrl);
+                }
+            })();
+        </script>
     </div>
 {% endblock %}
