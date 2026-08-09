@@ -46,7 +46,7 @@
                     paginationSize: 25,
                     reactiveData: true,
                     columns:[
-                        {title:"État", field:"state", headerFilter:true},
+                        {title:"État", field:"state", headerFilter:"select", headerFilterParams:{values:{}}},
                         {title:"Durée", field:"duration", hozAlign:"center", headerFilter:true},
                         {title:"Description", field:"description", headerFilter:"input", headerFilterPlaceholder:"Filtrer...", widthGrow:2},
                         {title:"Rendez-vous", field:"appointment", headerFilter:true},
@@ -67,7 +67,7 @@
                                    `<input type=hidden name=csrfmiddlewaretoken value="{{ csrf_token }}">` +
                                    `<button type="submit" class="px-2 py-1 bg-rose-200 rounded">Suppr</button></form>`;
                         }}
-                    ],
+                    ]
                 });
 
                 // fetch data including any current query params so server-side filters apply
@@ -76,15 +76,28 @@
                     .then(data => {
                         table.setData(data);
 
-                        // apply simple URL-based filters to Tabulator (for persistence)
+                        // Collect unique state values from data for the select filter
+                        const stateValues = [...new Set(data.map(row => row.state).filter(s => s))];
+                        table.getColumn("state").updateDefinition({
+                            headerFilterParams: {values: stateValues}
+                        });
+
+                        // apply URL-based filters to Tabulator (for persistence)
                         const params = new URLSearchParams(window.location.search);
                         const keys = ["description","who","place","category","state","priority"];
+                        let hasStateParam = false;
                         keys.forEach(k => {
                             const v = params.get(k);
                             if(v){
+                                if(k === "state") hasStateParam = true;
                                 table.addFilter(k,"like",v);
                             }
                         });
+
+                        // Set initial state filter via header filter if no state param in URL
+                        if(!hasStateParam){
+                            table.setHeaderFilterValue("state", "A faire");
+                        }
                     });
 
                 // global search

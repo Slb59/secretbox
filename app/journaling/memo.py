@@ -74,7 +74,7 @@ class Memo(models.Model):
     """
 
     STATE_CHOICES = [
-        ("todo", _("À faire")),
+        ("todo", _("A faire")),
         ("in_progress", _("En cours")),
         ("done", _("Terminé")),
         ("report", _("Reporté")),

@@ -81,12 +81,13 @@ TEMPLATES = [
         "DIRS": [
             os.path.join(BASE_DIR, "templates"),
             os.path.join(BASE_DIR, "core", "templates"),
-            os.path.join(BASE_DIR, "jackietrade", "journal", "templates"),
+            os.path.join(BASE_DIR, "app", "jackietrade", "journal", "templates"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.template.context_processors.csrf",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "config.context_processor.current_year",

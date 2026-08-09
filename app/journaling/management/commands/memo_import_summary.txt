@@ -1,0 +1,4 @@
+CSV source: /home/sylvie/Documents/slb/10-dev/2026/secretbox/app/journaling/management/commands/memo.csv
+Rejected file: /home/sylvie/Documents/slb/10-dev/2026/secretbox/app/journaling/management/commands/memo_rejects.csv
+Integrated rows: 1299
+Rejected rows: 0

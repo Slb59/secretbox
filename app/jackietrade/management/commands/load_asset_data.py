@@ -1,7 +1,6 @@
 import yfinance as yf
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
-
 from jackietrade.assetmodels import Asset
 from jackietrade.import_data import YFinanceImporter
 
