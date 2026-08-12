@@ -3,8 +3,9 @@
 ## Description
 petits outils d'organisation
 - account : gestion des utilisateurs
-- journaling : tableau de bord
+- journaling : tableau de bord, organisation de vie
 - jackietrade :  outil d'analyse boursière
+- dictavoix : un outil d'aide à l'apprentissage des langues
 
 ## Maintenance
 

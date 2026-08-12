@@ -1,6 +1,8 @@
 ## [0.3.1]
 - secretbox: transfert des applications dans le dossier app
 - journaling: modification du import_memo.py
+- journaling: correction du fonctionnement du filtre "état"
+- secretbox: ajout de la documentation pour chaque application
 
 ## [0.3.0]
 - dictavoix : creation de nouvelle application, fonctions de base
