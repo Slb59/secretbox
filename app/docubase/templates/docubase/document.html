@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - SecretBox{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-4xl">
+    <!-- Navigation Breadcrumbs -->
+    <div class="mb-6">
+        <a href="{% url 'docubase:index' %}" class="text-blue-600 hover:text-blue-800 underline">Documentation</a>
+        <span class="mx-2 text-gray-600">/</span>
+        <a href="{% url 'docubase:app_docs' app=current_app %}" class="text-blue-600 hover:text-blue-800 underline">{{ current_app|title }}</a>
+        <span class="mx-2 text-gray-600">/</span>
+        <span class="text-gray-700">{{ display_name }}</span>
+    </div>
+    
+    <!-- Document Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold mb-2">{{ display_name }}</h1>
+        <p class="text-gray-600">From <em>{{ current_app }}</em> application</p>
+    </div>
+    
+    <!-- Document Content -->
+    <article class="p-6 bg-white rounded-lg shadow prose prose-sm max-w-none">
+        {{ content|safe }}
+    </article>
+    
+    <!-- Back to App Link -->
+    <div class="mt-6 text-center">
+        <a href="{% url 'docubase:app_docs' app=current_app %}" class="text-blue-600 hover:text-blue-800 underline">← Back to {{ current_app|title }} Documentation</a>
+    </div>
+</div>
+{% endblock %}

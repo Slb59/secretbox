@@ -34,6 +34,7 @@ PROJECT_APPS = [
     "journaling",
     "jackietrade",
     "dictavoix",
+    "docubase",
 ]
 
 THIRD_PARTY_APPS = [

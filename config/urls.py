@@ -19,7 +19,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-
 from journaling import views
 
 print(f"Secretbox version: {settings.VERSION}")
@@ -32,6 +31,7 @@ urlpatterns = [
     path("journaling/", include("journaling.urls")),
     path("jackietrade/", include("jackietrade.urls")),
     path("dictavoix/", include("dictavoix.urls")),
+    path("docubase/", include("docubase.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 

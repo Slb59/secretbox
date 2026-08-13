@@ -1,3 +1,7 @@
+## [0.4.0]
+- documentaion: creation de l'application
+
+
 ## [0.3.1]
 - secretbox: transfert des applications dans le dossier app
 - journaling: modification du import_memo.py

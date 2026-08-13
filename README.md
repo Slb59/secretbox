@@ -99,3 +99,9 @@ Raspberry Pi :
 Documentation officielle : https://www.raspberrypi.org/documentation/
 Installation d’Ubuntu Server : https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi
 
+# vulnerability
+
+looking for funding
+  run `npm fund` for details
+
+To address all issues, run: npm audit fix
