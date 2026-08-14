@@ -1,6 +1,9 @@
 ## [0.4.0]
 - documentaion: creation de l'application
-
+- journaling: initialisation du filtre sur le champ priorité
+- journaling: initialisation du filtre sur la date de planification
+- journaling: le taleau est rendu éditable
+- documentation: ajout de tests sur les vues
 
 ## [0.3.1]
 - secretbox: transfert des applications dans le dossier app

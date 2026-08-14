@@ -5,12 +5,12 @@ to ensure consistency between models, forms and display.
 """
 
 PRIORITY_CHOICES = [
-    ("6-lowest", "Très faible"),
-    ("5-low", "Faible"),
-    ("4-normal", "Normale"),
-    ("3-medium", "Moyenne"),
-    ("2-high", "Élevée"),
-    ("1-highest", "Très élevée"),
+    ("6-lowest", "6-Le soir"),
+    ("5-low", "5-Faible"),
+    ("4-normal", "4-Normale"),
+    ("3-medium", "3-Moyenne"),
+    ("2-high", "2-Élevée"),
+    ("1-highest", "1-Le matin"),
 ]
 
 PERIODIC_CHOICES = [

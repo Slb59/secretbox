@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import pandas as pd
 from django.test import TestCase
-
 from jackietrade.assetmodels import Asset, Candle, Sector
 from jackietrade.import_data import YFinanceImporter
 

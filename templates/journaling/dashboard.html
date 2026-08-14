@@ -38,6 +38,42 @@
                     return template.replace(/0(?![0-9])/g, pk);
                 }
 
+                // Save memo changes via API
+                function saveMemoChanges(rowData){
+                    const updateUrl = "{% url 'journaling:update_memo_api' %}";
+                    fetch(updateUrl, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({
+                            pk: rowData.pk,
+                            state: rowData.state,
+                            duration: rowData.duration,
+                            description: rowData.description,
+                            appointment: rowData.appointment,
+                            category: rowData.category,
+                            who: rowData.who,
+                            place: rowData.place,
+                            periodic: rowData.periodic,
+                            planned_date: rowData.planned_date,
+                            priority: rowData.priority,
+                            done_date: rowData.done_date,
+                            note: rowData.note
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if(!data.success){
+                            alert("Erreur lors de la sauvegarde: " + (data.error || "Erreur inconnue"));
+                        }
+                    })
+                    .catch(err => {
+                        alert("Erreur lors de la sauvegarde: " + err.message);
+                    });
+                }
+
                 // create Tabulator
                 const table = new Tabulator("#memos-table", {
                     layout: "fitColumns",
@@ -46,18 +82,28 @@
                     paginationSize: 25,
                     reactiveData: true,
                     columns:[
-                        {title:"État", field:"state", headerFilter:"select", headerFilterParams:{values:{}}},
-                        {title:"Durée", field:"duration", hozAlign:"center", headerFilter:true},
-                        {title:"Description", field:"description", headerFilter:"input", headerFilterPlaceholder:"Filtrer...", widthGrow:2},
-                        {title:"Rendez-vous", field:"appointment", headerFilter:true},
-                        {title:"Catégorie", field:"category", headerFilter:true},
-                        {title:"Qui", field:"who", headerFilter:"input"},
-                        {title:"Lieu", field:"place", headerFilter:true},
-                        {title:"Fréquence", field:"periodic", headerFilter:true},
-                        {title:"Planifié", field:"planned_date", headerFilter:true},
-                        {title:"Priorité", field:"priority", headerFilter:true},
-                        {title:"Fait", field:"done_date", headerFilter:true},
-                        {title:"Note", field:"note", headerFilter:"input"},
+                        {title:"État", field:"state", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
+                        {title:"Durée", field:"duration", hozAlign:"center", headerFilter:true, editor:"input"},
+                        {title:"Description", field:"description", headerFilter:"input", headerFilterPlaceholder:"Filtrer...", widthGrow:2, editor:"textarea"},
+                        {title:"Rendez-vous", field:"appointment", headerFilter:true, editor:"input"},
+                        {title:"Catégorie", field:"category", headerFilter:true, editor:"input"},
+                        {title:"Qui", field:"who", headerFilter:"input", editor:"input"},
+                        {title:"Lieu", field:"place", headerFilter:true, editor:"input"},
+                        {title:"Fréquence", field:"periodic", headerFilter:true, editor:"input"},
+                        {title:"Planifié", field:"planned_date", headerFilter:"date", editor:"date", formatter:function(cell){
+                            const val = cell.getValue();
+                            if(!val) return "";
+                            const d = new Date(val);
+                            return d.toLocaleDateString("fr-FR");
+                        }},
+                        {title:"Priorité", field:"priority", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
+                        {title:"Fait", field:"done_date", headerFilter:true, editor:"date", formatter:function(cell){
+                            const val = cell.getValue();
+                            if(!val) return "";
+                            const d = new Date(val);
+                            return d.toLocaleDateString("fr-FR");
+                        }},
+                        {title:"Note", field:"note", headerFilter:"input", editor:"textarea"},
                         {title:"Actions", field:"pk", hozAlign:"center", formatter:function(cell, formatterParams){
                             const pk = cell.getValue();
                             const edit = pkReplace(editUrlTemplate, pk);
@@ -67,7 +113,10 @@
                                    `<input type=hidden name=csrfmiddlewaretoken value="{{ csrf_token }}">` +
                                    `<button type="submit" class="px-2 py-1 bg-rose-200 rounded">Suppr</button></form>`;
                         }}
-                    ]
+                    ],
+                    cellEdited: function(cell){
+                        saveMemoChanges(cell.getRow().getData());
+                    }
                 });
 
                 // fetch data including any current query params so server-side filters apply
@@ -79,17 +128,27 @@
                         // Collect unique state values from data for the select filter
                         const stateValues = [...new Set(data.map(row => row.state).filter(s => s))];
                         table.getColumn("state").updateDefinition({
-                            headerFilterParams: {values: stateValues}
+                            headerFilterParams: {values: stateValues.sort()},
+                            editorParams: {values: stateValues.sort()}
+                        });
+
+                        // Collect unique priority values from data for the select filter
+                        const priorityValues = [...new Set(data.map(row => row.priority).filter(s => s))];
+                        table.getColumn("priority").updateDefinition({
+                            headerFilterParams: {values: priorityValues.sort()},
+                            editorParams: {values: priorityValues.sort()}
                         });
 
                         // apply URL-based filters to Tabulator (for persistence)
                         const params = new URLSearchParams(window.location.search);
                         const keys = ["description","who","place","category","state","priority"];
                         let hasStateParam = false;
+                        let hasPriorityParam = false;
                         keys.forEach(k => {
                             const v = params.get(k);
                             if(v){
                                 if(k === "state") hasStateParam = true;
+                                if(k === "priority") hasPriorityParam = true;
                                 table.addFilter(k,"like",v);
                             }
                         });
@@ -97,6 +156,21 @@
                         // Set initial state filter via header filter if no state param in URL
                         if(!hasStateParam){
                             table.setHeaderFilterValue("state", "A faire");
+                        }
+                        // Set initial priority filter via header filter if no priority param in URL
+                        if(!hasPriorityParam){
+                            table.setHeaderFilterValue("priority", "matin");
+                        }
+                        // set initial planned_date filter via header filter to the minimum date in the data if no planned_date param in URL
+                        if(!params.get("planned_date")){
+                            const validDates = data
+                                .filter(row => row.state === "A faire")
+                                .map(row => row.planned_date)
+                                .filter(d => d);
+                            if(validDates.length > 0){
+                                const minDate = new Date(Math.min(...validDates.map(d => new Date(d))));
+                                table.setHeaderFilterValue("planned_date", minDate.toISOString().split('T')[0]);
+                            }
                         }
                     });
 

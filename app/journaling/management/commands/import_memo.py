@@ -7,7 +7,6 @@ from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-
 from journaling.memo import Memo
 
 User = get_user_model()

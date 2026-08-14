@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import date
 
@@ -13,6 +14,12 @@ from django.views.generic import CreateView, ListView, TemplateView, UpdateView,
 
 from config import env
 
+from .choices import (
+    CATEGORY_CHOICES,
+    PERIODIC_CHOICES,
+    PLACE_CHOICES,
+    PRIORITY_CHOICES,
+)
 from .filters import MemoFilterForm
 from .forms import MemoForm, MemoReportForm, MemoValidateForm
 from .memo import Memo, MemoHistory
@@ -145,14 +152,89 @@ class DashboardDataView(DashboardView):
                     "who": ", ".join([u.trigram for u in m.who.all()]),
                     "place": m.place,
                     "periodic": m.get_periodic_display(),
-                    "planned_date": m.get_planned_date_display(),
+                    "planned_date": m.planned_date.isoformat()
+                    if m.planned_date
+                    else "",
                     "priority": m.get_priority_display(),
-                    "done_date": m.get_done_date_display(),
+                    "done_date": m.done_date.isoformat() if m.done_date else "",
                     "note": m.note or "",
                 }
             )
 
         return JsonResponse(data, safe=False)
+
+
+class MemoUpdateAPIView(LoginRequiredMixin, View):
+    """API endpoint for updating memo fields via PATCH request."""
+
+    def patch(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            pk = data.get("pk")
+            memo = get_object_or_404(Memo, pk=pk)
+
+            # Check permissions
+            if not (memo.can_edit(request.user) or memo.can_edit_limited(request.user)):
+                return JsonResponse(
+                    {"success": False, "error": "Permission denied"},
+                    status=403,
+                )
+
+            # Create reverse mapping from display names to values
+            # Handle lazy translation strings for STATE_CHOICES
+            state_map = {str(v): k for k, v in Memo.STATE_CHOICES}
+            priority_map = {str(v): k for k, v in PRIORITY_CHOICES}
+            category_map = {str(v): k for k, v in CATEGORY_CHOICES}
+            periodic_map = {str(v): k for k, v in PERIODIC_CHOICES}
+            place_map = {str(v): k for k, v in PLACE_CHOICES}
+            appointment_map = {str(v): k for k, v in Memo.APPOINTEMENT_CHOICES}
+
+            # Update fields if provided
+            if "duration" in data and data["duration"]:
+                try:
+                    memo.duration = int(data["duration"])
+                except (ValueError, TypeError):
+                    pass
+            if "description" in data:
+                memo.description = data["description"]
+            if "note" in data:
+                memo.note = data["note"]
+            if "place" in data and data["place"]:
+                memo.place = place_map.get(data["place"], memo.place)
+            if "state" in data and data["state"]:
+                memo.state = state_map.get(data["state"], memo.state)
+            if "priority" in data and data["priority"]:
+                memo.priority = priority_map.get(data["priority"], memo.priority)
+            if "category" in data and data["category"]:
+                memo.category = category_map.get(data["category"], memo.category)
+            if "periodic" in data and data["periodic"]:
+                memo.periodic = periodic_map.get(data["periodic"], memo.periodic)
+            if "appointment" in data and data["appointment"]:
+                memo.appointment = appointment_map.get(
+                    data["appointment"], memo.appointment
+                )
+            if "planned_date" in data and data["planned_date"]:
+                memo.planned_date = data["planned_date"]
+            if "done_date" in data and data["done_date"]:
+                memo.done_date = data["done_date"]
+
+            memo.save()
+
+            return JsonResponse(
+                {"success": True, "message": "Memo updated successfully"}
+            )
+
+        except Memo.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "error": "Memo not found"},
+                status=404,
+            )
+        except Exception as e:
+            logger.error(f"Error updating memo: {str(e)}")
+            return JsonResponse(
+                {"success": False, "error": str(e)},
+                status=400,
+            )
 
 
 class MemoCreateView(LoginRequiredMixin, CreateView):

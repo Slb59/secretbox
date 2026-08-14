@@ -11,6 +11,7 @@ from .views import (
     MemoHistoryView,
     MemoReportView,
     MemoUnDeleteView,
+    MemoUpdateAPIView,
     MemoUpdateView,
     MemoValidateView,
 )
@@ -28,4 +29,5 @@ urlpatterns = [
     path("report/<int:pk>/", MemoReportView.as_view(), name="report_memo"),
     path("history/<int:pk>/", MemoHistoryView.as_view(), name="history"),
     path("api/memos/", DashboardDataView.as_view(), name="memos_api"),
+    path("api/memos/update/", MemoUpdateAPIView.as_view(), name="update_memo_api"),
 ]
