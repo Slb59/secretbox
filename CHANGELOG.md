@@ -4,6 +4,7 @@
 - journaling: initialisation du filtre sur la date de planification
 - journaling: le taleau est rendu éditable
 - documentation: ajout de tests sur les vues
+- journaling: ajout paramétrage des filtres dur lieu et périodique
 
 ## [0.3.1]
 - secretbox: transfert des applications dans le dossier app

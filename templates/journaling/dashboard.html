@@ -17,15 +17,25 @@
 
  
  
-    <div class="w-full">
-        <div class="flex items-center space-x-2 mb-2">
-            <input id="global-search" type="search" placeholder="Recherche globale..." class="px-3 py-2 rounded border" />
-            <button id="reset-filters" class="px-3 py-2 bg-gray-200 rounded">Réinitialiser</button>
-        </div>
+    <div class="w-full  ">
+
 
         <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
+        
+        <style>
+            #memos-table {
+                width: 100%;
+            }
+            .tabulator-cell[data-field="description"] {
+                white-space: normal;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                max-height: 4.5em;
+                overflow: hidden;
+            }
+        </style>
 
-        <div id="memos-table" class="w-full"></div>
+        <div id="memos-table" class="w-full "></div>
 
         <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
         <script>
@@ -84,12 +94,12 @@
                     columns:[
                         {title:"État", field:"state", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
                         {title:"Durée", field:"duration", hozAlign:"center", headerFilter:true, editor:"input"},
-                        {title:"Description", field:"description", headerFilter:"input", headerFilterPlaceholder:"Filtrer...", widthGrow:2, editor:"textarea"},
-                        {title:"Rendez-vous", field:"appointment", headerFilter:true, editor:"input"},
-                        {title:"Catégorie", field:"category", headerFilter:true, editor:"input"},
+                        {title:"Description", field:"description", headerFilter:"input", headerFilterPlaceholder:"Filtrer...", widthGrow:3, variableHeight:true, editor:"textarea"},
+                        {title:"Rendez-vous", field:"appointment", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
+                        {title:"Catégorie", field:"category", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
                         {title:"Qui", field:"who", headerFilter:"input", editor:"input"},
-                        {title:"Lieu", field:"place", headerFilter:true, editor:"input"},
-                        {title:"Fréquence", field:"periodic", headerFilter:true, editor:"input"},
+                        {title:"Lieu", field:"place", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
+                        {title:"Fréquence", field:"periodic", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
                         {title:"Planifié", field:"planned_date", headerFilter:"date", editor:"date", formatter:function(cell){
                             const val = cell.getValue();
                             if(!val) return "";
@@ -137,6 +147,34 @@
                         table.getColumn("priority").updateDefinition({
                             headerFilterParams: {values: priorityValues.sort()},
                             editorParams: {values: priorityValues.sort()}
+                        });
+
+                        // Collect unique appointment values from data for the select filter
+                        const appointmentValues = [...new Set(data.map(row => row.appointment).filter(s => s))];
+                        table.getColumn("appointment").updateDefinition({
+                            headerFilterParams: {values: appointmentValues.sort()},
+                            editorParams: {values: appointmentValues.sort()}
+                        });
+
+                        // Collect unique category values from data for the select filter
+                        const categoryValues = [...new Set(data.map(row => row.category).filter(s => s))];
+                        table.getColumn("category").updateDefinition({
+                            headerFilterParams: {values: categoryValues.sort()},
+                            editorParams: {values: categoryValues.sort()}
+                        });
+
+                        // Collect unique place values from data for the select filter
+                        const placeValues = [...new Set(data.map(row => row.place).filter(s => s))];
+                        table.getColumn("place").updateDefinition({
+                            headerFilterParams: {values: placeValues.sort()},
+                            editorParams: {values: placeValues.sort()}
+                        });
+
+                        // Collect unique periodic values from data for the select ())
+                        const periodicValues = [...new Set(data.map(row => row.periodic).filter(s => s))];
+                        table.getColumn("periodic").updateDefinition({
+                            headerFilterParams: {values: periodicValues.sort()},
+                            editorParams: {values: periodicValues.sort}
                         });
 
                         // apply URL-based filters to Tabulator (for persistence)
