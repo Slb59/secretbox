@@ -5,6 +5,7 @@
 - journaling: le taleau est rendu éditable
 - documentation: ajout de tests sur les vues
 - journaling: ajout paramétrage des filtres dur lieu et périodique
+- documentation: correction de tests
 
 ## [0.3.1]
 - secretbox: transfert des applications dans le dossier app

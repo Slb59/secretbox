@@ -93,6 +93,7 @@ RDV_MAP = {
     "x": "rdv",
     "rdv": "rdv",
     "anniversaire": "birthday",
+    "fête": "festival",
 }
 
 PLACE_MAP = {

@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from jackietrade.assetmodels import Asset, Sector
+
+from app.jackietrade.assetmodels import Asset, Sector
 
 User = get_user_model()
 

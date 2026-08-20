@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -15,8 +15,9 @@ class DocubaseIndexViewTestCase(TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.client = Client()
+        User = get_user_model()
         self.user = User.objects.create_user(
-            username="testuser", password="testpass123"
+            email="testuser@tests.com", password="testpass123"
         )
         self.view = DocubaseIndexView()
 
@@ -31,7 +32,7 @@ class DocubaseIndexViewTestCase(TestCase):
 
     def test_view_accessible_for_authenticated_user(self):
         """Test that authenticated users can access the view."""
-        self.client.login(username="testuser", password="testpass123")
+        self.client.login(email="testuser@tests.com", password="testpass123")
         url = reverse("docubase:index")
         response = self.client.get(url)
 
@@ -40,7 +41,7 @@ class DocubaseIndexViewTestCase(TestCase):
 
     def test_view_uses_correct_template(self):
         """Test that the view uses the correct template."""
-        self.client.login(username="testuser", password="testpass123")
+        self.client.login(email="testuser@tests.com", password="testpass123")
         url = reverse("docubase:index")
         response = self.client.get(url)
 
@@ -48,7 +49,7 @@ class DocubaseIndexViewTestCase(TestCase):
 
     def test_context_contains_title(self):
         """Test that context includes the correct title."""
-        self.client.login(username="testuser", password="testpass123")
+        self.client.login(email="testuser@tests.com", password="testpass123")
         url = reverse("docubase:index")
         response = self.client.get(url)
 
@@ -57,7 +58,7 @@ class DocubaseIndexViewTestCase(TestCase):
 
     def test_context_contains_apps_list(self):
         """Test that context includes apps list."""
-        self.client.login(username="testuser", password="testpass123")
+        self.client.login(email="testuser@tests.com", password="testpass123")
         url = reverse("docubase:index")
         response = self.client.get(url)
 
@@ -66,7 +67,7 @@ class DocubaseIndexViewTestCase(TestCase):
 
     def test_context_contains_core_content(self):
         """Test that context includes core_content."""
-        self.client.login(username="testuser", password="testpass123")
+        self.client.login(email="testuser@tests.com", password="testpass123")
         url = reverse("docubase:index")
         response = self.client.get(url)
 
