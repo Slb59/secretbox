@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="main-screen">
+    {% include "base/logo_header.html" %}
+
+    <div class="container mx-auto max-w-xl bg-white rounded-xl shadow-md p-6 mt-8 text-center">
+        <h2 class="text-xl font-semibold text-red-700 mb-4">Confirmer la suppression</h2>
+
+        <p class="mb-6">
+            Es-tu sûr(e) de vouloir supprimer la position suivante ?
+        </p>
+
+        <div class="bg-gray-100 p-4 rounded mb-6">
+            <p><strong>Nom :</strong> {{ object.name }}</p>
+            <p><strong>Lieu :</strong> {{ object.city }}</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex justify-center gap-4">
+                <button type="submit" class="button-valider" alt="Supprimer la position">
+                    Supprimer
+                </button>
+                <a href="{% url 'escapevault:list_positions' %}"
+                    class="button-valider">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

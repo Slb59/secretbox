@@ -35,6 +35,7 @@ PROJECT_APPS = [
     "jackietrade",
     "dictavoix",
     "docubase",
+    "escapevault",
 ]
 
 THIRD_PARTY_APPS = [
@@ -83,6 +84,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, "templates"),
             os.path.join(BASE_DIR, "core", "templates"),
             os.path.join(BASE_DIR, "app", "jackietrade", "journal", "templates"),
+            os.path.join(BASE_DIR, "app", "journaling", "templates"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {

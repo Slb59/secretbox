@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+
+<div class="main-screen">
+
+    {% include "base/logo_header.html" %}
+    {% include 'navbar/navbar_ev2.html' %}
+
+
+    <!-- Display error message if it exists -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% block list_positions_content %}
+    <div class="max-w-6xl mx-auto px-4">
+    <!-- Search form -->
+    {% crispy form %}
+
+    <!-- main content -->    
+    <div class="overflow-x-auto overflow-y-auto h-[600px] scrollbar">
+
+
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr class="sticky top-0 bg-brown-100 text-left">
+                    <th class="py-2 px-4 border-b table-header" scope="row">Nom</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Ville</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Pays</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Étoiles</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Catégorie</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Ouverture</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Fermeture</th>
+                    <th class="py-2 px-4 border-b table-header" scope="row">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pos in positions %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ pos.name }}</td>
+                    <td class="py-2 px-4 border-b">{{ pos.city }}</td>
+                    <td class="py-2 px-4 border-b">{{ pos.country }}</td>
+                    <td class="py-2 px-4 border-b">{{ pos.stars }}</td>
+                    <td class="py-2 px-4 border-b">{{ pos.get_category_display }}</td>
+                    <td class="py-2 px-4 border-b">{{ pos.get_opening_date_display }}</td>
+                    <td class="py-2 px-4 border-b">{{ pos.get_closing_date_display }}</td>
+                    <td class="action-icons">
+                        <!-- Pastille for edit position -->
+                        <a href="{% url 'escapevault:edit_position' pk=pos.pk %}?next={{request.get_full_path}}" class="round-hicon">
+                            <img src="{% static 'icons/edit.png' %}" alt="Modifier la position" class="w-6 h-6">
+                        </a>
+
+
+                        <!-- Pastille for delete position -->
+                        <a href="{% url 'escapevault:delete_position' pk=pos.pk %}" class="round-hicon">
+                            <img src="{% static 'icons/delete.png' %}" alt="Supprimer la position" class="w-6 h-6">
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+    
+    {% endblock list_positions_content %}
+
+</div>
+
+{% endblock %}

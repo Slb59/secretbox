@@ -13,10 +13,7 @@
         </div>
     {% endif %}
 
-    {% include './navbar.html' %}
 
- 
- 
     <div class="w-full  ">
 
 
@@ -35,7 +32,23 @@
             }
         </style>
 
+        {% include "navbar.html" %}        
+
+        
+
         <div id="memos-table" class="w-full "></div>
+
+        <div id="start-day-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50">
+            <div class="bg-amber-300 rounded-lg shadow-xl w-full max-w-md p-5">
+                <h2 class="text-xl font-semibold mb-4">Démarrer la journée</h2>
+                <label for="start-day-date" class="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                <input id="start-day-date" type="date" class="w-full border border-slate-300 rounded px-3 py-2 mb-4" />
+                <div class="flex justify-end gap-2">
+                    <button id="start-day-cancel" type="button" class="px-3 py-2 rounded bg-slate-200 hover:bg-slate-300">Annuler</button>
+                    <button id="start-day-confirm" type="button" class="px-3 py-2 rounded bg-amber-500 text-white hover:bg-amber-700">Confirmer</button>
+                </div>
+            </div>
+        </div>
 
         <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
         <script>
@@ -51,6 +64,8 @@
                 // Save memo changes via API
                 function saveMemoChanges(rowData){
                     const updateUrl = "{% url 'journaling:update_memo_api' %}";
+                    console.log(">>> saveMemoChanges appelée");
+                    console.log("rowData =", rowData);
                     fetch(updateUrl, {
                         method: "PATCH",
                         headers: {
@@ -84,6 +99,80 @@
                     });
                 }
 
+                const startDayModal = document.getElementById("start-day-modal");
+                const startDayDateInput = document.getElementById("start-day-date");
+                const startDayConfirmButton = document.getElementById("start-day-confirm");
+                const startDayCancelButton = document.getElementById("start-day-cancel");
+
+                function setStartDayDefaultDate(){
+                    if (startDayDateInput) {
+                        const now = new Date();
+                        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+                        startDayDateInput.value = localDate.toISOString().split('T')[0];
+                    }
+                }
+
+                const startDayButton = document.getElementById("start-day");
+                if (startDayButton) {
+                    startDayButton.addEventListener("click", function(){
+                        console.log(">>> click on startDayButton");
+                        setStartDayDefaultDate();
+                        if (startDayModal) {
+                            console.log(">>> startDayModal is true, removing hidden class");
+                            startDayModal.classList.remove("hidden");
+;
+                            console.log(
+                                "classes après modification :",
+                                startDayModal.className
+                            );
+                            console.log(
+                                "display calculé :",
+                                window.getComputedStyle(startDayModal).display
+                            );
+                        }
+                    });
+                }
+
+                if (startDayCancelButton && startDayModal) {
+                    startDayCancelButton.addEventListener("click", function(){
+                        startDayModal.classList.add("hidden");
+                    });
+                }
+
+                if (startDayConfirmButton) {
+                    startDayConfirmButton.addEventListener("click", function(){
+                        const payload = new FormData();
+                        const fallbackDate = (() => {
+                            const now = new Date();
+                            const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+                            return localDate.toISOString().split('T')[0];
+                        })();
+                        payload.append("planned_date", startDayDateInput ? startDayDateInput.value : fallbackDate);
+
+                        fetch("{% url 'journaling:start_day' %}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken": "{{ csrf_token }}",
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            body: payload
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                throw new Error(data.error || "Erreur inconnue");
+                            }
+                            if (startDayModal) {
+                                startDayModal.classList.add("hidden");
+                            }
+                            location.reload();
+                        })
+                        .catch(err => {
+                            alert("Erreur lors du démarrage de la journée: " + err.message);
+                        });
+                    });
+                }
+
                 // create Tabulator
                 const table = new Tabulator("#memos-table", {
                     placeholder: "Aucune donnée",
@@ -91,9 +180,29 @@
                     paginationSize: 25,
                     reactiveData: true,
                     columns:[
-                        {title:"État", field:"state", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
-                        {title:"Durée", field:"duration", hozAlign:"center", headerFilter:true, editor:"input"},
-                        {title:"Description", 
+                        {   title:"État", 
+                            field:"state", headerFilter:"list", 
+                            headerFilterParams:{values:{}}, 
+                            editor:"list", 
+                            editorParams:{values:{}}
+                        },
+                        {   title:"Durée", 
+                            field:"duration", 
+                            hozAlign:"center", 
+                            headerFilter:true, 
+                            editor:"input",
+                            mutatorEdit:function(value){ return Number(value) || 0; },
+                            sorter:function(a, b){
+                                const av = Number(a) || 0;
+                                const bv = Number(b) || 0;
+                                return av - bv;
+                            },
+                            formatter:function(cell){
+                                const val = Number(cell.getValue());
+                                return Number.isFinite(val) ? val : 0;
+                            }
+                        },
+                        {   title:"Description", 
                             field:"description",
                             headerFilter:"input", 
                             headerFilterPlaceholder:"Filtrer...", 
@@ -109,18 +218,24 @@
                                 return val.replace(/\n/g, "<br>");
                             }                            
                         },
-                        {title:"Rendez-vous", field:"appointment", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
-                        {title:"Catégorie", field:"category", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
+                        {title:"Rendez-vous", field:"appointment", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
+                        {title:"Catégorie", field:"category", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
                         {title:"Qui", field:"who", headerFilter:"input", editor:"input"},
-                        {title:"Lieu", field:"place", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
-                        {title:"Fréquence", field:"periodic", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
-                        {title:"Planifié", field:"planned_date", headerFilter:"date", editor:"date", formatter:function(cell){
-                            const val = cell.getValue();
-                            if(!val) return "";
-                            const d = new Date(val);
-                            return d.toLocaleDateString("fr-FR");
-                        }},
-                        {title:"Priorité", field:"priority", headerFilter:"select", headerFilterParams:{values:{}}, editor:"select", editorParams:{values:{}}},
+                        {title:"Lieu", field:"place", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
+                        {title:"Fréquence", field:"periodic", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
+                        {title:"Priorité", field:"priority", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
+                        {   title:"Planifié", 
+                            field:"planned_date", 
+                            headerFilter:"date", 
+                            editor:"date",
+                            sorter:"date",
+                            formatter:function(cell){
+                                const val = cell.getValue();
+                                if(!val) return "";
+                                const d = new Date(val);
+                                return d.toLocaleDateString("fr-FR");
+                            }
+                        },
                         {title:"Fait", field:"done_date", headerFilter:true, editor:"date", formatter:function(cell){
                             const val = cell.getValue();
                             if(!val) return "";
@@ -138,16 +253,32 @@
                                    `<button type="submit" class="px-2 py-1 bg-rose-200 rounded">Suppr</button></form>`;
                         }}
                     ],
-                    cellEdited: function(cell){
+
+                });
+
+                table.on("cellEdited", function(cell){
+                        console.log(">>> cellEdited déclenché");
+                        console.log("Champ :", cell.getField());
+                        console.log("Valeur :", cell.getValue());
+                        console.log("Ligne :", cell.getRow().getData());
                         saveMemoChanges(cell.getRow().getData());
                     }
-                });
+                );
 
                 // fetch data including any current query params so server-side filters apply
                 fetch(apiUrl + window.location.search)
                     .then(r => r.json())
                     .then(data => {
-                        table.setData(data);
+                        const normalizedData = data
+                            .map(row => ({
+                                ...row,
+                                duration: Number(row.duration) || 0,
+                            }))
+                            .sort((a, b) => (Number(a.duration) || 0) - (Number(b.duration) || 0));
+
+                        table.clearSort();
+                        table.setData(normalizedData);
+                        table.setSort([{column: "duration", dir: "asc"}]);
 
                         // Collect unique state values from data for the select filter
                         const stateValues = [...new Set(data.map(row => row.state).filter(s => s))];
@@ -188,7 +319,7 @@
                         const periodicValues = [...new Set(data.map(row => row.periodic).filter(s => s))];
                         table.getColumn("periodic").updateDefinition({
                             headerFilterParams: {values: periodicValues.sort()},
-                            editorParams: {values: periodicValues.sort}
+                            editorParams: {values: periodicValues.sort()}
                         });
 
                         // apply URL-based filters to Tabulator (for persistence)
@@ -225,29 +356,35 @@
                             }
                         }
                     });
+                
+                
 
-                // global search
-                document.getElementById('global-search').addEventListener('input', function(e){
-                    const v = e.target.value;
-                    if(!v){
-                        table.clearFilter(true);
-                        // reapply header filters if any
-                        applyUrlFiltersToTable();
-                        return;
-                    }
-                    table.setFilter([
-                        {field:"description", type:"like", value:v},
-                        {field:"who", type:"like", value:v},
-                        {field:"place", type:"like", value:v},
-                    ]);
-                    updateUrlParam('q', v);
-                });
+                // Add a new row to the table on button click
+                const addButton = document.getElementById("reactivity-add");
+                if (addButton) {
+                    addButton.addEventListener("click", function(){
+                        const activeState = table.getHeaderFilterValue ? (table.getHeaderFilterValue("state") || "A faire") : "A faire";
+                        const activePriority = table.getHeaderFilterValue ? (table.getHeaderFilterValue("priority") || "matin") : "matin";
+                        const activePlannedDate = table.getHeaderFilterValue ? table.getHeaderFilterValue("planned_date") : "";
 
-                document.getElementById('reset-filters').addEventListener('click', function(){
-                    history.replaceState(null, '', window.location.pathname);
-                    table.clearFilter(true);
-                    document.getElementById('global-search').value = '';
-                });
+                        const newRow = {
+                            state: activeState,
+                            duration: 10,
+                            description: "Nouvelle tâche",
+                            appointment: "",
+                            category: "Organisation",
+                            who: "slb",
+                            place: "partout",
+                            periodic: "01-une seule fois",
+                            planned_date: activePlannedDate,
+                            priority: activePriority,
+                            done_date: "",
+                            note: ""
+                        };
+
+                        table.addRow(newRow);
+                    });
+                }
 
                 function applyUrlFiltersToTable(){
                     const params = new URLSearchParams(window.location.search);

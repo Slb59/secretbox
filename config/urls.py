@@ -32,6 +32,7 @@ urlpatterns = [
     path("jackietrade/", include("jackietrade.urls")),
     path("dictavoix/", include("dictavoix.urls")),
     path("docubase/", include("docubase.urls")),
+    path("escapevault/", include("escapevault.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 

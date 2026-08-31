@@ -24,6 +24,8 @@ dependencies = [
     "pypdf2>=3.0.1",
     "yfinance>=1.4.1",
     "markdown>=3.5.0",
+    "django-countries>=9.0.0",
+    "folium>=0.20.0",
 ]
 
 [dependency-groups]

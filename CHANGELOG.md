@@ -1,3 +1,10 @@
+## [0.5.0]
+- escapevault: creation de l'application
+- journaling: deplacement des templates
+- journaling: ajout du bouton start-day
+- journaling: sauvegarde des données en base sur modification
+- journaling: changement du tri des données
+
 ## [0.4.0]
 - documentaion: creation de l'application
 - journaling: initialisation du filtre sur le champ priorité

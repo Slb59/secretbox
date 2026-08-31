@@ -3,6 +3,7 @@ import logging
 from datetime import date
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import Min, Q
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "journaling/dashboard.html"
+    template_name = "dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -150,7 +151,7 @@ class DashboardDataView(DashboardView):
                     else (m.appointment or ""),
                     "category": m.get_category_display(),
                     "who": ", ".join([u.trigram for u in m.who.all()]),
-                    "place": m.place,
+                    "place": m.get_place_display(),
                     "periodic": m.get_periodic_display(),
                     "planned_date": m.planned_date.isoformat()
                     if m.planned_date
@@ -164,6 +165,50 @@ class DashboardDataView(DashboardView):
         return JsonResponse(data, safe=False)
 
 
+class MemoStartDayView(LoginRequiredMixin, View):
+    """Set the selected date for every todo item at the earliest todo date."""
+
+    def post(self, request, *args, **kwargs):
+        try:
+            raw_date = request.POST.get("planned_date")
+            if not raw_date:
+                try:
+                    payload = json.loads(request.body or "{}")
+                    raw_date = payload.get("planned_date")
+                except json.JSONDecodeError:
+                    raw_date = None
+
+            target_date = date.fromisoformat(raw_date) if raw_date else date.today()
+        except ValueError:
+            return JsonResponse(
+                {"success": False, "error": "Date invalide."},
+                status=400,
+            )
+
+        queryset = Memo.objects.filter(state="todo")
+        if not request.user.is_superuser:
+            queryset = queryset.filter(
+                Q(user=request.user) | Q(who=request.user)
+            ).distinct()
+
+        earliest_date = queryset.aggregate(earliest=Min("planned_date"))["earliest"]
+        if earliest_date is None:
+            return JsonResponse(
+                {"success": True, "updated": 0, "target_date": target_date.isoformat()}
+            )
+
+        updated_count = queryset.filter(planned_date=earliest_date).update(
+            planned_date=target_date
+        )
+        return JsonResponse(
+            {
+                "success": True,
+                "updated": updated_count,
+                "target_date": target_date.isoformat(),
+            }
+        )
+
+
 class MemoUpdateAPIView(LoginRequiredMixin, View):
     """API endpoint for updating memo fields via PATCH request."""
 
@@ -173,6 +218,8 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
             pk = data.get("pk")
             memo = get_object_or_404(Memo, pk=pk)
 
+            logger.info(f"Updating memo {pk} with data: {data}")
+
             # Check permissions
             if not (memo.can_edit(request.user) or memo.can_edit_limited(request.user)):
                 return JsonResponse(
@@ -180,17 +227,23 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
                     status=403,
                 )
 
-            # Create reverse mapping from display names to values
-            # Handle lazy translation strings for STATE_CHOICES
-            state_map = {str(v): k for k, v in Memo.STATE_CHOICES}
-            priority_map = {str(v): k for k, v in PRIORITY_CHOICES}
-            category_map = {str(v): k for k, v in CATEGORY_CHOICES}
-            periodic_map = {str(v): k for k, v in PERIODIC_CHOICES}
-            place_map = {str(v): k for k, v in PLACE_CHOICES}
-            appointment_map = {str(v): k for k, v in Memo.APPOINTEMENT_CHOICES}
+            def build_choice_map(choices):
+                mapping = {}
+                for key, label in choices:
+                    mapping[key] = key
+                    mapping[str(label)] = key
+                return mapping
+
+            # Accept both raw stored values and display labels from the table.
+            state_map = build_choice_map(Memo.STATE_CHOICES)
+            priority_map = build_choice_map(PRIORITY_CHOICES)
+            category_map = build_choice_map(CATEGORY_CHOICES)
+            periodic_map = build_choice_map(PERIODIC_CHOICES)
+            place_map = build_choice_map(PLACE_CHOICES)
+            appointment_map = build_choice_map(Memo.APPOINTEMENT_CHOICES)
 
             # Update fields if provided
-            if "duration" in data and data["duration"]:
+            if "duration" in data and data["duration"] is not None:
                 try:
                     memo.duration = int(data["duration"])
                 except (ValueError, TypeError):
@@ -200,23 +253,32 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
             if "note" in data:
                 memo.note = data["note"]
             if "place" in data and data["place"]:
-                memo.place = place_map.get(data["place"], memo.place)
+                memo.place = place_map.get(str(data["place"]), memo.place)
             if "state" in data and data["state"]:
-                memo.state = state_map.get(data["state"], memo.state)
+                memo.state = state_map.get(str(data["state"]), memo.state)
             if "priority" in data and data["priority"]:
-                memo.priority = priority_map.get(data["priority"], memo.priority)
+                memo.priority = priority_map.get(str(data["priority"]), memo.priority)
             if "category" in data and data["category"]:
-                memo.category = category_map.get(data["category"], memo.category)
+                memo.category = category_map.get(str(data["category"]), memo.category)
             if "periodic" in data and data["periodic"]:
-                memo.periodic = periodic_map.get(data["periodic"], memo.periodic)
+                memo.periodic = periodic_map.get(str(data["periodic"]), memo.periodic)
             if "appointment" in data and data["appointment"]:
                 memo.appointment = appointment_map.get(
-                    data["appointment"], memo.appointment
+                    str(data["appointment"]), memo.appointment
                 )
             if "planned_date" in data and data["planned_date"]:
                 memo.planned_date = data["planned_date"]
             if "done_date" in data and data["done_date"]:
                 memo.done_date = data["done_date"]
+            if "who" in data and data["who"] not in (None, ""):
+                user_model = get_user_model()
+                values = [
+                    value.strip()
+                    for value in str(data["who"]).split(",")
+                    if value.strip()
+                ]
+                assignees = list(user_model.objects.filter(trigram__in=values))
+                memo.who.set(assignees)
 
             memo.save()
 
@@ -240,7 +302,7 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
 class MemoCreateView(LoginRequiredMixin, CreateView):
     model = Memo
     form_class = MemoForm
-    template_name = "journaling/add_template.html"
+    template_name = "add_template.html"
     success_url = reverse_lazy("home")
 
     def get_context_data(self, **kwargs):
@@ -275,7 +337,7 @@ class MemoCreateView(LoginRequiredMixin, CreateView):
 class MemoUpdateView(LoginRequiredMixin, UpdateView):
     model = Memo
     form_class = MemoForm
-    template_name = "journaling/add_template.html"
+    template_name = "add_template.html"
     success_url = reverse_lazy("home")
 
     def get_context_data(self, **kwargs):
@@ -425,7 +487,7 @@ class MemoReportView(LoginRequiredMixin, UpdateView):
 
 class MemoHistoryView(LoginRequiredMixin, ListView):
     model = MemoHistory
-    template_name = "journaling/history.html"
+    template_name = "history.html"
     context_object_name = "history"
 
     def get_queryset(self):

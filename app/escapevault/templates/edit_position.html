@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags i18n %}
+{% load filters %}
+
+{% block content %}
+
+<div class="main-screen">
+    {% include "base/logo_header.html" %}
+    <div class="w-full max-w-xl mx-auto sm:px-4 lg:px-4">
+        {% csrf_token %}
+        {% crispy form %}
+    </div>
+
+    {% if form.instance.reviews %}
+    <div class="mt-6 border-t pt-4">
+        <h3 class="text-lg font-semibold mb-2">Avis précédents</h3>
+        
+        <ul class="space-y-2">
+            {% for review in form.instance.reviews %}
+            <li class="bg-gray-100 p-3 rounded shadow-sm">                
+                <div class="text-sm text-gray-700">{{ review.date|parse_iso_date|date:"d/m/Y" }}
+                </div>
+                <div class="text-sm text-gray-700">{{ review.text|linebreaksbr }}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+
+</div>
+{% endblock %}

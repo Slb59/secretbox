@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<div class="main-screen">
+    {% include "base/logo_header.html" %}
+    <a href="{% url 'escapevault:evmap' %}" class="round-hicon">
+        <img src="{% static 'icons/boussole.png' %}" alt="Vers la carte" class="w-8 h-8">
+    </a>
+
+    <div class="legend-section px-4 py-6 max-w-xl mx-auto">
+        <h2 class="text-2xl font-semibold mb-4 relative inline-block">
+            Légende
+            <span
+                class="absolute left-0 bottom-0 w-full h-2 bg-[url('icons/escapevault/wave_b36739.svg')] bg-no-repeat bg-bottom bg-contain"></span>
+        </h2>
+    
+        <ul class="space-y-4 list-disc pl-6">
+            <li class="flex items-center gap-4">
+                <img src="{% static 'icons/escapevault/home.png' %}" alt="Maison" class="w-8 h-8">
+                <span>Maison – Ce marqueur indique un lieu familial ou un logement principal.</span>
+            </li>
+            <li class="flex items-center gap-4">
+                <img src="{% static 'icons/escapevault/love.png' %}" alt="Coup de cœur" class="w-8 h-8">
+                <span>Coup de cœur – Lieu particulièrement apprécié ou marquant.</span>
+            </li>
+            <li class="flex items-center gap-4">
+                <img src="{% static 'icons/escapevault/ban.png' %}" alt="À bannir" class="w-8 h-8">
+                <span>À bannir – Endroit à éviter à l’avenir.</span>
+            </li>
+            <li class="flex items-center gap-4">
+                <img src="{% static 'icons/escapevault/nomade.png' %}" alt="Offre nomade" class="w-8 h-8">
+                <span>Nomade – Ce lieu est une offre nomade.</span>
+            </li>
+            <li class="flex items-center gap-4">
+                <img src="{% static 'icons/escapevault/plain.png' %}" alt="Divers" class="w-8 h-8">
+                <span>Divers – Lien déjà visité mais sans importance spécifique..</span>
+            </li>
+        </ul>
+    </div>
+
+</div>
+{% endblock %}
