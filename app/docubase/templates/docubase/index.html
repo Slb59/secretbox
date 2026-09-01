@@ -15,34 +15,33 @@
     <!-- App-Specific Content -->
     {% if not current_app %}
 
-    <!-- Main Index Content -->
-    
+    <!-- Main Index Content -->   
         
         
         <!-- Applications Documentation Section -->
         {% if apps %}
-        <div class="p-6 bg-white rounded-lg shadow">
-            <h2 class="text-2xl font-bold mb-4">Applications</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {% for app in apps %}
-                <a href="{% url 'docubase:app_docs' app=app.name %}" class="p-4 border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-500 transition">
-                    <h3 class="text-lg font-semibold">{{ app.display_name }}</h3>
-                    <p class="text-sm text-gray-600">{{ app.docs_count }} document{{ app.docs_count|pluralize }}</p>
-                </a>
-                {% endfor %}
+            <div class="p-6 bg-white rounded-lg shadow">
+                <h2 class="text-2xl font-bold mb-4">Applications</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for app in apps %}
+                    <a href="{% url 'docubase:app_docs' app=app.name %}" class="p-4 border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-500 transition">
+                        <h3 class="text-lg font-semibold">{{ app.display_name }}</h3>
+                        <p class="text-sm text-gray-600">{{ app.docs_count }} document{{ app.docs_count|pluralize }}</p>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
         {% else %}
-        <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p class="text-yellow-800">No applications with documentation found.</p>
-        </div>
+            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="text-yellow-800">No applications with documentation found.</p>
+            </div>
         {% endif %}
 
         <!-- Core Documentation Section -->
         {% if core_content %}
         <div class="mb-8 p-6 bg-white rounded-lg shadow">
             <h2 class="text-2xl font-bold mb-4">Core Documentation</h2>
-            <div class="prose prose-sm max-w-none">
+            <div class="prose prose-sm max-w-none documentation">
                 {{ core_content|safe }}
             </div>
         </div>
@@ -53,7 +52,7 @@
         {% if index_content %}
         <div class="mb-8 p-6 bg-white rounded-lg shadow">
             <h2 class="text-2xl font-bold mb-4">Overview</h2>
-            <div class="prose prose-sm max-w-none">
+            <div class="prose prose-sm max-w-none documentation">
                 {{ index_content|safe }}
             </div>
         </div>

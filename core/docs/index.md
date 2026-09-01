@@ -6,17 +6,19 @@
 Le projet SecretBox a pour objectif de gérer toute mon organisation. 
 Il intègre intègre notament les applications:
 
-- Journalling : propose la liste des actions à réaliser dans la journée et planifie le reste des actions et évènements.
+- Journalling : liste des actions à réaliser dans la journée.
 
-- Account : gestion des utilisateurs
+- Account: gestion des utilisateurs
 
-- ComptaQuest: pour la gestion de ma comptabilité
+- ComptaQuest: gestion de ma comptabilité
 
-- Dictavoix : pour l'apprentissage des langues
+- Dictavoix: apprentissage des langues
 
-- JackieTrade : pour l'analyse boursière
+- JackieTrade: analyse boursière
 
-- DocuBase : pour la gestion de la documentation liée à chaque application
+- DocuBase: gestion de la documentation liée à chaque application
+
+- EscapeVault: gestion des parcours et des lieux que nous avons visités où que nous souhaitons visiter 
 
 
 

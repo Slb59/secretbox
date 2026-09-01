@@ -4,13 +4,7 @@ from django.views.generic import TemplateView
 
 from config.settings.base import BASE_DIR
 
-# Try to import markdown, fallback to basic conversion if not available
-try:
-    import markdown
-
-    MARKDOWN_AVAILABLE = True
-except ImportError:
-    MARKDOWN_AVAILABLE = False
+from .services import MarkdownRenderer
 
 
 class DocubaseIndexView(LoginRequiredMixin, TemplateView):
@@ -78,47 +72,9 @@ class DocubaseIndexView(LoginRequiredMixin, TemplateView):
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-            return self._convert_markdown_to_html(content)
+            return MarkdownRenderer.render(content)
         except Exception as e:
             return f"<p>Error reading file: {e}</p>"
-
-    @staticmethod
-    def _convert_markdown_to_html(content):
-        """Convert markdown content to HTML."""
-        if MARKDOWN_AVAILABLE:
-            return markdown.markdown(
-                content,
-                extensions=[
-                    "markdown.extensions.fenced_code",
-                    "markdown.extensions.codehilite",
-                    "markdown.extensions.tables",
-                    "markdown.extensions.toc",
-                ],
-            )
-        else:
-            # Fallback: basic markdown conversion
-            import html as html_module
-
-            lines = content.split("\n")
-            result = []
-            in_code_block = False
-
-            for line in lines:
-                if line.startswith("```"):
-                    in_code_block = not in_code_block
-                    result.append("<pre><code>" if in_code_block else "</code></pre>")
-                elif in_code_block:
-                    result.append(html_module.escape(line) + "\n")
-                elif line.startswith("#"):
-                    level = len(line) - len(line.lstrip("#"))
-                    text = line.lstrip("#").strip()
-                    result.append(f"<h{level}>{html_module.escape(text)}</h{level}>")
-                elif line.startswith("-"):
-                    result.append(f"<li>{html_module.escape(line[2:].strip())}</li>")
-                elif line.strip():
-                    result.append(f"<p>{html_module.escape(line)}</p>")
-
-            return "\n".join(result)
 
 
 class DocubaseAppListView(LoginRequiredMixin, TemplateView):
