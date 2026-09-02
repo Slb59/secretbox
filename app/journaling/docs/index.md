@@ -1,6 +1,6 @@
 ## Journaling - Documentation
 
-### Version de relecture : 0.4.0
+### Version de relecture : 0.5.0
 
 ### Description
 
@@ -27,6 +27,9 @@ priorité: (matin, élevé, moyenne, normal, faible, soir) défaut= matin
 fait: égale à la date du jour lorsque le mémo est réalisé.
 note: Une note complémentaire à la description
 
+Les données sont triées par ordre croissant selon : 
+la date planifiée, la priorité, la durée, qui, le lieu, la périodicité, la catégorie, la description
+
 ### Cycle de vie d'un memo
 
 Exemple :  
@@ -36,59 +39,52 @@ memo(planifié 23/06, réalisé: none , report: none, quotidien)
 28/06 : le memo est reporté au 30/06 => memo(planifié: 30/06, réalisé: 23/06 , report: 24/06)
 30/06 : le mémo est validé => mémo(planifié: 31/06, rélisé: 30/06 , report: none)
 
-#### reporter un memo
-Dans la div d'actions, je voudrais avoir un bouton en forme de flèche pointant vers la droite (le design de l'icône reste à faire).  
-Lorsque je clique sur cette icône, une fenêtre contextuelle (popup) s'ouvre.  
-Un champ modifiable me propose une date de report calculée par la fonction `todo.next_date()`.  
-Cette popup contient également un bouton de validation et un bouton d'annulation.  
-Si je valide, la date `todo.planned_date` est écrasée par la date proposée ou modifiée.  
-Si `todo.report_date` n'est pas spécifiée, elle est mise à jour avec la date du jour.  
-Seuls les éléments avec `todo.state='Todo'` peuvent avoir ce comportement.  
-Je dois également modifier le comportement du bouton de validation pour que, lorsqu'un élément est validé, `todo.report_date` soit définie à `null`.
+#### valider un memo [TODO]
+Un bouton pour validation est disponible dans la colonne action uniquement pour les enregistrements avec l'état "à faire".
+La nouvelle date de planification est calulée en fonction de la périodicité et proposée en popup avant validation.
+La date de réalisation est proposée par défaut à la date du jour. Elle est également modifiable dans la popup.
+Sur validation, si la date de report est renseignée, elle est effacée.
 
-#### Reporter tous les memos au jour suivant
+#### reporter un memo [TODO]
+Un bouton pour report est disponible dans la colonne action, uniquement pour les enregistrement avec l'état "à faire".  
+Une popup propose:  
+- un champ modifiable avec la date report calculée en fonction de périodicité.
+- un bouton de validation et un bouton d'annulation.  
 
-At the start of the day, I start by closing the previous day. I note the time not completed for statistical purposes to have time completed – time remaining = time completed. Then I select all items that have scheduled_date on today's date and bring them forward to the next day. I redo a selection of the elements of the day, that is to say the elements that I have just postponed + the elements already programmed, to note the time to be allocated in the statistics of the day. The day can begin. I would also like to record the weather that was during the day and during this report.
+Sur validation la date de planification est modifiée.  
+Si la date de report n'est pas renseignée, elle est alimentée avec la date du jour.
 
-#### Coloriser les memos
+#### Commencer une nouvelle journée 
 
-I would like to define a parameter table to set a color for a combination of priority, periodicity, category and place.  
-I group the data like this way:  
-Priority:  
-higest-hight
-medium-normal
-low, lowest
-Periodicity:
-every day, every 2 days, every 3 days
-none
-every 4 days, 5 days, week
-every 10 days, 2 weeks
-every 3 weeks, 1 month, 2 month
-every 3 month, 6 month, a year
-category:
-organisation, contact, doudou
-compta, achat
-sport, santé
-informatique
-menage, jardin
-bricoles, couture, loisirs
-place
-cantin
-genese
-chm
+Dans le menu horizontal, en haut de tableau, un bouton permet de "demarrer une journée". Une popup s'ouvre et propose par défaut la date du jour. Je laisse la possibilité de modifier cette date car il arrive que je loupe un journée de suivie. Cette fonction me permet de basculer sur une date choisie.
 
-there are therefore a total of 432 possibilities (3*6*6*4)
+Sur validation, les statistiques sont mises à jour. (temps cumulé restant de la journée à basculer).
 
-#### Supprimer un memo
+La journée qui sera basculée correspond à la plus ancienne date des éléments à l'état "à faire".
 
-From the dashboard, for each operation, I can perform a deletion. In the actions column, a link allows me to access this function. The item is not actually deleted. The status is set to “canceled”. The cancellation is recorded in the operation's modification history.
+Sur validation, la date de planification est mis à jour pour l'ensemble de ces enregistrements.
+
+Un nouvel enregistrement de satistiques est alors créé avec le cumul des temps et le cumul des temps pour les enregistrements topés "actions du jour" 
+
+Une nouvelle journée peut commencer :D
+
+Evolution possible: enregistrer avec les statistiques une note du jour, le temps qu'il fait, un dicton, à méditer :) 
+
+#### Coloriser les memos [TODO]
+
+Les memos (une ligne du tableau) sont colorisés en fonction de la priorité, la périodicité, la catégorie, le lieu.
+
+#### Supprimer un memo [TODO]
+
+Un bouton de suppression est disponible dans la colonne action. L'enregistrement ne sera pas supprimé de la base de données, l'état est mis à "annulé".
 
 ### Améliorations
 
-- Ajouter un chrono/pomodoro
+- Ajouter un chrono/pomodoro (je pense plutôt créer une nouvelle application à moins de l'associer à un enregistrement mais sans un couplage fort. L'un n'empêche pas l'autre)
 
-I would like to set up a stopwatch function on my dashboard. That is to say that in the actions div, with the edit and delete links I will have a link to activate the stopwatch. When I click on this link, the link turns into flashing. Between the filter and the table then appears a line containing the name of the current task, the time scroll and the stop button. When I activate the stop button, the timer stops, a popup offers me the time to save which I can possibly modify. I can either cancel the operation or validate it. If I validate, the time is recorded in a history with start date + validated time. This history will then be visible when hovering over the status column.
+Il faut que je puisse modifier le temps enregistré quand je stoppe le chrono (car souvent j'oublie de l'arrêter)
 
+Enregistrer le temps réellement effectuer pour une action me permettrait de mieux planifier mes journées.
 
 - Ajouter un case à cocher pour l'action du jour
 - Creer une notion de sous-memo

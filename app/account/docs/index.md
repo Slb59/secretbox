@@ -1,6 +1,6 @@
 ## Account - Documentation
 
-### Version de relcture: 0.4.0
+### Version de relcture: 0.5.0
 
 ### Objectif
 Cette application gère les comptes d'accès et autorisations
@@ -15,10 +15,10 @@ Il y a un compte administrateur (osynia).
 
 #### Demande de changement de mot de passe
 Elle peut se faire depuis la page de connexion ou depuis la page profile.
-L'utilisateur doit saisir son email pour obtenir l'accès à la page de reinitialisation de son mot de passe. Sur la page de reinitialisation, il pourra saisir son nouveau mot de passe avec confirmation. Il sera alors redirigé vers la page de connexion.
+L'utilisateur doit saisir son email pour obtenir l'accès à la page de reinitialisation de son mot de passe. Sur la page de reinitialisation, il peut saisir son nouveau mot de passe avec confirmation. Il est alors redirigé vers la page de connexion.
 
 #### Suppression de compte
-Seul l'administration aura la possibilité de supprimer un compte. Ceci est compliqué car il anonymise toutes les relations avec le compte.
+Seul l'administration a la possibilité de supprimer un compte. Ceci est compliqué car il anonymise toutes les relations avec le compte.
 
 #### Modification des données personnelles
 L'accès aux données personnelles peut se faire depuis toutes les pages de l'application. (Lien sur photo de profile).

@@ -8,7 +8,7 @@
     <!-- Back to Index Link (if viewing app-specific docs) -->
     {% if current_app %}
     <div class="mb-4">
-        <a href="{% url 'docubase:index' %}" class="text-blue-600 hover:text-blue-800 underline">← Back to Documentation Index</a>
+        <a href="{% url 'docubase:index' %}" class="text-blue-600 hover:text-blue-800 underline">← Retour à l'index</a>
     </div>
     {% endif %}
     
@@ -16,7 +16,6 @@
     {% if not current_app %}
 
     <!-- Main Index Content -->   
-        
         
         <!-- Applications Documentation Section -->
         {% if apps %}
@@ -40,7 +39,6 @@
         <!-- Core Documentation Section -->
         {% if core_content %}
         <div class="mb-8 p-6 bg-white rounded-lg shadow">
-            <h2 class="text-2xl font-bold mb-4">Core Documentation</h2>
             <div class="prose prose-sm max-w-none documentation">
                 {{ core_content|safe }}
             </div>
@@ -51,7 +49,7 @@
         <!-- App Index Content -->
         {% if index_content %}
         <div class="mb-8 p-6 bg-white rounded-lg shadow">
-            <h2 class="text-2xl font-bold mb-4">Overview</h2>
+
             <div class="prose prose-sm max-w-none documentation">
                 {{ index_content|safe }}
             </div>

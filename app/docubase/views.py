@@ -146,7 +146,7 @@ class DocubaseAppListView(LoginRequiredMixin, TemplateView):
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-            return DocubaseIndexView._convert_markdown_to_html(content)
+            return MarkdownRenderer.render(content)
         except Exception as e:
             return f"<p>Error reading file: {e}</p>"
 
@@ -203,6 +203,6 @@ class DocubaseDocumentView(LoginRequiredMixin, TemplateView):
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-            return DocubaseIndexView._convert_markdown_to_html(content)
+            return MarkdownRenderer.render(content)
         except Exception as e:
             return f"<p>Error reading file: {e}</p>"
