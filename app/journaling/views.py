@@ -157,6 +157,7 @@ class DashboardDataView(DashboardView):
                     if m.planned_date
                     else "",
                     "priority": m.get_priority_display(),
+                    "process_today": bool(m.process_today),
                     "done_date": m.done_date.isoformat() if m.done_date else "",
                     "note": m.note or "",
                 }
@@ -279,6 +280,12 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
                 ]
                 assignees = list(user_model.objects.filter(trigram__in=values))
                 memo.who.set(assignees)
+            # handle process_today boolean
+            if "process_today" in data:
+                try:
+                    memo.process_today = bool(data["process_today"])
+                except Exception:
+                    memo.process_today = False
 
             memo.save()
 

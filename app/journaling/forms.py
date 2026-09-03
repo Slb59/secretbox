@@ -25,6 +25,7 @@ class MemoForm(forms.ModelForm):
             "planned_date",
             "priority",
             "note",
+            "process_today",
         ]
 
     def __init__(self, *args, user=None, instance=None, **kwargs):
@@ -73,6 +74,7 @@ class MemoForm(forms.ModelForm):
             "planned_date",
             "priority",
             "note",
+            "process_today",
             action_buttons(back_url_name="home", back_label="Liste"),
         )
 

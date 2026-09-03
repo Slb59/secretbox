@@ -262,31 +262,46 @@ class Command(BaseCommand):
         return mapping.get(key, default)
 
     def import_memo_row(self, row: dict[str, str]) -> Memo:
-        planned_date = self.parse_date(row.get("Date"), "Date")
-        done_date = self.parse_date(row.get("Done"), "Done")
-        duration = self.parse_int(row.get("Durée"), "Durée", DEFAULT_DURATION)
+        # helper to perform case-insensitive key lookup on the CSV row
+        def get_row_value(key: str):
+            # try exact match first
+            if key in row:
+                return row.get(key)
+            # fallback to case-insensitive match
+            lk = key.lower()
+            for k, v in row.items():
+                if k and k.lower() == lk:
+                    return v
+            return None
+
+        planned_date = self.parse_date(get_row_value("Date"), "Date")
+        done_date = self.parse_date(get_row_value("Done"), "Done")
+        duration = self.parse_int(get_row_value("Durée"), "Durée", DEFAULT_DURATION)
+        # Accept 'x' or 'X' (case-insensitive) in the CSV today column.
+        process_today = self.normalize(get_row_value("today")) == "x"
 
         memo = Memo.objects.create(
-            user=self.find_user(row.get("Qui")),
-            state=self.get_choice(STATE_MAP, row.get("Etat"), DEFAULT_STATE),
+            user=self.find_user(get_row_value("Qui")),
+            state=self.get_choice(STATE_MAP, get_row_value("Etat"), DEFAULT_STATE),
             duration=duration,
-            description=self.normalize(row.get("Description")),
-            appointment=self.get_choice(RDV_MAP, row.get("Rdv"), "") or None,
-            category=self.get_choice(TYPE_MAP, row.get("Type"), DEFAULT_CATEGORY),
-            place=self.get_choice(PLACE_MAP, row.get("Lieu"), DEFAULT_PLACE),
+            description=self.normalize(get_row_value("Description")),
+            appointment=self.get_choice(RDV_MAP, get_row_value("Rdv"), "") or None,
+            category=self.get_choice(TYPE_MAP, get_row_value("Type"), DEFAULT_CATEGORY),
+            place=self.get_choice(PLACE_MAP, get_row_value("Lieu"), DEFAULT_PLACE),
             periodic=self.get_choice(
-                PERIODIC_MAP, row.get("Périodique"), DEFAULT_PERIODIC
+                PERIODIC_MAP, get_row_value("Périodique"), DEFAULT_PERIODIC
             ),
             planned_date=planned_date or datetime.today().date(),
             priority=self.get_choice(
-                PRIORITY_MAP, row.get("Priorité"), DEFAULT_PRIORITY
+                PRIORITY_MAP, get_row_value("Priorité"), DEFAULT_PRIORITY
             ),
             done_date=done_date,
-            note=self.normalize(row.get("Note")) or None,
+            note=self.normalize(get_row_value("Note")) or None,
+            process_today=process_today,
         )
         memo.save()
 
-        who_trigram = self.normalize_key(row.get("Qui"))
+        who_trigram = self.normalize_key(get_row_value("Qui"))
         if not who_trigram:
             who_trigram = DEFAULT_USER_TRIGRAM
         who_user = self.find_user(who_trigram)

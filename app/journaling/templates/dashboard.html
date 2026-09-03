@@ -74,7 +74,8 @@
                         },
                         body: JSON.stringify({
                             pk: rowData.pk,
-                            state: rowData.state,
+                                process_today: rowData.process_today,
+                                state: rowData.state,
                             duration: rowData.duration,
                             description: rowData.description,
                             appointment: rowData.appointment,
@@ -223,7 +224,24 @@
                         {title:"Qui", field:"who", headerFilter:"input", editor:"input"},
                         {title:"Lieu", field:"place", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
                         {title:"Fréquence", field:"periodic", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
-                        {title:"Priorité", field:"priority", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
+                        {title:"Priorité", field:"priority", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}},},
+                        {title:"Today", 
+                            field:"process_today",
+                            hozAlign:"center",
+                            formatter:"tickCross",
+                            editor:true,
+                            headerFilter:"select",
+                            headerFilterParams:{values:{
+                                "":"Tous",
+                                "true":"Aujourd'hui",
+                                "false":"Pas aujourd'hui"}},
+                            headerFilterFunc:function(headerValue, rowValue, rowData){
+                                if(!headerValue) return true;
+                                if(headerValue === "true") return !!rowValue;
+                                if(headerValue === "false") return !rowValue;
+                                return true;
+                            }
+                        },
                         {   title:"Planifié", 
                             field:"planned_date", 
                             headerFilter:"date", 
@@ -273,6 +291,7 @@
                             .map(row => ({
                                 ...row,
                                 duration: Number(row.duration) || 0,
+                                process_today: !!row.process_today,
                             }))
                             .sort((a, b) => (Number(a.duration) || 0) - (Number(b.duration) || 0));
 
@@ -321,6 +340,16 @@
                             headerFilterParams: {values: periodicValues.sort()},
                             editorParams: {values: periodicValues.sort()}
                         });
+
+                        // Ensure process_today field exists and is boolean on all rows
+                        if (data && data.length) {
+                            const processValues = [...new Set(data.map(row => !!row.process_today))];
+                            if(table.getColumn("process_today")){
+                                table.getColumn("process_today").updateDefinition({
+                                    headerFilterParams: {values: {"":"Tous","true":"Aujourd'hui","false":"Pas aujourd'hui"}}
+                                });
+                            }
+                        }
 
                         // apply URL-based filters to Tabulator (for persistence)
                         const params = new URLSearchParams(window.location.search);
@@ -378,6 +407,7 @@
                             periodic: "01-une seule fois",
                             planned_date: activePlannedDate,
                             priority: activePriority,
+                            process_today: false,
                             done_date: "",
                             note: ""
                         };

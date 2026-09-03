@@ -110,6 +110,8 @@ class Memo(models.Model):
     priority = models.CharField(
         max_length=20, choices=PRIORITY_CHOICES, default="4-normal"
     )
+    # Indicates whether this memo should be processed today (checkbox in UI)
+    process_today = models.BooleanField(default=False)
     done_date = models.DateField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(default=timezone.now)
