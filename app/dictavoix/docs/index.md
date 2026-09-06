@@ -4,9 +4,11 @@
 
 ### Description
 
-DictaVoix est une application du projet SecretBox. L'idée est de générer un audio qui permet de dicter le texte proposé. 
+DictaVoix est une application du projet SecretBox. L'idée est d'avoir une base de connaissance sur le vocabulaire et de proposer un outil pour effectuer des dictées de mots ou de phrases. 
 
 L'accès se fait via le tableau de bord SecretBox en fonction des droits utilisateurs.
+
+Le tableau de bord de dictavoix présente les thèmes d'études sous forme de boite-résumés. Un thème peut-être créer à partir de cette page.
 
 Une première lecture à vitesse normale est effectuée puis chaque phrase est redite 4 fois lentement avec ponctuation. Enfin le texte est redit lentement avec ponctuation puis à vitesse normale.
 
