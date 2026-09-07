@@ -4,6 +4,9 @@ This file centralizes type constants (value, label)
 to ensure consistency between models, forms and display.
 """
 
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 PRIORITY_CHOICES = [
     ("6-lowest", "6-Le soir"),
     ("5-low", "5-Faible"),
@@ -61,8 +64,41 @@ PLACE_CHOICES = [
 ]
 
 ACTION_CHOICES = [
-    ("created", "Création"),
-    ("updated", "Mise à jour"),
-    ("deleted", "Suppression"),
-    ("restored", "Restauration"),
+    ("created", _("Création")),
+    ("updated", _("Mise à jour")),
+    ("deleted", _("Suppression")),
+    ("restored", _("Restauration")),
 ]
+
+PERIODIC_DAYS_MAPPING = {
+    "01-none": 0,
+    "02-everyday": 1,
+    "03-every2days": 2,
+    "04-every3days": 3,
+    "05-every4days": 4,
+    "06-every5days": 5,
+    "07-everyweek": 7,
+    "08-every10days": 10,
+    "09-every2weeks": 14,
+    "10-everymonth": 30,
+    "11-every6weeks": 42,
+    "12-every2months": 60,
+    "13-every3months": 90,
+    "14-every4months": 120,
+    "15-every6months": 180,
+    "16-everyyear": 365,
+}
+
+EVENT_CHOICES = [
+    ("rdv", _("Rendez-vous")),
+    ("birthday", _("Anniversaire")),
+    ("festival", _("Fête")),
+]
+
+
+class State(models.TextChoices):
+    TODO = "todo", _("À faire")
+    IN_PROGRESS = "in_progress", _("En cours")
+    DONE = "done", _("Terminé")
+    REPORT = "report", _("Reporté")
+    CANCEL = "cancel", _("Annulé")

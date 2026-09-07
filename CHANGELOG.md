@@ -4,6 +4,7 @@
 - journaling: ajout du bouton start-day
 - journaling: sauvegarde des données en base sur modification
 - journaling: changement du tri des données
+- journaling: ajout de la gestion via la console d'administration
 
 ## [0.4.0]
 - documentaion: creation de l'application

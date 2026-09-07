@@ -11,11 +11,15 @@ from django.utils.translation import gettext_lazy as _
 from .choices import (
     ACTION_CHOICES,
     CATEGORY_CHOICES,
+    EVENT_CHOICES,
     PERIODIC_CHOICES,
+    PERIODIC_DAYS_MAPPING,
     PLACE_CHOICES,
     PRIORITY_CHOICES,
+    State,
 )
 from .colors import ColorParameter
+from .services import tomorrow
 
 User = get_user_model()
 
@@ -27,75 +31,26 @@ HEX_COLOR_VALIDATOR = RegexValidator(
 
 class Memo(models.Model):
     """
-    Model representing a task to be accomplished in the system.
+    Represents a task with scheduling, assignment, priority and status.
 
-    This model allows you to manage tasks
-    with their status, priority, category and assignment.
-    It also includes the ability to schedule recurring tasks
-    and associate them with a specific user.
-
-    Attributs:
-        state (CharField): État de la tâche avec les choix suivants :
-            - todo: À faire
-            - in_progress: En cours
-            - done: Terminé
-            - report: Reporté
-        priority (CharField): Niveau de priorité de la tâche :
-            - 6-verylow: Très faible
-            - 5-low: Faible
-            - 4-normal: Normale
-            - 3-medium: Moyenne
-            - 2-high: Élevée
-            - 1-highest: Très élevée
-        category (CharField): Catégorie de la tâche
-        who (CharField): Personne responsable avec les choix suivants :
-            - SLB: Sylvie
-            - JCB: Jean-Christophe
-            - LAU: Laurine
-            - THO: Thomas
-            - ODI: Odile
-            - MAM: Maman
-            - PAP: Papa
-        place (CharField): Lieu où la tâche doit être effectuée :
-            - cantin: Cantin
-            - chm: CHM
-            - genese: Genèse
-            - partout: Partout
-        periodic (CharField): Fréquence de répétition
-        duration (DurationField): Durée estimée pour accomplir la tâche
-        description (TextField): Description détaillée de la tâche
-        appointment (DateTimeField): Date et heure prévue pour la tâche
-        date (DateField): Date de création de la tâche
-        done (DateField): Date de réalisation de la tâche
-        note (TextField): Notes supplémentaires (optionnel)
+    Memos can be assigned to users, scheduled for a future date,
+    repeated according to a periodicity, and marked as completed,
+    reported or cancelled.
 
     Méthodes:
         __str__(): Returns the task description as a string representation.
     """
 
-    STATE_CHOICES = [
-        ("todo", _("A faire")),
-        ("in_progress", _("En cours")),
-        ("done", _("Terminé")),
-        ("report", _("Reporté")),
-        ("cancel", _("Annulé")),
-    ]
-
-    APPOINTEMENT_CHOICES = [
-        ("rdv", "Rendez-vous"),
-        ("birthday", "Anniversaire"),
-        ("festival", "Fête"),
-    ]
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="created_memos"
     )
-    state = models.CharField(max_length=20, choices=STATE_CHOICES, default="memo")
+    state = models.CharField(max_length=20, choices=State.choices, default=State.TODO)
     duration = models.IntegerField(
         default=30, validators=[MinValueValidator(10), MaxValueValidator(800)]
     )
     description = models.TextField()
-    appointment = models.CharField(
-        max_length=20, choices=APPOINTEMENT_CHOICES, blank=True, null=True
+    event_type = models.CharField(
+        max_length=20, choices=EVENT_CHOICES, blank=True, null=True
     )
     category = models.CharField(
         max_length=20, choices=CATEGORY_CHOICES, default="01-organisation"
@@ -106,7 +61,7 @@ class Memo(models.Model):
         max_length=20, choices=PERIODIC_CHOICES, default="partout"
     )
     report_date = models.DateField(blank=True, null=True)
-    planned_date = models.DateField(default=(date.today() + timedelta(days=1)))
+    planned_date = models.DateField(default=tomorrow)
     priority = models.CharField(
         max_length=20, choices=PRIORITY_CHOICES, default="4-normal"
     )
@@ -118,6 +73,7 @@ class Memo(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Keep the original value to detect planned_date changes.
         self.__original_planned_date = self.planned_date
 
     @property
@@ -128,82 +84,66 @@ class Memo(models.Model):
         return self.description
 
     def check_if_state_is_cancel_or_done(self):
-        if self.state == "done":
+        if self.state == State.DONE:
             return False, _("Cette tâche est déjà terminée")
-        if self.state == "cancel":
+        if self.state == State.CANCEL:
             return False, _("Cette tâche est déjà annulée")
         return True, ""
 
     def next_date(self, date_of_start):
         """
-        Calculate the next date based on the periodicity choice.
+        Calcul la date suivante basée sur le choix de périodicité.
+        Il y a un problème sur le calcul du mois suivant,
+        ici c'est +30 jours, mais il faudrait calculer le mois suivant exact.
 
         Returns:
             date: The next date calculated according to the periodicity
         """
-        PERIODIC_DAYS_MAPPING = {
-            "01-none": 0,
-            "02-everyday": 1,
-            "03-every2days": 2,
-            "04-every3days": 3,
-            "05-every4days": 4,
-            "06-every5days": 5,
-            "07-everyweek": 7,
-            "08-every10days": 10,
-            "09-every2weeks": 14,
-            "10-everymonth": 30,
-            "11-every6weeks": 42,
-            "12-every2months": 60,
-            "13-every3months": 90,
-            "14-every4months": 120,
-            "15-every6months": 180,
-            "16-everyyear": 365,
-        }
 
         if not date_of_start:
             date_of_start = date.today()
 
         days_to_add = PERIODIC_DAYS_MAPPING[self.periodic]
-        # print(f"next date: {days_to_add}")
+
         return date_of_start + timedelta(days=days_to_add)
 
-    def report_element(self, date_of_report):
+    def report(self, date_of_report):
         """
         Reports the element to the user at today+1.
 
         This method sets the element's state to "report"
         and updates the date to the next date.
         """
-        if not date_of_report:
+        if date_of_report is None:
             date_of_report = date.today()
-        if self.state != "done":
+        if self.state != State.DONE:
             self.planned_date = date_of_report + timedelta(days=1)
-            self.state = "report"
+            self.state = State.REPORT
             if self.report_date is None:
                 self.report_date = date_of_report
             self.save()
 
-    def delete_element(self, date_of_delete):
-        if not date_of_delete:
+    def cancel(self, date_of_delete):
+        if date_of_delete is None:
             date_of_delete = date.today()
-        if self.state != "cancel":
-            self.state = "cancel"
-            self.note = f"*** supprimé {date_of_delete} ***\n{self.note}"
+        if self.state != State.CANCEL:
+            self.state = State.CANCEL
+            self.note = f"*** annulé le {date_of_delete} ***\n{self.note}"
             self.save()
 
-    def undelete_element(self, date_of_undelete):
+    def restore(self, date_of_undelete):
         if not date_of_undelete:
             date_of_undelete = date.today()
-        if self.state == "cancel":
-            self.state = "todo"
-            self.note = f"*** restauré {date_of_undelete} ***\n{self.note}"
+        if self.state == State.CANCEL:
+            self.state = State.TODO
+            self.note = f"*** restauré le {date_of_undelete} ***\n{self.note}"
             self.save()
 
-    def report_element_if_not_done(self, date_of_report):
+    def report_if_not_done(self, date_of_report):
         if not date_of_report:
             date_of_report = date.today()
-        if self.state != "done" and self.planned_date < date_of_report:
-            self.report_element(date_of_report)
+        if self.state != State.DONE and self.planned_date < date_of_report:
+            self.report(date_of_report)
 
     def new_day(self, new_planned_date):
         """
@@ -218,25 +158,28 @@ class Memo(models.Model):
         if not new_planned_date:
             new_planned_date = date.today()
 
-        if self.state != "done" and self.planned_date < new_planned_date:
+        if self.state != State.DONE and self.planned_date < new_planned_date:
             self.planned_date = new_planned_date
-            self.state = "report"
+            self.state = State.REPORT
             if self.report_date is None:
                 self.report_date = new_planned_date
             self.save()
 
-    def set_done(self, date_of_done):
+    def mark_as_done(self, date_of_done):
         """
         Sets the element's state to "done" and updates the date done_date.
         """
         if not date_of_done:
             date_of_done = date.today()
-        if self.state != "cancel":
-            self.state = "done"
+        if self.state != State.CANCEL:
+            self.state = State.DONE
             self.done_date = date_of_done
             self.save()
             return True
         return False
+
+    def _format_date(self, value):
+        return value.strftime("%d/%m/%Y") if value else ""
 
     def get_planned_date_display(self):
         """
@@ -244,7 +187,7 @@ class Memo(models.Model):
         Returns:
             str: The formatted planned_date or an empty string.
         """
-        return self.planned_date.strftime("%d/%m/%Y") if self.planned_date else ""
+        return self._format_date(self.planned_date)
 
     def get_done_date_display(self):
         """
@@ -252,7 +195,7 @@ class Memo(models.Model):
         Returns:
             str: The formatted done_date or an empty string.
         """
-        return self.done_date.strftime("%d/%m/%Y") if self.done_date else ""
+        return self._format_date(self.done_date)
 
     def get_report_date_display(self):
         """
@@ -260,16 +203,15 @@ class Memo(models.Model):
         Returns:
             str: The formatted report_date or an empty string.
         """
-        return self.report_date.strftime("%d/%m/%Y") if self.report_date else ""
+        return self._format_date(self.report_date)
 
     def get_state_label(self):
         base_label = super().get_state_display()
-        if self.state == "report" and self.report_date:
+        if self.state == State.REPORT and self.report_date:
             return f"{base_label} le {self.get_report_date_display()}"
         return base_label
 
-    @property
-    def get_color(self) -> str:
+    def _find_color_parameter(self):
         filters = [
             Q(
                 priority=self.priority,
@@ -297,12 +239,17 @@ class Memo(models.Model):
             ),
         ]
 
-        for f in filters:
-            color_param = ColorParameter.objects.filter(f).first()
-            if color_param:
-                return color_param.color
+        for condition in filters:
+            color_parameter = ColorParameter.objects.filter(condition).first()
+            if color_parameter:
+                return color_parameter
 
-        return "#f3faf0"  # Couleur par défaut
+        return None
+
+    @property
+    def get_color(self) -> str:
+        color_parameter = self._find_color_parameter()
+        return color_parameter.color if color_parameter else "#f3faf0"
 
     def can_view(self, user):
         return (
@@ -312,9 +259,10 @@ class Memo(models.Model):
         )
 
     def can_edit(self, user):
-        return (user.is_superuser or self.user == user) and (
-            self.state == "done" or self.state == "report" or self.state == "todo"
-        )
+        editable_states = {State.TODO, State.REPORT, State.DONE}
+        return (
+            user.is_superuser or self.user == user
+        ) and self.state in editable_states
 
     def can_edit_limited(self, user):
         return (
@@ -324,18 +272,16 @@ class Memo(models.Model):
         )
 
     def can_delete(self, user):
-        return (user.is_superuser or self.user == user) and (
-            self.state == "done"
-            or self.state == "in_progress"
-            or self.state == "report"
-            or self.state == "todo"
-        )
+        deletable_states = {State.TODO, State.IN_PROGRESS, State.REPORT, State.DONE}
+        return (
+            user.is_superuser or self.user == user
+        ) and self.state in deletable_states
 
     def can_edit_any(self, user):
         return self.can_edit(user) or self.can_edit_limited(user)
 
     def can_undelete(self, user):
-        return (user.is_superuser or self.user == user) and (self.state == "cancel")
+        return (user.is_superuser or self.user == user) and (self.state == State.CANCEL)
 
 
 class MemoHistory(models.Model):
