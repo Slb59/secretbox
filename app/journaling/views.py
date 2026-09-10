@@ -17,9 +17,11 @@ from config import env
 
 from .choices import (
     CATEGORY_CHOICES,
+    EVENT_CHOICES,
     PERIODIC_CHOICES,
     PLACE_CHOICES,
     PRIORITY_CHOICES,
+    State,
 )
 from .filters import MemoFilterForm
 from .forms import MemoForm, MemoReportForm, MemoValidateForm
@@ -69,7 +71,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "category": "category",
             "priority": "priority",
             "description": lambda v: {"description__icontains": v},
-            "appointment": "appointment",
+            "event_type": "event_type",
             "who": "who",
             "place": "place",
             "periodic": "periodic",
@@ -146,9 +148,7 @@ class DashboardDataView(DashboardView):
                     "state": m.get_state_display(),
                     "duration": m.duration,
                     "description": m.description,
-                    "appointment": m.get_appointment_display()
-                    if hasattr(m, "get_appointment_display")
-                    else (m.appointment or ""),
+                    "event_type": m.get_event_type_display(),
                     "category": m.get_category_display(),
                     "who": ", ".join([u.trigram for u in m.who.all()]),
                     "place": m.get_place_display(),
@@ -236,12 +236,12 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
                 return mapping
 
             # Accept both raw stored values and display labels from the table.
-            state_map = build_choice_map(Memo.STATE_CHOICES)
+            state_map = build_choice_map(State.choices)
             priority_map = build_choice_map(PRIORITY_CHOICES)
             category_map = build_choice_map(CATEGORY_CHOICES)
             periodic_map = build_choice_map(PERIODIC_CHOICES)
             place_map = build_choice_map(PLACE_CHOICES)
-            appointment_map = build_choice_map(Memo.APPOINTEMENT_CHOICES)
+            event_map = build_choice_map(EVENT_CHOICES)
 
             # Update fields if provided
             if "duration" in data and data["duration"] is not None:
@@ -263,9 +263,9 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
                 memo.category = category_map.get(str(data["category"]), memo.category)
             if "periodic" in data and data["periodic"]:
                 memo.periodic = periodic_map.get(str(data["periodic"]), memo.periodic)
-            if "appointment" in data and data["appointment"]:
-                memo.appointment = appointment_map.get(
-                    str(data["appointment"]), memo.appointment
+            if "event_type" in data and data["event_type"]:
+                memo.event_type = event_map.get(
+                    str(data["event_type"]), memo.event_type
                 )
             if "planned_date" in data and data["planned_date"]:
                 memo.planned_date = data["planned_date"]

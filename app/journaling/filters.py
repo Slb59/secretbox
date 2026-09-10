@@ -11,24 +11,25 @@ from django.utils.translation import gettext_lazy as _
 
 from .choices import (
     CATEGORY_CHOICES,
+    EVENT_CHOICES,
     PERIODIC_CHOICES,
     PLACE_CHOICES,
     PRIORITY_CHOICES,
+    State,
 )
-from .memo import Memo
 
 Member = get_user_model()
 
 
 class MemoFilterForm(forms.Form):
     state = forms.ChoiceField(
-        choices=[("", "Tous")] + Memo.STATE_CHOICES, required=False, label="Etat"
+        choices=[("", "Tous")] + State.choices, required=False, label="Etat"
     )
     duration_min = forms.IntegerField(required=False, min_value=0, label="Durée min")
     duration_max = forms.IntegerField(required=False, min_value=0, label="Durée max")
     description = forms.CharField(required=False)
     appointment = forms.ChoiceField(
-        choices=[("", "Tous")] + Memo.APPOINTEMENT_CHOICES,
+        choices=[("", "Tous")] + EVENT_CHOICES,
         required=False,
         label=_("Rendez-vous"),
     )

@@ -179,7 +179,9 @@
                     placeholder: "Aucune donnée",
                     pagination: "local",
                     paginationSize: 25,
-                    reactiveData: true,
+                    // Keep inline editing stable: 
+                    // reactiveData re-renders the row on each keystroke
+                    // and drops focus from textarea editors before the user finishes typing.
                     columns:[
                         {   title:"État", 
                             field:"state", headerFilter:"list", 
@@ -219,7 +221,7 @@
                                 return val.replace(/\n/g, "<br>");
                             }                            
                         },
-                        {title:"Rendez-vous", field:"appointment", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
+                        {title:"Event", field:"event_type", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
                         {title:"Catégorie", field:"category", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
                         {title:"Qui", field:"who", headerFilter:"input", editor:"input"},
                         {title:"Lieu", field:"place", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
@@ -313,11 +315,11 @@
                             editorParams: {values: priorityValues.sort()}
                         });
 
-                        // Collect unique appointment values from data for the select filter
-                        const appointmentValues = [...new Set(data.map(row => row.appointment).filter(s => s))];
-                        table.getColumn("appointment").updateDefinition({
-                            headerFilterParams: {values: appointmentValues.sort()},
-                            editorParams: {values: appointmentValues.sort()}
+                        // Collect unique event values from data for the select filter
+                        const eventValues = [...new Set(data.map(row => row.event_type).filter(s => s))];
+                        table.getColumn("event_type").updateDefinition({
+                            headerFilterParams: {values: eventValues.sort()},
+                            editorParams: {values: eventValues.sort()}
                         });
 
                         // Collect unique category values from data for the select filter
@@ -367,16 +369,16 @@
 
                         // Set initial state filter via header filter if no state param in URL
                         if(!hasStateParam){
-                            table.setHeaderFilterValue("state", "A faire");
+                            table.setHeaderFilterValue("state", "À faire");
                         }
                         // Set initial priority filter via header filter if no priority param in URL
                         if(!hasPriorityParam){
-                            table.setHeaderFilterValue("priority", "matin");
+                            table.setHeaderFilterValue("priority", "1-Le matin");
                         }
                         // set initial planned_date filter via header filter to the minimum date in the data if no planned_date param in URL
                         if(!params.get("planned_date")){
                             const validDates = data
-                                .filter(row => row.state === "A faire")
+                                .filter(row => row.state === "À faire")
                                 .map(row => row.planned_date)
                                 .filter(d => d);
                             if(validDates.length > 0){
@@ -392,15 +394,15 @@
                 const addButton = document.getElementById("reactivity-add");
                 if (addButton) {
                     addButton.addEventListener("click", function(){
-                        const activeState = table.getHeaderFilterValue ? (table.getHeaderFilterValue("state") || "A faire") : "A faire";
-                        const activePriority = table.getHeaderFilterValue ? (table.getHeaderFilterValue("priority") || "matin") : "matin";
+                        const activeState = table.getHeaderFilterValue ? (table.getHeaderFilterValue("state") || "À faire") : "À faire";
+                        const activePriority = table.getHeaderFilterValue ? (table.getHeaderFilterValue("priority") || "1-Le matin") : "1-Le matin";
                         const activePlannedDate = table.getHeaderFilterValue ? table.getHeaderFilterValue("planned_date") : "";
 
                         const newRow = {
                             state: activeState,
                             duration: 10,
                             description: "Nouvelle tâche",
-                            appointment: "",
+                            event_type: "",
                             category: "Organisation",
                             who: "slb",
                             place: "partout",

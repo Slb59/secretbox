@@ -17,7 +17,7 @@ class MemoForm(forms.ModelForm):
             "state",
             "duration",
             "description",
-            "appointment",
+            "event_type",
             "category",
             "who",
             "place",
@@ -34,7 +34,7 @@ class MemoForm(forms.ModelForm):
         self.fields["state"].label = _("État")
         self.fields["duration"].label = _("Durée")
         self.fields["description"].label = _("Description")
-        self.fields["appointment"].label = _("Rdv")
+        self.fields["event_type"].label = _("Evènement")
         self.fields["category"].label = _("Catégorie")
         self.fields["who"].label = _("Personnes")
         self.fields["place"].label = _("Lieu")
@@ -66,7 +66,7 @@ class MemoForm(forms.ModelForm):
             "state",
             "duration",
             "description",
-            "appointment",
+            "event_type",
             "category",
             "who",
             "place",

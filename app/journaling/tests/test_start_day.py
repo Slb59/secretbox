@@ -6,6 +6,42 @@ from django.urls import reverse
 from journaling.memo import Memo
 
 
+class DashboardHomepageFilterLabelsTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            email="homeuser@example.com",
+            password="secretpass123",
+        )
+        self.client.force_login(self.user)
+
+    def test_homepage_uses_backend_default_filter_labels(self):
+        Memo.objects.create(
+            user=self.user,
+            state="todo",
+            description="Default task",
+            priority="1-highest",
+            planned_date=date.today(),
+        )
+
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'table.setHeaderFilterValue("state", "À faire");')
+        self.assertContains(
+            response,
+            'table.setHeaderFilterValue("priority", "1-Le matin");',
+        )
+        self.assertContains(response, "// Keep inline editing stable:")
+        self.assertNotContains(
+            response, 'table.setHeaderFilterValue("state", "A faire");'
+        )
+        self.assertNotContains(
+            response,
+            'table.setHeaderFilterValue("priority", "matin");',
+        )
+
+
 class StartDayViewTests(TestCase):
     def setUp(self):
         User = get_user_model()

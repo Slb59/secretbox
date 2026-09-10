@@ -12,9 +12,9 @@ Journalling propose la liste des actions à réaliser dans la journée et planif
 - cycle de vie : un exemple d'utilisation
 - valider : comment valider un memo
 - reporter : une action que je ne ferais pas de suite, je peux la reporter
-- a new day : encore une nouvelle commence.
+- a new day : c'est reparti pour une nouvelle journée.
 - supprimer : la fin définitive d'un memo
-- ameliorer : du travail pour plus tard :)
+- ameliorer : des idées pour plus tard :)
 
 
 

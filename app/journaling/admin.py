@@ -70,7 +70,7 @@ class MemoAdmin(admin.ModelAdmin):
                     "planned_date",
                     "report_date",
                     "done_date",
-                    "appointment",
+                    "event_type",
                     "duration",
                     "timestamp",
                 )
