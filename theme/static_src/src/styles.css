@@ -129,5 +129,10 @@
         text-decoration: underline;
     }
    
-
+    .wave-background {
+        background-image: url("../../icons/escapevault/wave.svg");
+        background-repeat: no-repeat;
+        background-position: bottom;
+        background-size: contain;
+    }
 }

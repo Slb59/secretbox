@@ -1,0 +1,16 @@
+{% load static %}
+
+<div class="w-64 p-4 flex items-center space-x-4">
+    <!-- Chip for the list -->
+    <a href="{% url 'escapevault:list_positions' %}" class="round-hicon">
+        <img src="{% static 'icons/list.png' %}" alt="Liste des positions" class="w-8 h-8">
+    </a>
+    <!-- Chip for new position -->
+    <a href="{% url 'escapevault:add_position' %}" class="round-hicon">
+        <img src="{% static 'icons/add.png' %}" alt="Nouvelle position" class="w-8 h-8">
+    </a>
+    <!-- Chip for the parameters screen -->
+    <a href="{% url 'escapevault:parameters' %}" class="round-hicon">
+        <img src="{% static 'icons/parameters.png' %}" alt="Paramètres" class="w-8 h-8">
+    </a>
+</div>

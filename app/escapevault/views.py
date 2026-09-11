@@ -28,7 +28,7 @@ class EscapeVaultBaseView(LoginRequiredMixin, GroupRequiredMixin):
 
 
 class EscapeVaultMapView(EscapeVaultBaseView, TemplateView):
-    template_name = "escapevault/map.html"
+    template_name = "map.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -120,7 +120,7 @@ class EscapeVaultCreateView(EscapeVaultBaseView, CreateView):
 
 class EscapeVaultListView(EscapeVaultBaseView, ListView):
     model = NomadePosition
-    template_name = "escapevault/list_position.html"
+    template_name = "list_position.html"
     context_object_name = "positions"
 
     def get_queryset(self):
@@ -146,7 +146,7 @@ class EscapeVaultListView(EscapeVaultBaseView, ListView):
 class EscapeVaultEditView(EscapeVaultBaseView, UpdateView):
     model = NomadePosition
     form_class = EscapeVaultForm
-    template_name = "escapevault/edit_position.html"
+    template_name = "edit_position.html"
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -187,5 +187,5 @@ class EscapeVaultEditView(EscapeVaultBaseView, UpdateView):
 
 class EscapeVaultDeleteView(EscapeVaultBaseView, DeleteView):
     model = NomadePosition
-    template_name = "escapevault/delete_position.html"
+    template_name = "delete_position.html"
     success_url = reverse_lazy("escapevault:list_positions")
