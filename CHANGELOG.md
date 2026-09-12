@@ -1,3 +1,6 @@
+## [0.6.0]
+
+
 ## [0.5.0]
 - escapevault: creation de l'application
 - journaling: deplacement des templates
@@ -6,6 +9,7 @@
 - journaling: changement du tri des données
 - journaling: ajout de la gestion via la console d'administration
 - journaling: refactoring de view.py
+- escapevault: correction des chemins icons
 
 ## [0.4.0]
 - documentaion: creation de l'application
