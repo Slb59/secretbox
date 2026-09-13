@@ -1,6 +1,12 @@
 from django import forms
 
-from .models import DictavoixSession
+from .models import DictavoixDictionaryWord, DictavoixSession
+
+
+class DictavoixDictionaryWordForm(forms.ModelForm):
+    class Meta:
+        model = DictavoixDictionaryWord
+        fields = ["word", "pronunciation_hint"]
 
 
 class DictavoixSessionForm(forms.ModelForm):

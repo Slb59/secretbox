@@ -15,7 +15,9 @@
                         <p class="text-sm text-stone-600 mt-2">{{ theme.description }}</p>
                     {% endif %}
                     <div class="mt-4 text-sm space-y-1 text-stone-700">
-                        <div>{{ theme.word_count }} mot{{ theme.word_count|pluralize }}</div>
+                        <a href="{% url 'dictavoix:dictionary' theme.pk %}" class="block text-amber-900 underline decoration-amber-300 underline-offset-2 hover:text-amber-700">
+                            {{ theme.word_count }} mot{{ theme.word_count|pluralize }}
+                        </a>
                         <div>{{ theme.exercise_count }} exercice{{ theme.exercise_count|pluralize }}</div>
                     </div>
                     <div class="mt-4">

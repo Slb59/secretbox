@@ -1,5 +1,8 @@
 ## [0.6.0]
-
+- dictavoix: le nombre de mots dans une boite thème est clickable
+- dictavoix: le lien donne accès à un tableau des mots du dictionnaire
+- dictavoix: ajout du test d'intégration pour ce lien
+- dictavoix: ajout des urls d'accès au tableau des mots
 
 ## [0.5.0]
 - escapevault: creation de l'application

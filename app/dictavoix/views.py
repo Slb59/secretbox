@@ -1,20 +1,22 @@
+import json
 import re
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 from django.db.models import Count, Prefetch
-from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic import DetailView, TemplateView
 
-from .forms import DictavoixSessionForm
+from .forms import DictavoixDictionaryWordForm, DictavoixSessionForm
 from .models import DictavoixExercise, DictavoixTheme
 
 
-class DictavoixDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "dictavoix/dashboard.html"
-
+class DictavoixAccessMixin:
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.is_superuser
@@ -22,6 +24,10 @@ class DictavoixDashboardView(LoginRequiredMixin, TemplateView):
         ):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+
+
+class DictavoixDashboardView(LoginRequiredMixin, DictavoixAccessMixin, TemplateView):
+    template_name = "dictavoix/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,18 +51,85 @@ class DictavoixDashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ExerciseDetailView(LoginRequiredMixin, DetailView):
+class DictavoixDictionaryView(LoginRequiredMixin, DictavoixAccessMixin, TemplateView):
+    template_name = "dictavoix/dictionary.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["theme"] = get_object_or_404(DictavoixTheme, pk=self.kwargs["theme_pk"])
+        context["title"] = f"Dictionnaire - {context['theme'].name}"
+        return context
+
+
+class DictavoixDictionaryWordsAPIView(LoginRequiredMixin, DictavoixAccessMixin, View):
+    def get_theme(self, theme_pk):
+        return get_object_or_404(DictavoixTheme, pk=theme_pk)
+
+    def get(self, request, theme_pk):
+        theme = self.get_theme(theme_pk)
+        return JsonResponse(
+            [self.serialize(word) for word in theme.dictionary_words.order_by("word")],
+            safe=False,
+        )
+
+    def post(self, request, theme_pk):
+        theme = self.get_theme(theme_pk)
+        data = self.parse_json(request)
+        if isinstance(data, JsonResponse):
+            return data
+        form = DictavoixDictionaryWordForm(data)
+        if not form.is_valid():
+            return JsonResponse({"errors": form.errors}, status=400)
+        word = form.save(commit=False)
+        word.theme = theme
+        try:
+            word.save()
+        except IntegrityError:
+            return JsonResponse(
+                {"error": "Ce mot existe déjà dans ce thème."}, status=400
+            )
+        return JsonResponse(self.serialize(word), status=201)
+
+    def patch(self, request, theme_pk):
+        theme = self.get_theme(theme_pk)
+        data = self.parse_json(request)
+        if isinstance(data, JsonResponse):
+            return data
+        word = get_object_or_404(theme.dictionary_words, pk=data.get("pk"))
+        form = DictavoixDictionaryWordForm(data, instance=word)
+        if not form.is_valid():
+            return JsonResponse({"errors": form.errors}, status=400)
+        return JsonResponse(self.serialize(form.save()))
+
+    def delete(self, request, theme_pk):
+        theme = self.get_theme(theme_pk)
+        data = self.parse_json(request)
+        if isinstance(data, JsonResponse):
+            return data
+        word = get_object_or_404(theme.dictionary_words, pk=data.get("pk"))
+        word.delete()
+        return JsonResponse({"success": True})
+
+    @staticmethod
+    def parse_json(request):
+        try:
+            return json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON invalide."}, status=400)
+
+    @staticmethod
+    def serialize(word):
+        return {
+            "pk": word.pk,
+            "word": word.word,
+            "pronunciation_hint": word.pronunciation_hint or "",
+        }
+
+
+class ExerciseDetailView(LoginRequiredMixin, DictavoixAccessMixin, DetailView):
     model = DictavoixExercise
     template_name = "dictavoix/exercise_detail.html"
     context_object_name = "exercise"
-
-    def dispatch(self, request, *args, **kwargs):
-        if not (
-            request.user.is_superuser
-            or request.user.groups.filter(name="dictavoix_access").exists()
-        ):
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
