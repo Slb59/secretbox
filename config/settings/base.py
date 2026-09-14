@@ -36,10 +36,10 @@ PROJECT_APPS = [
     "dictavoix",
     "docubase",
     "escapevault",
+    "devapps",
 ]
 
 THIRD_PARTY_APPS = [
-    # Tailwind
     "tailwind",
     "theme",
     "django_browser_reload",
