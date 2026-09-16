@@ -85,6 +85,10 @@ TEMPLATES = [
             os.path.join(BASE_DIR, "core", "templates"),
             os.path.join(BASE_DIR, "app", "jackietrade", "journal", "templates"),
             os.path.join(BASE_DIR, "app", "journaling", "templates"),
+            os.path.join(BASE_DIR, "app", "dictavoix", "templates"),
+            os.path.join(BASE_DIR, "app", "docubase", "templates"),
+            os.path.join(BASE_DIR, "app", "escapevault", "templates"),
+            os.path.join(BASE_DIR, "app", "devapps", "templates"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {

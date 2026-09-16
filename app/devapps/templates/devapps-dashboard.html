@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% load static %}
+{% block title %}{{ block.super }} - DevApps{% endblock %}
+
+
+{% block content %}
+    {% if messages %}
+        <div class="mb-4 w-full">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="w-full max-w-7xl">
+
+        <div class="mb-4">
+            <form id="action-form" 
+            class="grid gap-3 rounded-xl border border-stone-300 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+                {% csrf_token %}                
+            </form>
+        </div>
+        {% include "devapps-navbar.html" %} 
+        <p id="action-error" 
+            class="mb-4 hidden rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        </p>
+        <div id="actions-table" class="w-full"></div>
+    
+
+        
+
+        <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
+        <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
+        {{ applications|json_script:"applications-data" }}
+        {{ versions|json_script:"versions-data" }}
+        {{ categories|json_script:"categories-data" }}
+        {{ states|json_script:"states-data" }}
+        <script>
+            (() => {
+                const apiUrl = "{% url 'devapps:actions_api' %}";
+                const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+                const errorElement = document.getElementById("action-error");
+                const applications = JSON.parse(document.getElementById("applications-data").textContent);
+                const versions = JSON.parse(document.getElementById("versions-data").textContent);
+                const categories = JSON.parse(document.getElementById("categories-data").textContent);
+                const states = JSON.parse(document.getElementById("states-data").textContent);
+                const values = (items) => Object.fromEntries(items.map(item => [item.value || item.pk, item.label || item.name]));
+                const applicationValues = values(applications);
+                const versionValues = values(versions);
+                const categoryValues = values(categories);
+                const stateValues = values(states);
+
+                function showError(message) {
+                    errorElement.textContent = message;
+                    errorElement.classList.remove("hidden");
+                }
+
+                function plannedValue(value) {
+                    return value === true || value === "true" || value === 1 || value === "1" ? 1 : 0;
+                }
+
+                async function request(options = {}) {
+                    const response = await fetch(apiUrl, {
+                        ...options,
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                            ...(options.headers || {})
+                        }
+                    });
+                    const data = await response.json();
+                    if (!response.ok) {
+                        const detail = data.error || Object.values(data.errors || {}).flat().join(" ");
+                        throw new Error(detail || "Une erreur est survenue.");
+                    }
+                    return data;
+                }
+
+                const table = new Tabulator("#actions-table", {
+                    ajaxURL: apiUrl,
+                    layout: "fitDataStretch",
+                    placeholder: "Aucune action.",
+                    pagination: "local",
+                    paginationSize: 25,
+                    columns: [
+                        {title: "Application", field: "application", editor: "list", editorParams: {values: applicationValues}, formatter: "lookup", formatterParams: applicationValues, headerFilter: "input"},
+                        {title: "Version", field: "version", editor: "list", editorParams: {values: versionValues, allowEmpty: true}, formatter: "lookup", formatterParams: versionValues, headerFilter: "input",
+                            sorter:function(a, b, aRow, bRow){
+                                const versionA = aRow.getData().version_name || "";
+                                const versionB = bRow.getData().version_name || "";
+                                return versionA.localeCompare(versionB, undefined, {numeric: true});
+                            }
+                        },
+                        {title: "Catégorie", field: "category", editor: "list", editorParams: {values: categoryValues}, formatter: "lookup", formatterParams: categoryValues, headerFilter: "list", headerFilterParams: {values: categoryValues}},
+                        {title: "Description", field: "description", 
+                            editor: "textarea", headerFilter: "input", 
+                            width: 260
+                        },
+                        {title: "Détails", field: "details", 
+                            editor: "textarea", width: 240, 
+                            variableHeight: true
+                        },
+                        {title: "Priorité", field: "priority", editor: "number", hozAlign: "right"},
+                        {title: "État", field: "state", editor: "list", editorParams: {values: stateValues}, formatter: "lookup", formatterParams: stateValues, headerFilter: "list", headerFilterParams: {values: stateValues}},
+                        {title: "Estimé", field: "estimated_time", editor: "number", hozAlign: "right"},
+                        {title: "Réalisé", field: "achieved_time", editor: "number", hozAlign: "right"},
+    
+                        {title: "Début", field: "started_at", 
+                            headerFilter:"date", editor: "input", sorter:"date",
+                            formatter:function(cell){
+                                    const val = cell.getValue();
+                                    if(!val) return "";
+                                    const d = new Date(val);
+                                    return d.toLocaleDateString("fr-FR");
+                            }
+                        },
+                        {title: "Fin", field: "finished_at", 
+                            headerFilter:"date", editor: "input", sorter:"date",
+                            formatter:function(cell){
+                                    const val = cell.getValue();
+                                    if(!val) return "";
+                                    const d = new Date(val);
+                                    return d.toLocaleDateString("fr-FR");
+                            }
+                        },
+                        {title: "Planifiée", field: "planned", editor: true, formatter: "tickCross", hozAlign: "center",
+                            sorter:function(a, b){
+                                return plannedValue(a) - plannedValue(b);
+                            }
+                        },
+                        {title: "Actions", formatter: () => "Supprimer", hozAlign: "center", cellClick: async (event, cell) => {
+                            if (!window.confirm("Supprimer cette action ?")) return;
+                            try {
+                                await request({method: "DELETE", body: JSON.stringify({pk: cell.getRow().getData().pk})});
+                                cell.getRow().delete();
+                            } catch (error) { showError(error.message); }
+                        }}
+                    ]
+                });
+
+                table.on("cellEdited", async (cell) => {
+                    try {
+                        const data = cell.getRow().getData();
+                        await request({
+                            method: "PATCH",
+                            body: JSON.stringify(data)
+                        });
+                        errorElement.classList.add("hidden");
+                    } catch (error) {
+                        showError(error.message);                        
+                    }
+                });
+
+                document.getElementById("action-form").addEventListener("submit", async (event) => {
+                    event.preventDefault();
+                    const data = Object.fromEntries(new FormData(event.currentTarget));
+                    data.planned = data.planned === "true";
+                    for (const field of ["application", "version", "priority", "estimated_time", "achieved_time"]) {
+                        if (data[field] === "") delete data[field];
+                        else if (data[field] !== undefined) data[field] = Number(data[field]);
+                    }
+                    try {
+                        const action = await request({method: "POST", body: JSON.stringify(data)});
+                        table.addRow(action, true);
+                        event.currentTarget.reset();
+                        errorElement.classList.add("hidden");
+                    } catch (error) { showError(error.message); }
+                });
+
+                const orderButton = document.getElementById("reactivity-order");
+                if (orderButton) {
+                    orderButton.addEventListener("click", () => {
+                        table.clearSort();
+                        table.setSort([
+                            {column: "planned", dir: "desc"},
+                            {column: "version", dir: "asc"},
+                            {column: "started_at", dir: "desc"},
+                            {column: "state", dir: "asc"},
+                            {column: "priority", dir: "asc"},
+                            {column: "category", dir: "asc"},
+                            {column: "estimated_time", dir: "desc"}
+                        ]);
+                    });
+                }
+
+                // Add a new row to the table on button click
+                const addButton = document.getElementById("reactivity-add");
+                if (addButton) {
+                    addButton.addEventListener("click", async function(){
+                        const application = applications[0];
+                        if (!application) {
+                            showError("Créez d'abord une application.");
+                            return;
+                        }
+
+                        try {
+                            const action = await request({
+                                method: "POST",
+                                body: JSON.stringify({
+                                    application: application.pk,
+                                    category: "analysis",
+                                    description: "Nouvelle action",
+                                    details: "",
+                                    priority: 100,
+                                    state: "todo",
+                                    estimated_time: 0,
+                                    planned: false
+                                })
+                            });
+                            errorElement.classList.add("hidden");
+                        } catch (error) {
+                            showError(error.message);
+                        }
+                    });
+                }
+
+            })();
+        </script>
+    </div>
+{% endblock %}
