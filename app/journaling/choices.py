@@ -102,3 +102,8 @@ class State(models.TextChoices):
     DONE = "done", _("Terminé")
     REPORT = "report", _("Reporté")
     CANCEL = "cancel", _("Annulé")
+
+
+class LocationType(models.TextChoices):
+    INDOOR = "indoor", _("Intérieur")
+    OUTDOOR = "outdoor", _("Extérieur")

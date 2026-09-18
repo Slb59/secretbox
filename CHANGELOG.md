@@ -3,6 +3,8 @@
 - dictavoix: le lien donne accès à un tableau des mots du dictionnaire
 - dictavoix: ajout du test d'intégration pour ce lien
 - dictavoix: ajout des urls d'accès au tableau des mots
+- devapps: ajout du tableau de bord, nouvelle application
+- journaling: ajout de la colonne location_type
 
 ## [0.5.0]
 - escapevault: creation de l'application

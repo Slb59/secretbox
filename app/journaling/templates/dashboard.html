@@ -82,6 +82,7 @@
                             category: rowData.category,
                             who: rowData.who,
                             place: rowData.place,
+                            location_type: rowData.location_type,
                             periodic: rowData.periodic,
                             planned_date: rowData.planned_date,
                             priority: rowData.priority,
@@ -221,13 +222,44 @@
                                 return val.replace(/\n/g, "<br>");
                             }                            
                         },
-                        {title:"Event", field:"event_type", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
-                        {title:"Catégorie", field:"category", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
-                        {title:"Qui", field:"who", headerFilter:"input", editor:"input"},
-                        {title:"Lieu", field:"place", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
-                        {title:"Fréquence", field:"periodic", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}}},
-                        {title:"Priorité", field:"priority", headerFilter:"list", headerFilterParams:{values:{}}, editor:"list", editorParams:{values:{}},},
-                        {title:"Today", 
+                        {
+                            title:"Event", 
+                            field:"event_type", headerFilter:"list", 
+                            headerFilterParams:{values:{}}, 
+                            editor:"list", 
+                            editorParams:{values:{}}
+                        },
+                        {
+                            title:"Catégorie", field:"category", 
+                            headerFilter:"list", headerFilterParams:{values:{}}, 
+                            editor:"list", editorParams:{values:{}}
+                        },
+                        {
+                            title:"Qui", field:"who", headerFilter:"input", 
+                            editor:"input"
+                        },
+                        {
+                            title:"Lieu", field:"place", headerFilter:"list", 
+                            headerFilterParams:{values:{}}, 
+                            editor:"list", editorParams:{values:{}}
+                        },
+                        {
+                            title:"Int/Ext", field:"location_type", 
+                            headerFilter:"list", headerFilterParams:{values:{}}, 
+                            editor:"list", editorParams:{values:{}}
+                        },
+                        {
+                            title:"Fréquence", field:"periodic", headerFilter:"list", 
+                            headerFilterParams:{values:{}}, editor:"list", 
+                            editorParams:{values:{}}
+                        },
+                        {
+                            title:"Priorité", field:"priority", 
+                            headerFilter:"list", headerFilterParams:{values:{}}, 
+                            editor:"list", editorParams:{values:{}},
+                        },
+                        {
+                            title:"Today", 
                             field:"process_today",
                             hozAlign:"center",
                             formatter:"tickCross",
@@ -256,14 +288,23 @@
                                 return d.toLocaleDateString("fr-FR");
                             }
                         },
-                        {title:"Fait", field:"done_date", headerFilter:true, editor:"date", formatter:function(cell){
+                        {
+                            title:"Fait", field:"done_date", headerFilter:true, 
+                            editor:"date", 
+                            formatter:function(cell){
                             const val = cell.getValue();
                             if(!val) return "";
                             const d = new Date(val);
                             return d.toLocaleDateString("fr-FR");
-                        }},
-                        {title:"Note", field:"note", headerFilter:"input", editor:"textarea", width:200},
-                        {title:"Actions", field:"pk", hozAlign:"center", formatter:function(cell, formatterParams){
+                            }
+                        },
+                        {
+                            title:"Note", field:"note", headerFilter:"input", 
+                            editor:"textarea", width:200
+                        },
+                        {
+                            title:"Actions", field:"pk", hozAlign:"center", 
+                            formatter:function(cell, formatterParams){
                             const pk = cell.getValue();
                             const edit = pkReplace(editUrlTemplate, pk);
                             const del = pkReplace(deleteUrlTemplate, pk);
@@ -271,16 +312,17 @@
                                    `<form method="post" action="${del}" style="display:inline;" onsubmit="return confirm('Supprimer ?');">` +
                                    `<input type=hidden name=csrfmiddlewaretoken value="{{ csrf_token }}">` +
                                    `<button type="submit" class="px-2 py-1 bg-rose-200 rounded">Suppr</button></form>`;
-                        }}
+                            }
+                        }
                     ],
 
                 });
 
                 table.on("cellEdited", function(cell){
-                        console.log(">>> cellEdited déclenché");
-                        console.log("Champ :", cell.getField());
-                        console.log("Valeur :", cell.getValue());
-                        console.log("Ligne :", cell.getRow().getData());
+                        // console.log(">>> cellEdited déclenché");
+                        // console.log("Champ :", cell.getField());
+                        // console.log("Valeur :", cell.getValue());
+                        // console.log("Ligne :", cell.getRow().getData());
                         saveMemoChanges(cell.getRow().getData());
                     }
                 );
@@ -335,6 +377,17 @@
                             headerFilterParams: {values: placeValues.sort()},
                             editorParams: {values: placeValues.sort()}
                         });
+
+                        const locationTypeValues = {};
+                        const locationTypeChoices = data[0]?.location_type_choices || [];
+                        locationTypeChoices.forEach(choice => {
+                            locationTypeValues[choice.label] = choice.label;
+                        });
+                        table.getColumn("location_type").updateDefinition({
+                            headerFilterParams: {values: locationTypeValues},
+                            editorParams: {values: locationTypeValues}
+                        });
+
 
                         // Collect unique periodic values from data for the select ())
                         const periodicValues = [...new Set(data.map(row => row.periodic).filter(s => s))];
@@ -406,6 +459,7 @@
                             category: "Organisation",
                             who: "slb",
                             place: "partout",
+                            location_type: "Intérieur",
                             periodic: "01-une seule fois",
                             planned_date: activePlannedDate,
                             priority: activePriority,
@@ -420,7 +474,10 @@
 
                 function applyUrlFiltersToTable(){
                     const params = new URLSearchParams(window.location.search);
-                    const mapping = ['description','who','place','category','state','priority'];
+                    const mapping = [
+                        'description','who','place','location_type',
+                        'category','state','priority',
+                    ];
                     mapping.forEach(k=>{
                         const v = params.get(k);
                         if(v){ table.addFilter(k,'like',v); }

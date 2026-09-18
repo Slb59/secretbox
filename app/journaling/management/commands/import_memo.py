@@ -11,7 +11,7 @@ from journaling.memo import Memo
 
 User = get_user_model()
 
-STATE_MAP = {
+STATE_MAP: dict[str, str] = {
     "done": "done",
     "todo": "todo",
     "annulé": "cancel",
@@ -21,7 +21,7 @@ STATE_MAP = {
     "report": "report",
 }
 
-PRIORITY_MAP = {
+PRIORITY_MAP: dict[str, str] = {
     "1-highest": "1-highest",
     "2-high": "2-high",
     "3-medium": "3-medium",
@@ -30,7 +30,7 @@ PRIORITY_MAP = {
     "6-lowest": "6-lowest",
 }
 
-TYPE_MAP = {
+TYPE_MAP: dict[str, str] = {
     "01-organisation": "01-organisation",
     "organisation": "01-organisation",
     "02-compta": "02-compta",
@@ -62,7 +62,7 @@ TYPE_MAP = {
     "vacances": "14-vacances",
 }
 
-PERIODIC_MAP = {
+PERIODIC_MAP: dict[str, str] = {
     "none": "01-none",
     "04-none": "01-none",
     "01-every day": "02-everyday",
@@ -89,14 +89,14 @@ PERIODIC_MAP = {
     "19-every 2 years": "19-every2years",
 }
 
-RDV_MAP = {
+RDV_MAP: dict[str, str] = {
     "x": "rdv",
     "rdv": "rdv",
     "anniversaire": "birthday",
     "fête": "festival",
 }
 
-PLACE_MAP = {
+PLACE_MAP: dict[str, str] = {
     "br30": "chm",
     "chm": "chm",
     "cantin-ext": "cantin-ext",
@@ -108,13 +108,18 @@ PLACE_MAP = {
     "fnd": "fontaine",
 }
 
-USER_MAP = {
+USER_MAP: dict[str, str] = {
     "syl": "slb",
     "sylvie": "slb",
     "laurine": "lau",
     "jcb": "jcb",
     "thomas": "tom",
     "odile": "jcb",
+}
+
+LOCATION_TYPE_MAP: dict[str, str] = {
+    "int": "indoor",
+    "ext": "outdoor",
 }
 
 DEFAULT_USER_TRIGRAM = "slb"
@@ -285,9 +290,13 @@ class Command(BaseCommand):
             state=self.get_choice(STATE_MAP, get_row_value("Etat"), DEFAULT_STATE),
             duration=duration,
             description=self.normalize(get_row_value("Description")),
-            appointment=self.get_choice(RDV_MAP, get_row_value("Rdv"), "") or None,
+            event_type=self.get_choice(RDV_MAP, get_row_value("Rdv"), "") or None,
             category=self.get_choice(TYPE_MAP, get_row_value("Type"), DEFAULT_CATEGORY),
             place=self.get_choice(PLACE_MAP, get_row_value("Lieu"), DEFAULT_PLACE),
+            location_type=self.get_choice(
+                LOCATION_TYPE_MAP, get_row_value("outdoor"), ""
+            )
+            or "indoor",
             periodic=self.get_choice(
                 PERIODIC_MAP, get_row_value("Périodique"), DEFAULT_PERIODIC
             ),

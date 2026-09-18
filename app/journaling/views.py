@@ -21,6 +21,7 @@ from .choices import (
     PERIODIC_CHOICES,
     PLACE_CHOICES,
     PRIORITY_CHOICES,
+    LocationType,
     State,
 )
 from .filters import MemoFilterForm
@@ -47,6 +48,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "priority",
             "periodic",
             "first_who",
+            "location_type",
             "place",
             "duration",
             "pk",
@@ -74,6 +76,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "event_type": "event_type",
             "who": "who",
             "place": "place",
+            "location_type": "location_type",
             "periodic": "periodic",
             "done_date_isnull": lambda v: {"done_date__isnull": v},
         }
@@ -136,6 +139,7 @@ class DashboardDataView(DashboardView):
             "periodic",
             "first_who",
             "place",
+            "location_type",
             "duration",
             "pk",
         )
@@ -152,6 +156,11 @@ class DashboardDataView(DashboardView):
                     "category": m.get_category_display(),
                     "who": ", ".join([u.trigram for u in m.who.all()]),
                     "place": m.get_place_display(),
+                    "location_type": m.get_location_type_display(),
+                    "location_type_choices": [
+                        {"value": value, "label": label}
+                        for value, label in LocationType.choices
+                    ],
                     "periodic": m.get_periodic_display(),
                     "planned_date": m.planned_date.isoformat()
                     if m.planned_date
@@ -241,6 +250,7 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
             category_map = build_choice_map(CATEGORY_CHOICES)
             periodic_map = build_choice_map(PERIODIC_CHOICES)
             place_map = build_choice_map(PLACE_CHOICES)
+            location_type_map = build_choice_map(LocationType.choices)
             event_map = build_choice_map(EVENT_CHOICES)
 
             # Update fields if provided
@@ -255,6 +265,10 @@ class MemoUpdateAPIView(LoginRequiredMixin, View):
                 memo.note = data["note"]
             if "place" in data and data["place"]:
                 memo.place = place_map.get(str(data["place"]), memo.place)
+            if "location_type" in data and data["location_type"]:
+                memo.location_type = location_type_map.get(
+                    str(data["location_type"]), memo.location_type
+                )
             if "state" in data and data["state"]:
                 memo.state = state_map.get(str(data["state"]), memo.state)
             if "priority" in data and data["priority"]:

@@ -16,6 +16,7 @@ from .choices import (
     PERIODIC_DAYS_MAPPING,
     PLACE_CHOICES,
     PRIORITY_CHOICES,
+    LocationType,
     State,
 )
 from .colors import ColorParameter
@@ -57,6 +58,11 @@ class Memo(models.Model):
     )
     who = models.ManyToManyField(User, related_name="assigned_memos", blank=True)
     place = models.CharField(max_length=20, choices=PLACE_CHOICES, default="partout")
+    location_type = models.CharField(
+        max_length=10,
+        choices=LocationType.choices,
+        default=LocationType.INDOOR,
+    )
     periodic = models.CharField(
         max_length=20, choices=PERIODIC_CHOICES, default="partout"
     )
