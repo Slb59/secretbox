@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-
-from app.jackietrade.assetmodels import Asset, Sector
+from jackietrade.assetmodels import Asset, Sector
 
 User = get_user_model()
 
@@ -74,7 +73,7 @@ class AssetListViewTests(TestCase):
     def test_asset_list_page(self):
 
         self.client.login(
-            username="testuser",
+            email="testuser@test.com",
             password="secret",
         )
 
@@ -85,7 +84,7 @@ class AssetListViewTests(TestCase):
     def test_only_active_assets_are_returned(self):
 
         self.client.login(
-            username="testuser",
+            email="testuser@test.com",
             password="secret",
         )
 
@@ -126,7 +125,7 @@ class AssetListViewTests(TestCase):
     def test_sectors_in_context(self):
 
         self.client.login(
-            username="testuser",
+            email="testuser@test.com",
             password="secret",
         )
 

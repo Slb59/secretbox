@@ -1,14 +1,12 @@
+from dictavoix.models import DictavoixDictionaryWord, DictavoixTheme
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-
-from ..models import DictavoixDictionaryWord, DictavoixTheme
 
 
 class DictavoixDictionaryTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_superuser(
-            username="dictavoix-admin",
             email="dictavoix@example.com",
             password="password",
         )

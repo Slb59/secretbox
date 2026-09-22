@@ -1,6 +1,5 @@
 import tempfile
 from pathlib import Path
-from pprint import pprint
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -91,18 +90,18 @@ class DocubaseIndexViewTestCase(TestCase):
         result = DocubaseIndexView._format_app_name("myTestApp")
         self.assertEqual(result, "My Test App")
 
-    def test_get_apps_with_docs_empty_when_no_app_dir(self, mock_base_dir):
+    def test_get_apps_with_docs_empty_when_no_app_dir(self):
         """Test that _get_apps_with_docs returns empty list when app dir
         doesn't exist."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
 
-            with patch("docubase.views.BASE_DIR", tmpdir_path):
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
                 result = self.view._get_apps_with_docs()
 
             self.assertEqual(result, [])
 
-    def test_get_apps_with_docs_filters_non_directories(self, mock_base_dir):
+    def test_get_apps_with_docs_filters_non_directories(self):
         """Test that _get_apps_with_docs filters out non-directories."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
@@ -112,20 +111,17 @@ class DocubaseIndexViewTestCase(TestCase):
             # Create a file (not a directory)
             (app_dir / "notadir.txt").touch()
 
-            with patch("docubase.views.BASE_DIR", tmpdir_path):
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
                 result = self.view._get_apps_with_docs()
 
             self.assertEqual(result, [])
 
-    def test_get_apps_with_docs_finds_apps_with_docs(self, mock_base_dir):
+    def test_get_apps_with_docs_finds_apps_with_docs(self):
         """Test that _get_apps_with_docs finds apps with docs folders."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
             app_dir = tmpdir_path / "app"
             app_dir.mkdir()
-
-            print("BASE_DIR / app :", mock_base_dir / "app")
-            print("Expected app_dir:", app_dir)
 
             # Create apps with docs
             app1 = app_dir / "testapp1"
@@ -145,20 +141,16 @@ class DocubaseIndexViewTestCase(TestCase):
             app3 = app_dir / "testapp3"
             app3.mkdir()
 
-            with patch("docubase.views.BASE_DIR", tmpdir_path):
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
                 result = self.view._get_apps_with_docs()
 
-            print("BASE_DIR / app :", mock_base_dir / "app")
-            print("Expected app_dir:", app_dir)
-            pprint(result)
             self.assertEqual(len(result), 2)
             self.assertEqual(result[0]["name"], "testapp1")
             self.assertEqual(result[0]["docs_count"], 2)
             self.assertEqual(result[1]["name"], "testapp2")
             self.assertEqual(result[1]["docs_count"], 1)
 
-    @patch("docubase.views.BASE_DIR")
-    def test_get_apps_with_docs_sorted_alphabetically(self, mock_base_dir):
+    def test_get_apps_with_docs_sorted_alphabetically(self):
         """Test that apps are sorted alphabetically."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
@@ -172,24 +164,16 @@ class DocubaseIndexViewTestCase(TestCase):
                 (app_path / "docs").mkdir()
                 (app_path / "docs" / "index.md").touch()
 
-            def mock_truediv(self, key):
-                if key == "app":
-                    return app_dir
-                return tmpdir_path / key
-
-            mock_base_dir.__truediv__ = mock_truediv
-
-            result = self.view._get_apps_with_docs()
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
+                result = self.view._get_apps_with_docs()
 
             names = [app["name"] for app in result]
             self.assertEqual(
                 names,
                 [
-                    "account",
-                    "dictavoix",
-                    "escapevault",
-                    "jackietrade",
-                    "journaling",
+                    "apple",
+                    "monkey",
+                    "zebra",
                 ],
             )
 
@@ -273,43 +257,31 @@ class DocubaseIndexViewTestCase(TestCase):
             finally:
                 Path(f.name).unlink()
 
-    @patch("docubase.views.BASE_DIR")
-    def test_context_includes_empty_string_when_no_core_docs(self, mock_base_dir):
+    def test_context_includes_empty_string_when_no_core_docs(self):
         """Test that core_content is empty string when core/docs/index.md
         doesn't exist."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
 
-            def mock_truediv(self, key):
-                if key == "core":
-                    return tmpdir_path / "core"
-                return tmpdir_path / key
-
-            mock_base_dir.__truediv__ = mock_truediv
-
-            context = self.view.get_context_data()
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
+                context = self.view.get_context_data()
 
             self.assertEqual(context["core_content"], "")
 
-    @patch("docubase.views.markdown.markdown")
+    @patch("app.docubase.services.markdown.markdown")
     def test_convert_markdown_uses_extensions(self, mock_markdown):
         """Test that markdown conversion uses the correct extensions."""
         mock_markdown.return_value = "<p>converted</p>"
 
         content = "# Test"
-        DocubaseIndexView._convert_markdown_to_html(content)
+        MarkdownRenderer.render(content)
 
         mock_markdown.assert_called_once()
         call_args = mock_markdown.call_args
         self.assertIn("extensions", call_args.kwargs)
         self.assertEqual(
             call_args.kwargs["extensions"],
-            [
-                "markdown.extensions.fenced_code",
-                "markdown.extensions.codehilite",
-                "markdown.extensions.tables",
-                "markdown.extensions.toc",
-            ],
+            ["fenced_code", "codehilite", "tables", "toc", "nl2br"],
         )
 
     def test_view_inherits_login_required_mixin(self):
@@ -330,15 +302,19 @@ class DocubaseIndexViewTestCase(TestCase):
 
     def test_get_context_data_calls_parent(self):
         """Test that get_context_data calls parent implementation."""
-        self.client.login(username="testuser", password="testpass123")
+        logged_in = self.client.login(
+            email="testuser@tests.com", password="testpass123"
+        )
+        self.assertTrue(logged_in)
+
         url = reverse("docubase:index")
         response = self.client.get(url)
 
+        self.assertEqual(response.status_code, 200)
         # Parent TemplateView.get_context_data should include 'view' key
         self.assertIn("view", response.context)
 
-    @patch("docubase.views.BASE_DIR")
-    def test_app_display_name_in_context(self, mock_base_dir):
+    def test_app_display_name_in_context(self):
         """Test that display_name is correctly formatted in context."""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
@@ -351,16 +327,12 @@ class DocubaseIndexViewTestCase(TestCase):
             (app_path / "docs").mkdir()
             (app_path / "docs" / "index.md").touch()
 
-            def mock_truediv(self, key):
-                if key == "app":
-                    return app_dir
-                return tmpdir_path / key
+            self.client.force_login(self.user)
 
-            mock_base_dir.__truediv__ = mock_truediv
-
-            self.client.login(username="testuser", password="testpass123")
-            url = reverse("docubase:index")
-            response = self.client.get(url)
+            print(tmpdir_path)
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
+                url = reverse("docubase:index")
+                response = self.client.get(url)
 
             apps = response.context["apps"]
             self.assertEqual(len(apps), 1)
@@ -378,18 +350,8 @@ class DocubaseIndexViewTestCase(TestCase):
             app_path.mkdir()
             (app_path / "docs").mkdir()
 
-            with patch("docubase.views.BASE_DIR.__truediv__") as mock_truediv:
+            with patch("app.docubase.views.BASE_DIR", tmpdir_path):
+                result = self.view._get_apps_with_docs()
 
-                def truediv_side_effect(key):
-                    if key == "app":
-                        return app_dir
-                    return tmpdir_path / key
-
-                mock_truediv.side_effect = truediv_side_effect
-
-                with patch("docubase.views.BASE_DIR", tmpdir_path):
-                    result = self.view._get_apps_with_docs()
-
-                    # Apps with docs folder but no .md files should have docs_count = 0
-                    if result:
-                        self.assertTrue(any(app["docs_count"] == 0 for app in result))
+            self.assertEqual(result[0]["name"], "emptyapp")
+            self.assertEqual(result[0]["docs_count"], 0)
