@@ -1,0 +1,11 @@
+#memos-table {
+    width: 100%;
+}
+
+.tabulator-cell[data-field="description"] {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-height: 4.5em;
+    overflow: hidden;
+}
