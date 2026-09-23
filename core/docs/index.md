@@ -19,3 +19,4 @@ Et les applications d'exploitation:
 
 ### Diagramme de communication entre les applications
 
+### pomodoro : description de l'utilisation de l'outil pomodoro

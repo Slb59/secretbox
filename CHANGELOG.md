@@ -5,6 +5,7 @@
 - dictavoix: ajout des urls d'accès au tableau des mots
 - devapps: ajout du tableau de bord, nouvelle application
 - journaling: ajout de la colonne location_type
+- journaling: refactoring de dashboard.html
 
 ## [0.5.0]
 - escapevault: creation de l'application
