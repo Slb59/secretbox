@@ -20,18 +20,11 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
+                ("note", models.TextField(blank=True, verbose_name="Remarque")),
                 (
                     "value",
-                    models.TextField(
-                        blank=True,
-                        help_text="Valeur saisie pour cet indicateur.",
-                        verbose_name="Valeur",
-                    ),
-                ),
-                (
-                    "level",
                     models.PositiveIntegerField(
-                        blank=True, null=True, verbose_name="Niveau"
+                        blank=True, null=True, verbose_name="Valeur"
                     ),
                 ),
                 (

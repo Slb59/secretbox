@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
-from .models import SamiCategory, SamiDay, SamiIndicator
+from .models import SamiCategory, SamiDay, SamiEntry, SamiIndicator
 
 
 class SamiIndicatorInline(admin.TabularInline):
@@ -65,3 +65,25 @@ class SamiDayAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "date"
     ordering = ("-date",)
+
+
+@admin.register(SamiEntry)
+class SamiEntryAdmin(admin.ModelAdmin):
+    list_display = (
+        "day",
+        "indicator",
+        "value",
+        "note",
+    )
+    list_filter = ("day", "indicator__category")
+    search_fields = (
+        "value",
+        "indicator__title",
+        "indicator__description",
+    )
+    ordering = (
+        "-day",
+        "indicator__category",
+        "indicator",
+    )
+    list_select_related = ("day", "indicator", "indicator__category")

@@ -13,6 +13,11 @@ class SamiCategory(models.Model):
         default=25,
     )
 
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("Catégorie Sami")
+        verbose_name_plural = _("Catégories Sami")
+
     def __str__(self):
         return self.name
 
@@ -46,7 +51,7 @@ class SamiIndicator(models.Model):
         verbose_name_plural = _("Indicateurs")
 
     def __str__(self):
-        return f"{self.get_category_display()} - {self.title}"
+        return f"{self.category} - {self.title}"
 
 
 class SamiDay(models.Model):
@@ -91,16 +96,15 @@ class SamiEntry(models.Model):
         verbose_name=_("Indicateur"),
     )
 
-    value = models.TextField(
+    note = models.TextField(
         blank=True,
-        verbose_name=_("Valeur"),
-        help_text=_("Valeur saisie pour cet indicateur."),
+        verbose_name=_("Remarque"),
     )
 
-    level = models.PositiveIntegerField(
+    value = models.PositiveIntegerField(
         null=True,
         blank=True,
-        verbose_name=_("Niveau"),
+        verbose_name=_("Valeur"),
     )
 
     class Meta:
