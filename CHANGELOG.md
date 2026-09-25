@@ -1,3 +1,6 @@
+## [0.7.0]
+- samicheck: creation de l'application
+
 ## [0.6.0]
 - dictavoix: le nombre de mots dans une boite thème est clickable
 - dictavoix: le lien donne accès à un tableau des mots du dictionnaire

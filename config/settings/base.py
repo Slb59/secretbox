@@ -37,6 +37,7 @@ PROJECT_APPS = [
     "docubase",
     "escapevault",
     "devapps",
+    "samicheck",
 ]
 
 THIRD_PARTY_APPS = [

@@ -34,6 +34,7 @@ urlpatterns = [
     path("docubase/", include("docubase.urls")),
     path("escapevault/", include("escapevault.urls")),
     path("devapps/", include("devapps.urls")),
+    path("samicheck/", include("samicheck.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 

@@ -44,9 +44,14 @@
     </a>
 {% endif %}
 
+<!-- Chip for devapps -->
 {% if user.is_authenticated %}
-    <a href="{% url 'devapps:dashboard' %}" class="round-icon round-icon--rose" title="DevApps">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <a href="{% url 'devapps:dashboard' %}" 
+        class="round-icon round-icon--rose" title="DevApps">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+            width="24" height="24" viewBox="0 0 24 24" fill="none" 
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+            stroke-linejoin="round" aria-hidden="true">
             <rect width="8" height="8" x="3" y="3" rx="1"/>
             <rect width="8" height="8" x="13" y="3" rx="1"/>
             <rect width="8" height="8" x="3" y="13" rx="1"/>
@@ -55,10 +60,14 @@
     </a>
 {% endif %}
 
+<!-- Chip for dictavoix -->
 {% if can_access_dictavoix %}
-    <a href="{% url 'dictavoix:dashboard' %}" class="round-icon round-icon--rose" title="Dictavoix">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    <a href="{% url 'dictavoix:dashboard' %}" 
+    class="round-icon round-icon--rose" title="Dictavoix">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" 
+            height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+            stroke-linejoin="round"
             class="lucide lucide-mic-icon lucide-mic">
             <path d="M12 1a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4z"/>
             <path d="M19 11a7 7 0 0 1-14 0"/>
@@ -68,11 +77,10 @@
     </a>
 {% endif %}
 
-{% if can_access_diarylab %}
-<!-- Chip for diarylab -->
-
+<!-- Chip for escapevault -->
 {% if can_access_escapevault %}
-    <a href="{% url 'escapevault:dashboard' %}" class="round-icon round-icon--rose" title="EscapeVault">
+    <a href="{% url 'escapevault:dashboard' %}" 
+        class="round-icon round-icon--rose" title="EscapeVault">
         <svg xmlns="http://www.w3.org/2000/svg" 
             width="24" height="24" viewBox="0 0 24 24" 
             fill="none" stroke="currentColor" 
@@ -87,4 +95,17 @@
     </a>
 {% endif %}
 
+<!-- Chip for samicheck -->
+{% if user.is_authenticated %}
+    <a href="{% url 'samicheck:dashboard' %}" 
+        class="round-icon round-icon--rose" title="SamiCheck">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+        width="24" height="24" viewBox="0 0 24 24" 
+        fill="none" stroke="currentColor" 
+        stroke-width="2" stroke-linecap="round" 
+        stroke-linejoin="round" 
+        class="lucide lucide-activity preview-icon">
+        <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+    </svg>
+    </a>
 {% endif %}
