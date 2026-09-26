@@ -44,8 +44,8 @@ class DocubaseIndexView(LoginRequiredMixin, TemplateView):
             if app_folder.is_dir():
                 docs_path = app_folder / "docs"
                 if docs_path.exists() and docs_path.is_dir():
-                    app_name = app_folder.name
-                    docs_count = len(list(docs_path.glob("*.md")))
+                    app_name: str = app_folder.name
+                    docs_count: int = len(list(docs_path.glob("*.md")))
                     apps.append(
                         {
                             "name": app_name,

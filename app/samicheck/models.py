@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
@@ -52,6 +53,30 @@ class SamiIndicator(models.Model):
 
     def __str__(self):
         return f"{self.category} - {self.title}"
+
+    def clean(self):
+        super().clean()
+        if not self.category_id:
+            return
+
+        # Somme des max_level des autres indicateurs
+        other_indicators_total = (
+            SamiIndicator.objects.filter(category=self.category)
+            .exclude(pk=self.pk)
+            .aggregate(total=models.Sum("max_level"))["total"]
+            or 0
+        )
+        total = other_indicators_total + self.max_level
+        if total > self.category.max_score:
+            raise ValidationError(
+                {
+                    "max_level": (
+                        f"La somme des niveaux maximum ({total}) "
+                        f"dépasse le score maximum de la catégorie "
+                        f"({self.category.max_score})."
+                    )
+                }
+            )
 
 
 class SamiDay(models.Model):

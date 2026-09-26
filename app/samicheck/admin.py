@@ -1,19 +1,50 @@
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.fields import TextField
+from django.forms.widgets import Textarea
 
 from .models import SamiCategory, SamiDay, SamiEntry, SamiIndicator
 
 
+class SamiIndicatorInlineFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+
+        if any(self.errors):
+            return
+
+        total = 0
+
+        for form in self.forms:
+            if (
+                form.cleaned_data
+                and not form.cleaned_data.get("DELETE", False)
+                and (form.instance.pk or form.has_changed())
+            ):
+                total += form.cleaned_data.get("max_level", 0) or 0
+
+        if total > self.instance.max_score:
+            raise ValidationError(
+                f"Les niveaux maximum ({total}) "
+                f"dépasse le score maximum de la catégorie "
+                f"({self.instance.max_score})."
+            )
+
+
 class SamiIndicatorInline(admin.TabularInline):
     model: type[SamiIndicator] = SamiIndicator
+    formset: type[SamiIndicatorInlineFormSet] = SamiIndicatorInlineFormSet
     extra = 1
+
     fields = (
         "title",
         "max_level",
         "description",
     )
-    formfield_overrides = {
+
+    formfield_overrides: dict[type[TextField], dict[str, Textarea]] = {
         models.TextField: {
             "widget": forms.Textarea(
                 attrs={
