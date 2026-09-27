@@ -93,6 +93,8 @@ class SamiDayAdmin(admin.ModelAdmin):
         "date",
         "started_at",
         "ended_at",
+        "total_score",
+        "category_scores",
     )
     date_hierarchy = "date"
     ordering = ("-date",)

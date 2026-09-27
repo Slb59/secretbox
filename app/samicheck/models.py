@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
 from django.db.models.constraints import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
@@ -104,6 +105,23 @@ class SamiDay(models.Model):
 
     def __str__(self):
         return str(self.date)
+
+    def category_score(self, category):
+        return (
+            self.entries.filter(indicator__category=category).aggregate(
+                total=Sum("value")
+            )["total"]
+            or 0
+        )
+
+    def total_score(self):
+        return self.entries.aggregate(total=Sum("value"))["total"] or 0
+
+    def category_scores(self):
+        return {
+            category.name: self.category_score(category)
+            for category in SamiCategory.objects.all()
+        }
 
 
 class SamiEntry(models.Model):
