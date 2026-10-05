@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+{% load static %}
+{% block title %}{{ block.super }} - SamiCheck{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <div class="mb-4 w-full">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="w-full  ">
+
+        <link 
+            href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" 
+            rel="stylesheet"
+        >
+        
+        <link rel="stylesheet" href="{% static 'samicheck/css/samicheck.css' %}">
+
+        {% include "samicheck-navbar.html" %} 
+
+        <div class="overflow-x-auto">
+            <div id="samicheck-table"></div>
+        </div>
+
+        {{ table_columns|json_script:"samicheck-columns" }}
+        {{ table_data|json_script:"samicheck-data" }}
+
+        <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js">
+        </script>
+
+        <script src="{% static 'samicheck/js/samicheck.js' %}?v=20261005-1"></script>
+
+    </div>
+{% endblock %}
