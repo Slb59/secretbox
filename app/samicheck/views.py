@@ -15,7 +15,10 @@ class SamicheckDashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         indicators = list(
             SamiIndicator.objects.select_related("category").order_by(
-                "category__name", "title"
+                "category__display_order",
+                "category__name",
+                "display_order",
+                "title",
             )
         )
         days = SamiDay.objects.prefetch_related("entries").order_by("-date")

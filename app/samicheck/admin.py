@@ -39,6 +39,7 @@ class SamiIndicatorInline(admin.TabularInline):
     extra = 1
 
     fields = (
+        "display_order",
         "title",
         "max_level",
         "description",
@@ -54,7 +55,7 @@ class SamiIndicatorInline(admin.TabularInline):
             ),
         },
     }
-    ordering = ("title",)
+    ordering = ("display_order", "title")
 
 
 @admin.register(SamiCategory)
@@ -62,9 +63,11 @@ class SamiCategoryAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "max_score",
+        "display_order",
     )
+    list_editable = ("display_order",)
     search_fields = ("name",)
-    ordering = ("name",)
+    ordering = ("display_order", "name")
     inlines: tuple[type[SamiIndicatorInline]] = (SamiIndicatorInline,)
 
 
@@ -74,7 +77,9 @@ class SamiIndicatorAdmin(admin.ModelAdmin):
         "title",
         "category",
         "max_level",
+        "display_order",
     )
+    list_editable = ("display_order",)
     list_filter = ("category",)
     search_fields = (
         "title",
@@ -82,6 +87,7 @@ class SamiIndicatorAdmin(admin.ModelAdmin):
     )
     ordering = (
         "category",
+        "display_order",
         "title",
     )
     list_select_related = ("category",)

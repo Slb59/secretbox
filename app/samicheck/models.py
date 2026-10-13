@@ -15,8 +15,13 @@ class SamiCategory(models.Model):
         default=25,
     )
 
+    display_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Ordre d'affichage"),
+    )
+
     class Meta:
-        ordering = ["name"]
+        ordering = ["display_order", "name"]
         verbose_name = _("Catégorie Sami")
         verbose_name_plural = _("Catégories Sami")
 
@@ -47,8 +52,18 @@ class SamiIndicator(models.Model):
         verbose_name=_("Niveau maximum"),
     )
 
+    display_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Ordre d'affichage"),
+    )
+
     class Meta:
-        ordering = ["category", "title"]
+        ordering = [
+            "category__display_order",
+            "category__name",
+            "display_order",
+            "title",
+        ]
         verbose_name = _("Indicateur")
         verbose_name_plural = _("Indicateurs")
 
@@ -151,7 +166,13 @@ class SamiEntry(models.Model):
     )
 
     class Meta:
-        ordering: list[str] = ["-day", "indicator__category", "indicator"]
+        ordering: list[str] = [
+            "-day",
+            "indicator__category__display_order",
+            "indicator__category__name",
+            "indicator__display_order",
+            "indicator__title",
+        ]
         verbose_name = _("Relevé")
         verbose_name_plural = _("Relevés")
         constraints: list[UniqueConstraint] = [
