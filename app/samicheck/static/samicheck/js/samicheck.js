@@ -1,4 +1,5 @@
 (function () {
+    let table;
 
     // ============================================================
     // Configuration des colonnes Tabulator
@@ -6,6 +7,20 @@
 
     function getColumns(){
         return [
+            {
+                title: "Journée",
+                columns: [
+                    {
+                        title: "Date",
+                        field: "date",
+                        frozen: true,
+                    },
+                    {
+                        title: "Poids",
+                        field: "weight",
+                    },
+                ],
+            },
             {
                 title: "Date",
                 field: "date",
@@ -383,6 +398,61 @@
     // ============================================================
     function init() {
         createTable();
+        initDayDialog();
+    }
+
+    function initDayDialog() {
+        const dialog = document.getElementById("samicheck-day-dialog");
+        const form = document.getElementById("samicheck-day-form");
+        const errorBox = document.getElementById("samicheck-day-error");
+        const dateInput = document.getElementById("samicheck-day-date");
+
+        document.getElementById("samicheck-add-day").addEventListener("click", () => {
+            errorBox.classList.add("hidden");
+            dialog.showModal();
+        });
+
+        document.getElementById("samicheck-day-close").addEventListener("click", () => dialog.close());
+        document.getElementById("samicheck-day-cancel").addEventListener("click", () => dialog.close());
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+            errorBox.classList.add("hidden");
+
+            const formData = new FormData(form);
+            const csrfToken = formData.get("csrfmiddlewaretoken");
+            const payload = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: JSON.stringify(payload),
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    const messages = Object.values(result.errors || {}).join(" ");
+                    throw new Error(messages || `Erreur HTTP ${response.status}`);
+                }
+
+                table.addData([result.row], true);
+                form.reset();
+                const now = new Date();
+                dateInput.value = [
+                    now.getFullYear(),
+                    String(now.getMonth() + 1).padStart(2, "0"),
+                    String(now.getDate()).padStart(2, "0"),
+                ].join("-");
+                dialog.close();
+            } catch (error) {
+                errorBox.textContent = error.message;
+                errorBox.classList.remove("hidden");
+            }
+        });
     }
 
     init();

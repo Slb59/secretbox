@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n crispy_forms_tags %}
 {% load static %}
-{% block title %}{{ block.super }} - SamiCheck{% endblock %}
+{% block title %}Tableau de bord SAMI{% endblock %}
 
 {% block content %}
     {% if messages %}
@@ -13,6 +13,75 @@
             {% endfor %}
         </div>
     {% endif %}
+
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+
+        <button
+            type="button"
+            id="samicheck-add-day"
+            class="rounded-lg bg-rose-600 px-4 py-2
+                text-white hover:bg-rose-700"
+        >
+            + Saisir ma journée
+        </button>
+    </div>
+
+    <dialog
+        id="samicheck-day-dialog"
+        class="m-auto max-h-[85vh] w-[min(36rem,calc(100%-2rem))] rounded-lg p-0 shadow-xl backdrop:bg-black/50"
+        aria-labelledby="samicheck-day-title"
+    >
+        <form
+            id="samicheck-day-form"
+            action="{% url 'samicheck:create_day' %}"
+            method="post"
+            class="flex max-h-[85vh] flex-col bg-white text-gray-900"
+        >
+            {% csrf_token %}
+            <div class="flex items-center justify-between border-b px-5 py-4">
+                <h2 id="samicheck-day-title" class="text-lg font-semibold">Saisir une journée</h2>
+                <button
+                    type="button"
+                    id="samicheck-day-close"
+                    class="rounded px-2 py-1 text-gray-600 hover:bg-gray-100"
+                    aria-label="Fermer"
+                >
+                    &times;
+                </button>
+            </div>
+            <div class="overflow-y-auto px-5 py-4">
+                <label for="samicheck-day-date" class="mb-1 block font-medium">Date</label>
+                <input
+                    id="samicheck-day-date"
+                    name="date"
+                    type="date"
+                    value="{{ today }}"
+                    required
+                    class="mb-5 w-full rounded border border-gray-300 px-3 py-2"
+                >
+                <div id="samicheck-day-error" class="mb-4 hidden rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700" role="alert"></div>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {% for indicator in indicators %}
+                        <label class="block">
+                            <span class="mb-1 block text-sm font-medium">{{ indicator.category.name }} - {{ indicator.title }}</span>
+                            <input
+                                name="indicator_{{ indicator.pk }}"
+                                type="number"
+                                min="0"
+                                max="{{ indicator.max_level }}"
+                                step="1"
+                                class="w-full rounded border border-gray-300 px-3 py-2"
+                            >
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 border-t px-5 py-4">
+                <button type="button" id="samicheck-day-cancel" class="rounded border border-gray-300 px-4 py-2 hover:bg-gray-50">Annuler</button>
+                <button type="submit" class="rounded bg-rose-600 px-4 py-2 text-white hover:bg-rose-700">Enregistrer</button>
+            </div>
+        </form>
+    </dialog>
 
     <div class="w-full  ">
 
@@ -35,7 +104,7 @@
         <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js">
         </script>
 
-        <script src="{% static 'samicheck/js/samicheck.js' %}?v=20261005-1"></script>
+        <script src="{% static 'samicheck/js/samicheck.js' %}?v=20261014-1"></script>
 
     </div>
 {% endblock %}
