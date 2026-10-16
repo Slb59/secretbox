@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
 
+from config import env
+
 from .choices import Category, State
 from .forms import DevappsActionForm
 from .models import DevappsAction, DevappsApplication, DevappsVersion
@@ -33,6 +35,8 @@ class DevappsDashboardView(LoginRequiredMixin, TemplateView):
                 "states": [
                     {"value": value, "label": label} for value, label in State.choices
                 ],
+                "title": "Suivi de SecretBox Dev",
+                "logo_url": env("DEVAPPS_LOGO_URL"),
             }
         )
         return context
