@@ -1,6 +1,7 @@
 ## [0.7.0]
 - samicheck: creation de l'application
 - jackietrade: correction accès au dashboard
+- devapps: modification du logo_header
 
 ## [0.6.0]
 - dictavoix: le nombre de mots dans une boite thème est clickable
